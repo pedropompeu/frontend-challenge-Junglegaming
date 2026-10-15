@@ -1,0 +1,22 @@
+# AI / memory system (Pedro Pompeu) — local only, do not push to challenge upstream
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+Brief.md
+context/
+fontes/
+lint.py
+FrontendChallenge/
+docs/superpowers/
+.superpowers/
+
+# Build / tooling
+node_modules/
+dist/
+test-results/
+playwright-report/
+blob-report/
+.lighthouseci/
+.env.local
+.netlify/
+*.tsbuildinfo
