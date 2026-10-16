@@ -33,9 +33,11 @@ function CartPage() {
   const cart = useCart()
   const prefs = useCheckoutPrefs(ownerKey)
   const items = cart.data?.items ?? []
+  // Com quantidade acima do estoque o servidor recusaria a cotação: espera o ajuste.
+  const overStock = items.some((i) => i.quantity > i.available)
   const quote = useQuery({
     ...quoteQuery(ownerKey, quoteRequestOf(prefs)),
-    enabled: items.length > 0,
+    enabled: items.length > 0 && !overStock,
   })
 
   // Cupom salvo que deixou de valer (expirou entre visitas): sai das preferências com aviso.
@@ -56,7 +58,6 @@ function CartPage() {
 
   const blockingQuoteError =
     quote.isError && !(isApiError(quote.error) && COUPON_ERRORS.has(quote.error.code))
-  const overStock = items.some((i) => i.quantity > i.available)
   const canCheckout = Boolean(quote.data) && !quote.isFetching && !overStock && items.length > 0
 
   let list
@@ -109,7 +110,14 @@ function CartPage() {
               onRemove={() => setCheckoutPrefs(ownerKey, { couponCode: null })}
               className="mb-5 md:mt-6"
             />
-            {blockingQuoteError ? (
+            {overStock ? (
+              <p
+                role="status"
+                className="rounded-[10px] bg-surface-2 px-4 py-3 text-sm text-sand md:bg-surface"
+              >
+                Ajuste as quantidades destacadas para ver o resumo atualizado.
+              </p>
+            ) : blockingQuoteError ? (
               <RetryBox
                 title="Não foi possível calcular o resumo"
                 error={quote.error}

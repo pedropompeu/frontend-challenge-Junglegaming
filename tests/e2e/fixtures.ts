@@ -28,6 +28,14 @@ export function mocks(page: Page) {
       await ready()
       await page.evaluate(() => window.__kurioMocks!.expireSession())
     },
+    async dropSocket(opts?: { holdMs?: number }) {
+      await ready()
+      await page.evaluate((o) => window.__kurioMocks!.dropSocket(o), opts)
+    },
+    async connections() {
+      await ready()
+      return page.evaluate(() => window.__kurioMocks!.connections())
+    },
   }
 }
 

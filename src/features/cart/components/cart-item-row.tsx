@@ -5,6 +5,7 @@ import { EDITION_LABELS } from '@/features/nft/editions'
 import { EthPrice } from '@/shared/ui/eth-price'
 import { QuantityStepper } from '@/shared/ui/quantity-stepper'
 import { SkeletonShimmer } from '@/shared/ui/skeleton-shimmer'
+import { CART_LINE_NOTICE_LABELS, clearCartLineNotice, useCartLineNotices } from '../line-notices'
 import {
   availabilityMessage,
   conflictAvailable,
@@ -23,6 +24,7 @@ type CartItemRowProps = {
 export function CartItemRow({ item, line }: CartItemRowProps) {
   const update = useUpdateCartItem(item.id)
   const remove = useRemoveCartItem(item.id)
+  const notices = useCartLineNotices(item.id)
   const conflict = isAvailabilityConflict(update.error)
   const overStock = item.quantity > item.available
   const warning =
@@ -35,8 +37,13 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
   const stepper = (
     <QuantityStepper
       value={item.quantity}
-      max={Math.max(item.quantity, item.available, 1)}
-      onChange={(q) => update.mutate(q)}
+      // O teto é o estoque: acima dele o servidor recusa, então o "−" vai direto ao que resta.
+      max={Math.max(item.available, 1)}
+      disabled={item.available === 0}
+      onChange={(q) => {
+        clearCartLineNotice(item.id)
+        update.mutate(q)
+      }}
       label={`Quantidade de ${item.name}`}
     />
   )
@@ -66,6 +73,18 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
           </Link>
         </h3>
         <p className="text-sm text-sand">Edição: {EDITION_LABELS[item.editionKind]}</p>
+        {notices.length > 0 ? (
+          <ul aria-label="Mudanças recentes" className="flex flex-wrap gap-1.5">
+            {notices.map((kind) => (
+              <li
+                key={kind}
+                className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-bold text-primary-hi"
+              >
+                {CART_LINE_NOTICE_LABELS[kind]}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
       <EthPrice value={item.unitPrice} className="[grid-area:price]" />
       <div className="pt-1 pb-3 [grid-area:qty] md:py-0">
@@ -87,7 +106,10 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
         type="button"
         aria-label={`Remover ${item.name} do carrinho`}
         disabled={remove.isPending}
-        onClick={() => remove.mutate()}
+        onClick={() => {
+          clearCartLineNotice(item.id)
+          remove.mutate()
+        }}
         className="absolute top-2 right-2 grid size-10 place-items-center rounded-md text-primary-hi hover:bg-surface-2 disabled:opacity-50 md:static md:[grid-area:remove]"
       >
         <Trash2Icon aria-hidden="true" className="size-5" />

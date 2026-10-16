@@ -1,12 +1,13 @@
 import Big from 'big.js'
-import type { Nft, NftSummary } from '@/contracts'
+import type { Edition, Nft, NftSummary } from '@/contracts'
 
-/** Resumo de card a partir do detalhe (o "a partir de" é a edição mais barata). */
+/** "A partir de": o preço da edição mais barata. */
+export function fromPriceOf(editions: Edition[]): string {
+  return editions.reduce((min, e) => (new Big(e.price).lt(min) ? e.price : min), editions[0]!.price)
+}
+
+/** Resumo de card a partir do detalhe. */
 export function toNftSummary(nft: Nft): NftSummary {
-  const fromPrice = nft.editions.reduce(
-    (min, e) => (new Big(e.price).lt(min) ? e.price : min),
-    nft.editions[0]!.price,
-  )
   return {
     id: nft.id,
     name: nft.name,
@@ -16,6 +17,6 @@ export function toNftSummary(nft: Nft): NftSummary {
     images: nft.images,
     editions: nft.editions,
     version: nft.version,
-    fromPrice,
+    fromPrice: fromPriceOf(nft.editions),
   }
 }

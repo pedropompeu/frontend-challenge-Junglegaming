@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
 import { SessionProvider } from '@/features/auth/session-provider'
+import { RealtimeProvider } from '@/features/realtime/realtime-provider'
 import { errorMessage } from '@/shared/lib/api-error'
 import { SiteLayout } from '@/shared/layout/site-layout'
 
@@ -21,9 +22,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   return (
     <SessionProvider>
-      <SiteLayout>
-        <Outlet />
-      </SiteLayout>
+      <RealtimeProvider>
+        <SiteLayout>
+          <Outlet />
+        </SiteLayout>
+      </RealtimeProvider>
     </SessionProvider>
   )
 }

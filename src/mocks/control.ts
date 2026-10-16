@@ -7,7 +7,7 @@ import type { ScenarioName } from './scenarios/names'
 import type { EndpointId } from './scenarios/scenarios'
 import { failNext, getScenario, setLatencyOverride, setScenario } from './scenarios/runtime'
 import { cancelSettlements, settleOrder } from './socket/settlement'
-import { broadcast, dropAll, resetSocketServer } from './socket/server'
+import { broadcast, dropAll, listConnections, resetSocketServer } from './socket/server'
 
 export interface KurioMocksControl {
   reset(scenario?: ScenarioName): Promise<void>
@@ -21,6 +21,7 @@ export interface KurioMocksControl {
   settleOrder(orderId: string, status: 'confirmed' | 'declined'): void
   expireSession(): void
   dropSocket(opts?: { holdMs?: number }): void
+  connections(): Array<{ userId: string | null }>
   emitDuplicate(eventId: string): void
   emitStale(nftId: string): void
   disconnectWallet(): void
@@ -65,6 +66,7 @@ export function createControl(): KurioMocksControl {
       })
     },
     dropSocket: (opts) => dropAll(opts),
+    connections: listConnections,
     emitDuplicate(eventId) {
       resend(
         getDb().eventLog.find((e) => e.eventId === eventId),

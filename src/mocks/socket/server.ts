@@ -48,6 +48,11 @@ export function connectionCount(): number {
   return connections.size
 }
 
+/** Quem está conectado agora (`userId` nulo = visitante), para os testes de troca de usuário. */
+export function listConnections(): Array<{ userId: string | null }> {
+  return [...connections.values()].map((conn) => ({ userId: conn.userId }))
+}
+
 function closeWhere(match: (conn: SocketConnection) => boolean): void {
   for (const [id, conn] of [...connections]) {
     if (!match(conn)) continue

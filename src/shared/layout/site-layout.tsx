@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useRouterState } from '@tanstack/react-router'
+import { RealtimeStatusPill } from '@/features/realtime/components/realtime-indicator'
 import { cn } from '@/shared/lib/utils'
 import { BottomNav, mobileChromeOf } from './bottom-nav'
 import { FeatureStrip } from './feature-strip'
@@ -24,6 +25,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
         Pular para o conteúdo
       </a>
       <Header />
+      <RealtimeStatusPill />
       <main id="conteudo" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>

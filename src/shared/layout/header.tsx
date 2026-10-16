@@ -3,6 +3,7 @@ import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { SearchIcon, ShoppingCartIcon, XIcon } from 'lucide-react'
 import { AccountMenu } from '@/features/auth/components/account-menu'
 import { useCartCount } from '@/features/cart/queries'
+import { RealtimeIndicator } from '@/features/realtime/components/realtime-indicator'
 import { cn } from '@/shared/lib/utils'
 import { Unavailable } from '@/shared/ui/unavailable'
 
@@ -62,6 +63,7 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-4 lg:gap-6">
+            <RealtimeIndicator />
             <HeaderSearch />
             <CartLink />
             <AccountMenu />
