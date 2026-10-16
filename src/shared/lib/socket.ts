@@ -17,6 +17,9 @@ export async function createSocket(token: string | null): Promise<Socket> {
     reconnection: true,
     reconnectionDelay: 500,
     reconnectionDelayMax: 3000,
+    // Prazo de cada tentativa. Uma conexão fechada antes do handshake só é abandonada por ele:
+    // com o padrão (20s), uma queda de poucos segundos deixava o tempo real fora por ~22s.
+    timeout: 5000,
     autoConnect: true,
   })
 }
