@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { afterAuthTarget, authSearchSchema, safeRedirect } from '@/features/auth/schemas'
+import {
+  afterAuthTarget,
+  authSearchSchema,
+  closeAuthTarget,
+  safeRedirect,
+} from '@/features/auth/schemas'
 
 describe('safeRedirect', () => {
   it('accepts internal paths with search', () => {
@@ -36,5 +41,18 @@ describe('afterAuthTarget', () => {
     expect(afterAuthTarget({})).toBe('/')
     expect(afterAuthTarget({ redirect: '/entrar' })).toBe('/')
     expect(afterAuthTarget({ redirect: '/cadastro?redirect=%2Fperfil' })).toBe('/')
+  })
+})
+
+describe('closeAuthTarget', () => {
+  const isPrivate = (href: string) => href.startsWith('/checkout') || href.startsWith('/perfil')
+
+  it('keeps a public redirect', () => {
+    expect(closeAuthTarget({ redirect: '/nft/nft_x' }, isPrivate)).toBe('/nft/nft_x')
+  })
+
+  it('goes home when the redirect is private: the guard would bounce back to the login', () => {
+    expect(closeAuthTarget({ redirect: '/checkout', motivo: 'expirada' }, isPrivate)).toBe('/')
+    expect(closeAuthTarget({ redirect: '/perfil/carteiras' }, isPrivate)).toBe('/')
   })
 })

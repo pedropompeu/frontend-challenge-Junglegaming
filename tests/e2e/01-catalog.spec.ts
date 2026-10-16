@@ -94,3 +94,44 @@ test('card navigates to detail', async ({ page }) => {
   await first.click()
   await expect(page).toHaveURL(/\/nft\/nft_/)
 })
+
+const scrollY = (page: Page) => page.evaluate(() => Math.round(window.scrollY))
+
+test('filters keep the scroll position; pagination brings the catalog to the top', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await expect(cards(page)).toHaveCount(9)
+  const tabs = page.getByRole('tablist', { name: 'Seções do catálogo' })
+  await tabs.evaluate((el) => el.scrollIntoView({ block: 'start' }))
+  const before = await scrollY(page)
+  expect(before).toBeGreaterThan(200)
+
+  await tabs.getByRole('tab', { name: 'Em alta' }).click()
+  await expect(page).toHaveURL(/tab=trending/)
+  await expect(page.getByRole('list', { name: 'NFTs' })).toHaveAttribute('aria-busy', 'false')
+  expect(Math.abs((await scrollY(page)) - before)).toBeLessThanOrEqual(2)
+
+  if (!isMobile(page)) {
+    await page.getByRole('checkbox', { name: 'Polygon' }).check()
+    await expect(page).toHaveURL(/networks=polygon/)
+    await expect(page.getByRole('list', { name: 'NFTs' })).toHaveAttribute('aria-busy', 'false')
+    expect(Math.abs((await scrollY(page)) - before)).toBeLessThanOrEqual(2)
+  }
+
+  await page.goto('/')
+  await expect(cards(page)).toHaveCount(9)
+  const pagination = page.getByRole('navigation', { name: 'Paginação' })
+  await pagination.evaluate((el) => el.scrollIntoView({ block: 'end' }))
+  await pagination.getByRole('link', { name: 'Página 2' }).click()
+  await expect(page).toHaveURL(/page=2/)
+  // Nem fica lá embaixo nem volta ao hero: o topo do catálogo encosta no topo da tela.
+  await expect
+    .poll(() =>
+      page.locator('#catalogo').evaluate((el) => Math.round(el.getBoundingClientRect().top)),
+    )
+    .toBeGreaterThanOrEqual(0)
+  const top = await page.locator('#catalogo').evaluate((el) => el.getBoundingClientRect().top)
+  expect(top).toBeLessThanOrEqual(40)
+  expect(await scrollY(page)).toBeGreaterThan(200)
+})

@@ -101,6 +101,7 @@ export function AvatarField({ userId, avatarUrl }: { userId: string; avatarUrl: 
         <input
           ref={fileInput}
           type="file"
+          name="avatar"
           accept={AVATAR_ACCEPT}
           tabIndex={-1}
           aria-hidden="true"

@@ -123,6 +123,7 @@ export function CheckoutForm({
       <div className="mt-6 flex items-center gap-3">
         <Checkbox
           id={`${ids}-custom`}
+          name="useCustomWallet"
           checked={useCustom}
           // Sem carteira cadastrada não há para onde voltar: a avulsa é a única opção.
           disabled={!hasWallets}

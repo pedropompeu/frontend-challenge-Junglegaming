@@ -7,7 +7,7 @@ import { nftListQuery } from '@/features/catalog/queries'
 import { catalogSearchSchema, toListParams } from '@/features/catalog/search-schema'
 import { useMediaQuery } from '@/shared/lib/use-media-query'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/shared/ui/dialog'
-import { afterAuthTarget, type AuthSearch } from '../schemas'
+import { afterAuthTarget, closeAuthTarget, type AuthSearch } from '../schemas'
 import { SocialLogin } from './auth-fields'
 import { LoginForm } from './login-form'
 import { RegisterForm } from './register-form'
@@ -32,16 +32,25 @@ const tab =
 
 /**
  * Entrar/Criar conta: modal sobre o catálogo no desktop e tela cheia no mobile, como no Figma.
- * Fechar ou concluir leva ao `redirect` (sempre interno) ou ao Início.
+ * Concluir leva ao `redirect` (sempre interno) ou ao Início. Fechar sem entrar só volta ao
+ * `redirect` se ele for público: numa rota privada o guard devolveria o usuário a esta tela.
  */
 export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearch }) {
   const router = useRouter()
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const target = afterAuthTarget(search)
+  const closeTarget = closeAuthTarget(search, (href) => {
+    const pathname = href.split(/[?#]/)[0] ?? '/'
+    return router.matchRoutes(pathname).some((m) => m.routeId === '/_auth')
+  })
   const contentRef = useRef<HTMLDivElement>(null)
 
   function leave() {
     void router.navigate({ href: target, replace: true })
+  }
+
+  function close() {
+    void router.navigate({ href: closeTarget, replace: true })
   }
 
   const body = (
@@ -63,7 +72,7 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
     return (
       <>
         <AuthBackdrop />
-        <Dialog open onOpenChange={(open) => !open && leave()}>
+        <Dialog open onOpenChange={(open) => !open && close()}>
           <DialogContent
             ref={contentRef}
             onOpenAutoFocus={(event) => {
@@ -91,14 +100,14 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
 
   function back(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault()
-    leave()
+    close()
   }
 
   return (
     <section aria-labelledby="auth-title" className="page-container grid gap-6 pt-4 pb-10">
       <div className="grid grid-cols-[40px_1fr_40px] items-center">
         <a
-          href={target}
+          href={closeTarget}
           onClick={back}
           aria-label="Voltar"
           className="grid size-10 place-items-center rounded-full border border-line-strong text-cream"

@@ -70,6 +70,7 @@ export function WalletsPanel({ user, wallets, redirect }: WalletsPanelProps) {
           <div className="flex items-center gap-3">
             <Checkbox
               id={`${id}-same`}
+              name="sameAsPrimary"
               checked={copying}
               disabled={!primary}
               onCheckedChange={(checked) => setSameAsPrimary(checked === true)}

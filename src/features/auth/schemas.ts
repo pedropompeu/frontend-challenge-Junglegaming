@@ -23,3 +23,9 @@ export function afterAuthTarget(search: AuthSearch): string {
   if (!target || AUTH_PATHS.some((p) => target === p || target.startsWith(`${p}?`))) return '/'
   return target
 }
+
+/** Para onde ir ao fechar sem entrar: rota privada rebateria para o login, então vai ao Início. */
+export function closeAuthTarget(search: AuthSearch, isPrivate: (href: string) => boolean): string {
+  const target = afterAuthTarget(search)
+  return isPrivate(target) ? '/' : target
+}

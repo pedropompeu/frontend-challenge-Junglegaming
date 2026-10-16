@@ -141,6 +141,7 @@ export function SelectField<T extends FieldValues, V extends string, TOut = T>({
         <FormItem className="content-start">
           <FieldLabel required={required}>{label}</FieldLabel>
           <Select
+            name={field.name}
             value={field.value as string}
             onValueChange={(value) => field.onChange(value as V)}
             disabled={disabled}

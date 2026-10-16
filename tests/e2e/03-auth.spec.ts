@@ -125,3 +125,17 @@ test('closing the login returns to where the user was', async ({ page }) => {
   }
   await expect(page).toHaveURL(/\/nft\/nft_neon-vessel$/)
 })
+
+test('closing an expired login whose redirect is private goes to the Início', async ({ page }) => {
+  await page.goto('/entrar?redirect=%2Fcheckout&motivo=expirada')
+  await expect(page.getByText(/sua sessão expirou/i).first()).toBeVisible()
+  const isDesktop = (page.viewportSize()?.width ?? 1440) >= 768
+  if (isDesktop) {
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.keyboard.press('Escape')
+  } else {
+    await page.getByRole('link', { name: 'Voltar' }).click()
+  }
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByRole('dialog')).toBeHidden()
+})

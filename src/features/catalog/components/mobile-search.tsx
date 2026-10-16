@@ -56,6 +56,7 @@ export function SearchInput({ className }: { className?: string }) {
       />
       <input
         type="search"
+        name="q"
         aria-label="Buscar NFTs"
         placeholder="Explorar coleções"
         value={value}

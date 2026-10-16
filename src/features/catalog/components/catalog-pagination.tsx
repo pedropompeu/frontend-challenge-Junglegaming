@@ -15,6 +15,11 @@ export function pageWindow(current: number, total: number): Array<number | 'gap'
   return out
 }
 
+/** Trocar de página leva ao topo do catálogo (não ao hero), como o usuário espera de uma lista. */
+function toCatalogTop() {
+  document.getElementById('catalogo')?.scrollIntoView({ block: 'start' })
+}
+
 const cell =
   'grid size-9 place-items-center rounded-md border border-line-strong text-sm text-cream transition-colors hover:border-primary aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:font-bold aria-[current=page]:text-ink'
 
@@ -28,6 +33,8 @@ export function CatalogPagination({ page, totalPages }: { page: number; totalPag
             <Link
               from="/"
               to="/"
+              resetScroll={false}
+              onClick={toCatalogTop}
               search={(prev) => ({ ...prev, page: page - 1 })}
               className={cell}
               aria-label="Página anterior"
@@ -46,6 +53,8 @@ export function CatalogPagination({ page, totalPages }: { page: number; totalPag
               <Link
                 from="/"
                 to="/"
+                resetScroll={false}
+                onClick={toCatalogTop}
                 search={(prev) => ({ ...prev, page: p })}
                 className={cn(cell, 'tabular-nums')}
                 aria-label={`Página ${p}`}
@@ -61,6 +70,8 @@ export function CatalogPagination({ page, totalPages }: { page: number; totalPag
             <Link
               from="/"
               to="/"
+              resetScroll={false}
+              onClick={toCatalogTop}
               search={(prev) => ({ ...prev, page: page + 1 })}
               className={cell}
               aria-label="Próxima página"

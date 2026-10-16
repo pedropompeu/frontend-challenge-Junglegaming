@@ -13,7 +13,7 @@ type NetworkSelectorProps = {
 /** Rede do pedido: muda a taxa da cotação e o formato de endereço aceito. */
 export function NetworkSelector({ value, onChange, onBlur }: NetworkSelectorProps) {
   return (
-    <Select value={value} onValueChange={(v) => onChange(v as Network)}>
+    <Select name="network" value={value} onValueChange={(v) => onChange(v as Network)}>
       <FormControl>
         <SelectTrigger onBlur={onBlur} aria-required="true" className={selectTriggerClass}>
           <SelectValue placeholder="Selecione uma rede" />
