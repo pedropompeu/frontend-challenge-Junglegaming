@@ -166,3 +166,32 @@ test('desktop checkout, receipt and profile dividers are the primary hairline', 
   await page.goto('/perfil')
   await expectDivider(page.getByRole('button', { name: 'Sair' }).locator('..'), 'top')
 })
+
+/** Filtro dos frames mobile: #0A0604 a 45%, com o blur em dobro do stdDeviation do SVG. */
+async function expectFrameShadow(el: Locator, geometry: string) {
+  await expect(el).toHaveCSS('border-top-width', '0px')
+  expect(await el.evaluate((node) => getComputedStyle(node).boxShadow)).toContain(
+    `rgba(10, 6, 4, 0.45) ${geometry}`,
+  )
+}
+
+test('mobile bottom bars float on the frame shadow instead of a top border', async ({ page }) => {
+  test.skip(!isMobile(page), 'a navegação inferior e a barra de compra fixa só existem no mobile')
+  await page.goto('/')
+  await expectFrameShadow(
+    page.getByRole('navigation', { name: 'Navegação inferior' }),
+    '0px -10px 30px 0px',
+  )
+
+  await page.goto('/nft/nft_neon-vessel')
+  const bar = page.getByRole('button', { name: 'Comprar NFT', exact: true }).locator('xpath=../..')
+  await expectFrameShadow(bar, '0px 0px 20px 0px')
+})
+
+test('desktop purchase bar sits inline without the mobile shadow', async ({ page }) => {
+  test.skip(isMobile(page), 'no mobile a barra flutua com a sombra do frame')
+  await page.goto('/nft/nft_neon-vessel')
+  const bar = page.getByRole('button', { name: 'Comprar NFT', exact: true }).locator('xpath=../..')
+  await expect(bar).toHaveCSS('position', 'static')
+  expect(await hasVisibleShadow(bar)).toBe(false)
+})

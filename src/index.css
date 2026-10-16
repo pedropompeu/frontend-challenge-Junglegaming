@@ -31,6 +31,10 @@
   /* Divisória do desktop: 0,3 px de #D28A4C no frame, que a 1x vira 1 px com ~30% de cobertura. */
   --color-divider: rgb(210 138 76 / 0.3);
 
+  /* Filtros dos frames mobile: #0A0604 a 45%; o blur do CSS é o dobro do stdDeviation do SVG. */
+  --shadow-dock: 0 -10px 30px rgb(10 6 4 / 0.45);
+  --shadow-float: 0 0 20px rgb(10 6 4 / 0.45);
+
   --animate-shimmer: shimmer 1.6s linear infinite;
 
   @keyframes shimmer {

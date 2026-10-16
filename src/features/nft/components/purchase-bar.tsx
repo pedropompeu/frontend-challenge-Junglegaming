@@ -40,7 +40,7 @@ export function PurchaseBar({
   const allInCart = !soldOut && max < 1
   const blocked = soldOut || allInCart
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 rounded-t-[32px] border-t border-line bg-surface px-6 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:static md:z-auto md:flex md:items-start md:justify-between md:gap-4 md:rounded-none md:border-0 md:bg-transparent md:p-0">
+    <div className="fixed inset-x-0 bottom-0 z-30 rounded-t-[32px] bg-surface px-6 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:static md:z-auto md:flex md:items-start md:justify-between md:gap-4 shadow-float md:rounded-none md:bg-transparent md:p-0 md:shadow-none">
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-4">
