@@ -53,6 +53,7 @@ export function PurchaseBar({
               onChange={onQuantityChange}
               disabled={blocked}
               label={`Quantidade de ${nftName}`}
+              look="detail"
             />
           </div>
           <p data-testid="edition-available" className="text-xs text-khaki">

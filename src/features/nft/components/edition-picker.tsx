@@ -28,7 +28,7 @@ export function EditionPicker({ editions, selectedId, onSelect, className }: Edi
               onClick={() => onSelect(edition)}
               className={cn(
                 'h-8 rounded-full border border-line px-3 text-sm text-sand uppercase transition-colors',
-                'hover:border-primary-hi hover:text-cream aria-pressed:border-primary-hi aria-pressed:text-primary-hi',
+                'hover:border-primary-hi hover:text-cream aria-pressed:border-primary aria-pressed:font-medium aria-pressed:text-primary-hi',
                 'disabled:cursor-not-allowed disabled:border-line disabled:text-khaki/70',
               )}
             >

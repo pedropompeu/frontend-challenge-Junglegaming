@@ -45,6 +45,7 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
         update.mutate(q)
       }}
       label={`Quantidade de ${item.name}`}
+      look="cart"
     />
   )
 
