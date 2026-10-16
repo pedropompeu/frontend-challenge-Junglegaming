@@ -124,15 +124,13 @@
   }
 }
 
-/* Coluna de conteúdo do Figma: 1200px úteis (margens de 120px em 1440). */
+/* Coluna de conteúdo do Figma: 1200px úteis (margens de 120px em 1440); no mobile, os frames
+   alinham texto e blocos a 24px da borda. Quem sangra até a borda usa `-mx-6`. */
 @utility page-container {
   margin-inline: auto;
   width: 100%;
   max-width: 1248px;
-  padding-inline: 1rem;
-  @variant md {
-    padding-inline: 1.5rem;
-  }
+  padding-inline: 1.5rem;
 }
 
 /* CTA de compra do Figma: #D28A4C sólido no desktop; no mobile, o frame esmaece até 80%. */

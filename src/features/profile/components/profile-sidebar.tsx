@@ -51,7 +51,7 @@ export function ProfileSidebar() {
       >
         Meu perfil
       </h2>
-      <ul className="-mx-4 flex overflow-x-auto bg-surface px-1 lg:mx-0 lg:block lg:overflow-visible lg:px-0">
+      <ul className="-mx-6 flex overflow-x-auto bg-surface px-1 lg:mx-0 lg:block lg:overflow-visible lg:px-0">
         <li className="shrink-0">
           <Link
             to="/perfil"

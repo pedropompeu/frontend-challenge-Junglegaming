@@ -31,7 +31,7 @@ export function MoreFromCollection({ collectionId, currentId }: MoreFromCollecti
       </h2>
       <ul
         aria-busy={isPending}
-        className="-mx-4 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0"
+        className="-mx-6 mt-6 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0"
       >
         {isPending
           ? Array.from({ length: VISIBLE }, (_, i) => (

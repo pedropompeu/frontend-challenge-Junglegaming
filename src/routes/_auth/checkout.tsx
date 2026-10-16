@@ -594,7 +594,7 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
             onDisconnect={wallet.disconnect}
           />
 
-          <div className="-mx-4 grid gap-4 rounded-t-[32px] border-t border-line bg-surface px-6 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] max-md:sticky max-md:bottom-0 max-md:z-20 md:mx-0 md:rounded-none md:border-0 md:bg-transparent md:p-0">
+          <div className="-mx-6 grid gap-4 rounded-t-[32px] border-t border-line bg-surface px-6 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] max-md:sticky max-md:bottom-0 max-md:z-20 md:mx-0 md:rounded-none md:border-0 md:bg-transparent md:p-0">
             {submitError ? (
               <p
                 role="alert"

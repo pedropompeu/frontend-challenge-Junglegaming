@@ -100,11 +100,11 @@ function NftDetailPage() {
           </Link>
         </nav>
         <div className="grid gap-0 md:mt-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:gap-10">
-          <div className="relative -mx-4 md:mx-0">
+          <div className="relative -mx-6 md:mx-0">
             <MobileTopBar nftId={nft.id} name={nft.name} />
-            <NftGallery images={nft.images} name={nft.name} className="px-4 pt-16 md:p-0" />
+            <NftGallery images={nft.images} name={nft.name} className="px-6 pt-16 md:p-0" />
           </div>
-          <div className="relative z-10 -mx-4 -mt-10 rounded-t-[32px] bg-surface px-6 pt-8 pb-6 md:mx-0 md:mt-0 md:rounded-none md:bg-transparent md:p-0">
+          <div className="relative z-10 -mx-6 -mt-10 rounded-t-[32px] bg-surface px-6 pt-8 pb-6 md:mx-0 md:mt-0 md:rounded-none md:bg-transparent md:p-0">
             <NftInfo nft={nft} edition={edition}>
               <EditionPicker
                 editions={nft.editions}
@@ -146,10 +146,11 @@ function NftDetailPage() {
 function MobileTopBar({ nftId, name }: { nftId: string; name: string }) {
   const router = useRouter()
   const canGoBack = useCanGoBack()
-  const back =
-    'grid size-10 place-items-center rounded-full border border-line bg-ink/70 text-cream'
+  // Círculos de 34 px do frame, a 28 px das bordas e 24 px do topo.
+  const circle = 'grid size-[34px] place-items-center rounded-full border border-line bg-surface-2'
+  const back = `${circle} text-sand`
   return (
-    <div className="absolute inset-x-4 top-4 z-10 flex items-center justify-between md:hidden">
+    <div className="absolute inset-x-7 top-6 z-10 flex items-center justify-between md:hidden">
       {canGoBack ? (
         <button
           type="button"
@@ -164,7 +165,12 @@ function MobileTopBar({ nftId, name }: { nftId: string; name: string }) {
           <ChevronLeftIcon aria-hidden="true" className="size-5" />
         </Link>
       )}
-      <FavoriteButton nftId={nftId} name={name} className={back} iconClassName="size-5" />
+      <FavoriteButton
+        nftId={nftId}
+        name={name}
+        className={`${circle} text-primary-hi`}
+        iconClassName="size-5"
+      />
     </div>
   )
 }

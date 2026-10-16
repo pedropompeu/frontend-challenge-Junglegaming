@@ -79,7 +79,7 @@ function CartPage() {
         {showSummary ? (
           <section
             aria-labelledby="cart-summary-title"
-            className="-mx-4 rounded-t-[32px] border-t border-line bg-surface px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-md:sticky max-md:bottom-0 max-md:z-20 md:mx-0 md:rounded-none md:border-0 md:bg-transparent md:p-0 lg:self-start"
+            className="-mx-6 rounded-t-[32px] border-t border-line bg-surface px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-md:sticky max-md:bottom-0 max-md:z-20 md:mx-0 md:rounded-none md:border-0 md:bg-transparent md:p-0 lg:self-start"
           >
             <h2
               id="cart-summary-title"

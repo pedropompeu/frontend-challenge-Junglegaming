@@ -292,3 +292,84 @@ test('desktop checkout summary rows follow the frame 32px rhythm', async ({ page
   await openCheckout(page)
   await expectSummaryRhythm(page.getByRole('region', { name: 'Seus NFTs' }), 70.4)
 })
+
+/** Borda esquerda e direita do elemento em relação ao viewport. */
+async function edges(page: Page, el: Locator) {
+  const box = (await el.boundingBox())!
+  return { left: box.x, right: page.viewportSize()!.width - box.x - box.width }
+}
+
+test('mobile pages keep the frame 24px side margins and full-bleed sheets', async ({ page }) => {
+  test.skip(!isMobile(page), 'no desktop a coluna de 1200 px já tem respiro próprio')
+  await page.goto('/')
+  const grid = await edges(page, page.locator('#catalogo-grade'))
+  expect(grid.left).toBeCloseTo(24, 0)
+  expect(grid.right).toBeCloseTo(24, 0)
+
+  await page.goto('/nft/nft_neon-vessel')
+  const carousel = page.getByRole('region', { name: 'Mais desta coleção' }).getByRole('list')
+  await expect(carousel.getByRole('listitem').first()).toBeVisible()
+  const strip = await edges(page, carousel)
+  expect(strip.left).toBeCloseTo(0, 0)
+  expect(strip.right).toBeCloseTo(0, 0)
+  expect((await edges(page, carousel.getByRole('listitem').first())).left).toBeCloseTo(24, 0)
+
+  await addToCart(page, 'nft_neon-vessel')
+  await page.goto('/carrinho')
+  const sheet = await edges(page, page.getByRole('region', { name: 'Resumo da carteira' }))
+  expect(sheet.left).toBeCloseTo(0, 0)
+  expect(sheet.right).toBeCloseTo(0, 0)
+})
+
+const SURFACE_2 = 'rgb(47, 29, 21)'
+const KHAKI = 'rgb(179, 148, 99)'
+
+async function expectFrameCircle(button: Locator, color: string) {
+  const box = (await button.boundingBox())!
+  expect([box.width, box.height]).toEqual([34, 34])
+  await expect(button).toHaveCSS('background-color', SURFACE_2)
+  await expect(button).toHaveCSS('border-top-width', '1px')
+  await expect(button).toHaveCSS('border-top-color', LINE)
+  await expect(button).toHaveCSS('color', color)
+}
+
+test('mobile back and favorite buttons are the frame 34px circles', async ({ page }) => {
+  test.skip(!isMobile(page), 'os botões circulares são do topo mobile')
+  await page.goto('/nft/nft_neon-vessel')
+  const back = page
+    .getByRole('link', { name: 'Voltar' })
+    .or(page.getByRole('button', { name: 'Voltar' }))
+  await expectFrameCircle(back, SAND)
+  // x 28 e y 24 no frame "Detalhes do NFT"; o coração fica à mesma distância da direita.
+  const backEdges = await edges(page, back)
+  expect(backEdges.left).toBeCloseTo(28, 0)
+  expect((await back.boundingBox())!.y).toBeCloseTo(24, 0)
+  const favorite = page.getByRole('button', { name: /^(Favoritar|Remover) Neon Vessel/ }).first()
+  await expectFrameCircle(favorite, 'rgb(232, 155, 85)')
+  expect((await edges(page, favorite)).right).toBeCloseTo(28, 0)
+
+  await page.goto('/carrinho')
+  const cartBack = page.getByRole('main').getByRole('link', { name: 'Voltar' })
+  await expectFrameCircle(cartBack, KHAKI)
+  expect((await edges(page, cartBack)).left).toBeCloseTo(28, 0)
+})
+
+test('mobile title bar keeps the title on one line, clear of the back and demo buttons', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'o título só aparece no topo mobile')
+  await openCheckout(page)
+  const main = page.getByRole('main')
+  const back = main
+    .getByRole('button', { name: 'Voltar' })
+    .or(main.getByRole('link', { name: 'Voltar' }))
+  const backBox = (await back.boundingBox())!
+  const title = page.getByRole('heading', { level: 1, name: 'Pagamento com carteira' })
+  const titleBox = (await title.boundingBox())!
+  expect(titleBox.height).toBeLessThanOrEqual(30)
+  // O frame deixa 24,5 px entre o círculo e o título; a 390 px sobra menos, mas nunca encosta.
+  expect(titleBox.x - (backBox.x + backBox.width)).toBeGreaterThanOrEqual(12)
+  // O botão da demo (fora do frame) fica no canto superior direito do checkout.
+  const demo = (await page.getByRole('button', { name: 'Cenários (demo)' }).boundingBox())!
+  expect(demo.x - (titleBox.x + titleBox.width)).toBeGreaterThanOrEqual(4)
+})
