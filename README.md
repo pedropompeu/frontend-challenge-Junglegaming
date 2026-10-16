@@ -2,6 +2,8 @@
 
 Solução do [desafio frontend da Jungle Gaming](https://github.com/junglegaming/frontend-challenge): marketplace de NFTs em React + TypeScript, com descoberta, carrinho, cotação, checkout com carteira simulada, pedido idempotente, tempo real via Socket.IO e conta do colecionador, em desktop e mobile. O backend é **simulado no navegador** (MSW + servidor Socket.IO simulado). Ele vai junto no build publicado, então a demo funciona sem nenhum serviço externo.
 
+**Demo publicada:** <https://kurio-nft-pompeu.netlify.app> · **Relatório E2E:** <https://kurio-nft-pompeu.netlify.app/reports/playwright/>
+
 | Documento                                                            | Conteúdo                                                                                                                                                |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md)                                 | Camadas, contratos REST e eventos, sessão, carrinho, cache, reconciliação REST ↔ Socket.IO, idempotência, decisões de UX, desvios do Figma e limitações |
@@ -136,7 +138,7 @@ Todos os roteiros partem da demo (`pnpm dev`, `pnpm preview` ou a URL publicada)
 - **E2E (Playwright):** 15 specs em `tests/e2e/`, numerados pelos 12 grupos do enunciado (`01-catalog` a `12-loading-recovery`), mais `00-smoke`, `13-scenario-panel` e `visual`. Cada teste começa com o banco simulado zerado no cenário que pede; relógio (`page.clock`), latência, falhas e eventos são controlados pela API de controle. Os testes de tempo real passam pelo `socket.io-client`, e os de REST pelos handlers MSW. Tudo roda nos projetos `chromium-desktop` e `chromium-mobile`. A última execução completa teve 172 testes: 170 passaram e 2 são `skip` deliberados (zoom de 200% só no desktop; perfil mobile só no projeto mobile).
 - **Regressão visual:** início, detalhe, carrinho e pagamento × desktop e mobile, com dados do seed, animações desligadas e baselines versionadas em `tests/e2e/visual.spec.ts-snapshots/` (geradas no Linux).
 - **Unitários (Vitest):** 26 arquivos em `tests/unit/` (dinheiro, dedupe e versão de eventos, idempotência do checkout, handlers, sessão, cenários, socket).
-- **Relatório:** HTML em `playwright-report/` e traces só das falhas (`retain-on-failure`). Uma cópia do relatório da verificação final, feita a partir de um clone limpo, está em [`public/reports/playwright/`](public/reports/playwright/index.html).
+- **Relatório:** HTML em `playwright-report/` e traces só das falhas (`retain-on-failure`). Uma cópia do relatório da verificação final, feita a partir de um clone limpo, está em [`public/reports/playwright/`](public/reports/playwright/index.html) e publicada em <https://kurio-nft-pompeu.netlify.app/reports/playwright/>.
 
 ## Lighthouse
 
@@ -154,6 +156,9 @@ Performance no mobile ficou abaixo da meta de 90. A causa (o backend simulado in
 ## Deploy
 
 Netlify, configurado em `netlify.toml`: `pnpm build`, publica `dist/`, Node 22, `VITE_ENABLE_MOCKS=true` e redirect `/* → /index.html 200` para acesso direto e refresh de qualquer rota. O build publicado é o mesmo do `pnpm preview`, com mocks, painel de cenários e tempo real.
+
+- **URL pública:** <https://kurio-nft-pompeu.netlify.app>
+- **Verificação do publicado:** `E2E_BASE_URL=https://kurio-nft-pompeu.netlify.app pnpm exec playwright test -g "smoke|full purchase|direct access"` (18 testes, desktop e mobile, incluindo o handshake do Socket.IO e a compra até o recibo confirmado) passou contra o deploy, e o refresh direto em `/nft/nft_neon-vessel` e `/perfil` abre a própria tela.
 
 ## Estrutura
 

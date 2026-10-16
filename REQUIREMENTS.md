@@ -200,11 +200,11 @@ Legenda: ✅ atendido · ◐ atendido em parte (motivo na linha) · ⚠ abaixo d
 
 ## 12. Entrega
 
-| Requisito                                                                            | Onde                                                                                     | Estado |
-| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ------ |
-| Código, lockfile, assets, mocks, fixtures, testes e configurações de auditoria       | Repositório (`pnpm-lock.yaml`, `public/`, `src/mocks/`, `tests/`, `lighthouserc.*.cjs`)  | ✅     |
-| Deploy público com mocks e tempo real; acesso direto e refresh                       | Netlify (`netlify.toml` com redirect SPA); URL na seção Deploy do README                 | ✅     |
-| README com setup, variáveis, credenciais, cenários, comandos e roteiros de falha     | [`README.md`](README.md)                                                                 | ✅     |
-| Contratos, sessão, carrinho, cache, reconciliação, limitações, UX e desvios do Figma | [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                     | ✅     |
-| Comandos de dev com mocks, build, preview, tipos, lint, Playwright e Lighthouse      | `pnpm dev`, `build`, `preview`, `typecheck`, `lint`, `test:e2e`, `lighthouse`            | ✅     |
-| Executa a partir de um checkout limpo, sem serviços privados                         | Verificado num clone novo: `pnpm install --frozen-lockfile`, typecheck, lint, unit e E2E | ✅     |
+| Requisito                                                                            | Onde                                                                                                                       | Estado |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Código, lockfile, assets, mocks, fixtures, testes e configurações de auditoria       | Repositório (`pnpm-lock.yaml`, `public/`, `src/mocks/`, `tests/`, `lighthouserc.*.cjs`)                                    | ✅     |
+| Deploy público com mocks e tempo real; acesso direto e refresh                       | <https://kurio-nft-pompeu.netlify.app> (Netlify, `netlify.toml` com redirect SPA); smoke E2E rodado contra a URL publicada | ✅     |
+| README com setup, variáveis, credenciais, cenários, comandos e roteiros de falha     | [`README.md`](README.md)                                                                                                   | ✅     |
+| Contratos, sessão, carrinho, cache, reconciliação, limitações, UX e desvios do Figma | [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                                                       | ✅     |
+| Comandos de dev com mocks, build, preview, tipos, lint, Playwright e Lighthouse      | `pnpm dev`, `build`, `preview`, `typecheck`, `lint`, `test:e2e`, `lighthouse`                                              | ✅     |
+| Executa a partir de um checkout limpo, sem serviços privados                         | Verificado num clone novo: `pnpm install --frozen-lockfile`, typecheck, lint, unit e E2E                                   | ✅     |
