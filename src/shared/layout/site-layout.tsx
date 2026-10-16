@@ -10,7 +10,9 @@ export function SiteLayout({ children, cartCount }: { children: ReactNode; cartC
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const withBottomNav = hasBottomNav(pathname)
   return (
-    <div className={cn('flex min-h-dvh flex-col', withBottomNav && 'pb-24 md:pb-0')}>
+    <div
+      className={cn('flex min-h-dvh flex-col', withBottomNav ? 'pb-24 md:pb-0' : 'pb-52 md:pb-0')}
+    >
       <a
         href="#conteudo"
         className="sr-only z-50 rounded-md bg-primary px-4 py-2 text-ink focus:not-sr-only focus:fixed focus:top-2 focus:left-2"

@@ -1,14 +1,17 @@
 import {
   Link,
   Outlet,
-  createRootRoute,
+  createRootRouteWithContext,
   useRouter,
   type ErrorComponentProps,
 } from '@tanstack/react-router'
+import type { QueryClient } from '@tanstack/react-query'
 import { errorMessage } from '@/shared/lib/api-error'
 import { SiteLayout } from '@/shared/layout/site-layout'
 
-export const Route = createRootRoute({
+export type RouterContext = { queryClient: QueryClient }
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: RootError,
