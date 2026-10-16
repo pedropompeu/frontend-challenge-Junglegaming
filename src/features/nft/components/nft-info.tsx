@@ -21,9 +21,10 @@ const SHARE = [
 
 export function NftInfo({ nft, edition, children }: NftInfoProps) {
   return (
-    <div className="flex flex-col gap-4">
+    // No mobile o frame separa título, descrição, edição e metadados por 12 px.
+    <div className="flex flex-col gap-3 md:gap-4">
       <div className="flex flex-wrap items-start justify-between gap-3 md:block">
-        <h1 className="text-[22px] leading-tight font-bold md:text-3xl">{nft.name}</h1>
+        <h1 className="text-xl leading-tight font-bold md:text-3xl">{nft.name}</h1>
         <Rating rating={nft.rating} reviewsCount={nft.reviewsCount} className="md:hidden" />
       </div>
       <div className="hidden items-center justify-between gap-4 border-b border-divider pb-3 md:flex">
@@ -34,10 +35,10 @@ export function NftInfo({ nft, edition, children }: NftInfoProps) {
         <h2 id="nft-about" className="sr-only font-bold md:not-sr-only">
           Sobre este NFT:
         </h2>
-        <p className="mt-1 max-w-[46ch] text-sm leading-6 text-sand">{nft.description}</p>
+        <p className="max-w-[46ch] text-sm leading-6 text-sand md:mt-1">{nft.description}</p>
       </section>
       {children}
-      <dl className="grid gap-3 text-sm text-khaki">
+      <dl className="grid gap-3 text-[15px] leading-5 text-khaki md:text-sm">
         <div className="flex gap-1">
           <dt>ID do token:</dt>
           <dd>{nft.tokenId}</dd>

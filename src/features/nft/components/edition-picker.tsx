@@ -13,10 +13,14 @@ type EditionPickerProps = {
 export function EditionPicker({ editions, selectedId, onSelect, className }: EditionPickerProps) {
   return (
     <div className={className}>
-      <p id="edition-label" className="font-bold">
+      <p id="edition-label" className="text-[15px] font-bold md:text-base">
         Edição:
       </p>
-      <div role="group" aria-labelledby="edition-label" className="mt-2 flex flex-wrap gap-2">
+      <div
+        role="group"
+        aria-labelledby="edition-label"
+        className="mt-2 flex flex-wrap gap-3 md:gap-2"
+      >
         {editions.map((edition) => {
           const soldOut = edition.available === 0
           return (
@@ -27,7 +31,8 @@ export function EditionPicker({ editions, selectedId, onSelect, className }: Edi
               disabled={soldOut}
               onClick={() => onSelect(edition)}
               className={cn(
-                'h-8 rounded-full border border-line px-3 text-sm text-sand uppercase transition-colors',
+                // Mobile: as elipses de 28 px do frame ("Ellipse 25"); desktop: pílulas de 32 px.
+                'h-7 rounded-[50%] border border-line px-1.5 text-sm text-sand uppercase transition-colors md:h-8 md:rounded-full md:px-3',
                 'hover:border-primary-hi hover:text-cream aria-pressed:border-primary aria-pressed:font-medium aria-pressed:text-primary-hi',
                 'disabled:cursor-not-allowed disabled:border-line disabled:text-khaki/70',
               )}

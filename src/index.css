@@ -28,6 +28,8 @@
   --color-primary-hi: #e89b55;
   --color-coral: #f0805f;
   --color-band: #38220f;
+  /* Estrela do selo de avaliação do frame mobile (Iconly/Bold/Star). */
+  --color-star: #e3a44e;
   /* Divisória do desktop: 0,3 px de #D28A4C no frame, que a 1x vira 1 px com ~30% de cobertura. */
   --color-divider: rgb(210 138 76 / 0.3);
 

@@ -429,3 +429,39 @@ test('mobile detail gallery scrolls between images under the frame dots', async 
   await page.getByRole('button', { name: 'Ampliar imagem' }).click()
   await expect(page.getByRole('dialog').getByRole('img')).toHaveAttribute('src', second!)
 })
+
+test('mobile detail sheet uses the frame type sizes and rating badge', async ({ page }) => {
+  test.skip(!isMobile(page), 'o selo e os tamanhos são da folha mobile')
+  await page.goto('/nft/nft_neon-vessel')
+  const title = page.getByRole('heading', { level: 1, name: 'Neon Vessel' })
+  await expect(title).toHaveCSS('font-size', '20px')
+  // Selo de 27 px com contorno #D28A4C, estrela #E3A44E e a nota em 500.
+  const badge = page.getByTestId('rating-badge').filter({ visible: true })
+  expect((await badge.boundingBox())!.height).toBeCloseTo(27, 0)
+  await expect(badge).toHaveCSS('border-top-color', PRIMARY)
+  await expect(badge.locator('svg')).toHaveCSS('fill', 'rgb(227, 164, 78)')
+  await expect(badge.getByText('4.8', { exact: true })).toHaveCSS('font-weight', '500')
+  // A descrição começa 12 px abaixo da linha do título (463 − 451 no frame).
+  const row = (await title.locator('..').boundingBox())!
+  const about = (await page
+    .getByRole('region', { name: 'Sobre este NFT' })
+    .getByText(/^Neon Vessel faz parte/)
+    .boundingBox())!
+  expect(about.y - (row.y + row.height)).toBeCloseTo(12, 0)
+  await expect(page.locator('#edition-label')).toHaveCSS('font-size', '15px')
+  const info = page.locator('dl').filter({ hasText: 'ID do token' })
+  await expect(info).toHaveCSS('font-size', '15px')
+  const rows = info.locator(':scope > div')
+  const [first, second] = [(await rows.nth(0).boundingBox())!, (await rows.nth(1).boundingBox())!]
+  expect(second.y - first.y).toBeCloseTo(32, 0)
+})
+
+test('mobile edition chips are the frame 28px ellipses, 12px apart', async ({ page }) => {
+  test.skip(!isMobile(page), 'as elipses são dos chips mobile')
+  await page.goto('/nft/nft_neon-vessel')
+  const chips = page.getByRole('group', { name: 'Edição' }).getByRole('button')
+  await expect(chips.first()).toHaveCSS('height', '28px')
+  await expect(chips.first()).toHaveCSS('border-top-left-radius', '50%')
+  const [a, b] = [(await chips.nth(0).boundingBox())!, (await chips.nth(1).boundingBox())!]
+  expect(b.x - (a.x + a.width)).toBeCloseTo(12, 0)
+})

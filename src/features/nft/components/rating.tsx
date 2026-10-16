@@ -8,7 +8,7 @@ function srLabel(rating: number, reviewsCount: number): string {
   return `Avaliação ${value} de 5, ${reviewsCount} ${reviewsCount === 1 ? 'avaliação' : 'avaliações'}`
 }
 
-/** Estrelas + contagem no desktop; selo compacto "★ 4.8 (19)" no mobile, como no Figma. */
+/** Estrelas + contagem no desktop; selo compacto "★ 4.8(19)" de 27 px no mobile, como no Figma. */
 export function Rating({ rating, reviewsCount, className }: RatingProps) {
   const filled = Math.round(rating)
   return (
@@ -16,10 +16,14 @@ export function Rating({ rating, reviewsCount, className }: RatingProps) {
       <span className="sr-only">{srLabel(rating, reviewsCount)}</span>
       <span
         aria-hidden="true"
-        className="inline-flex items-center gap-1.5 rounded-full border border-primary-hi px-2.5 py-1 md:hidden"
+        data-testid="rating-badge"
+        className="inline-flex h-[27px] items-center gap-1 rounded-full border border-primary px-1.5 md:hidden"
       >
-        <StarIcon className="size-4 fill-primary-hi text-primary-hi" />
-        {rating.toFixed(1)} <span className="text-sand">({reviewsCount})</span>
+        <StarIcon className="size-3.5 fill-star text-star" />
+        <span>
+          <span className="font-medium">{rating.toFixed(1)}</span>
+          <span className="text-sand">({reviewsCount})</span>
+        </span>
       </span>
       <span aria-hidden="true" className="hidden items-center gap-1 md:inline-flex">
         {Array.from({ length: 5 }, (_, i) => (
