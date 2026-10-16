@@ -129,6 +129,8 @@ test('adding beyond available stock is rejected and explained', async ({ page })
 test('summary shows skeleton while loading', async ({ page }) => {
   // Trocar de cenário recria o banco simulado: o cenário vem antes do item no carrinho.
   await page.goto('/?scenario=slow')
+  // O `load` chega antes do mock subir; sair já da página perderia o `?scenario=` (A-023).
+  expect(await mocks(page).getScenario()).toBe('slow')
   await addToCart(page, 'nft_neon-vessel')
   await page.goto('/carrinho')
   await expect(page.getByTestId('cart-summary-skeleton')).toBeVisible()
