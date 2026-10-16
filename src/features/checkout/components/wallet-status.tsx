@@ -55,7 +55,7 @@ export function WalletStatus({
         <button
           type="button"
           onClick={onDisconnect}
-          className="h-10 rounded-full border border-line-strong text-sm font-bold text-sand hover:text-cream md:rounded-md"
+          className="h-10 rounded-full border border-line text-sm font-bold text-sand hover:text-cream md:rounded-md"
         >
           Desconectar
         </button>

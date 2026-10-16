@@ -101,7 +101,7 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
               event.preventDefault()
               if (closing.current && authOpener?.isConnected) authOpener.focus()
             }}
-            className="max-h-[calc(100dvh-2rem)] gap-6 overflow-y-auto border-line-strong bg-surface p-8 text-cream sm:max-w-[480px]"
+            className="max-h-[calc(100dvh-2rem)] gap-6 overflow-y-auto border-line bg-surface p-8 text-cream sm:max-w-[480px]"
           >
             <DialogTitle className="sr-only">{COPY[mode].title}</DialogTitle>
             <nav aria-label="Acesso" className="mr-8 flex border-b border-line">
@@ -132,7 +132,7 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
           href={closeTarget}
           onClick={back}
           aria-label="Voltar"
-          className="grid size-10 place-items-center rounded-full border border-line-strong text-cream"
+          className="grid size-10 place-items-center rounded-full border border-line text-cream"
         >
           <ChevronLeftIcon aria-hidden="true" className="size-5" />
         </a>

@@ -84,7 +84,7 @@ export function PurchaseBar({
           aria-label="Adicionar ao carrinho"
           disabled={blocked || isPending}
           onClick={onAddToCart}
-          className="grid size-14 shrink-0 place-items-center rounded-full border border-line-strong bg-surface-2 text-primary-hi transition-colors hover:bg-line disabled:cursor-not-allowed disabled:opacity-50 md:size-11 md:rounded-md"
+          className="grid size-14 shrink-0 place-items-center rounded-full border border-line bg-surface-2 text-primary-hi transition-colors hover:bg-line disabled:cursor-not-allowed disabled:opacity-50 md:size-11 md:rounded-md"
         >
           <ShoppingCartIcon aria-hidden="true" className="size-5" />
         </button>

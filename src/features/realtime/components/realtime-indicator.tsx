@@ -54,7 +54,7 @@ export function RealtimeStatusPill() {
       className="pointer-events-none fixed inset-x-0 top-2 z-40 flex justify-center md:top-[76px] lg:hidden"
     >
       {problem ? (
-        <p className="flex items-center gap-2 rounded-full border border-line-strong bg-surface px-3 py-1.5 text-xs font-bold text-cream shadow-lg">
+        <p className="flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-bold text-cream shadow-lg">
           <Dot status={status} />
           {status === 'offline' ? 'Sem atualizações ao vivo' : LABELS[status]}
         </p>

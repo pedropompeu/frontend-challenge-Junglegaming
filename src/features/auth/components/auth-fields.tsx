@@ -5,7 +5,7 @@ import { FacebookIcon } from '@/shared/layout/social-icons'
 import { Unavailable } from '@/shared/ui/unavailable'
 
 export const fieldClass =
-  'h-12 rounded-md border-line-strong bg-ink px-4 text-base text-cream placeholder:text-khaki md:text-base'
+  'h-12 rounded-md border-line bg-ink px-4 text-base text-cream placeholder:text-khaki md:text-base'
 
 export function PasswordInput({ className, ...props }: ComponentProps<'input'>) {
   const [visible, setVisible] = useState(false)
@@ -59,7 +59,7 @@ export function SubmitButton({
 }
 
 const socialButton =
-  'inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-line-strong bg-band text-sm font-medium text-cream'
+  'inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-line bg-band text-sm font-medium text-cream'
 
 /** Login social fora do escopo: visível como no Figma, mas avisa que não está disponível. */
 export function SocialLogin() {

@@ -75,7 +75,7 @@ export function CouponForm({ appliedCode, onRemove, className }: CouponFormProps
           placeholder="Digite o código promocional..."
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="h-11 min-w-0 flex-1 rounded-l-full border border-line-strong bg-transparent px-4 text-sm placeholder:text-khaki aria-invalid:border-coral md:rounded-l-md md:border-primary"
+          className="h-11 min-w-0 flex-1 rounded-l-full border border-line bg-transparent px-4 text-sm placeholder:text-khaki aria-invalid:border-coral md:rounded-l-md md:border-primary"
         />
         <button
           type="submit"

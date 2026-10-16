@@ -27,7 +27,7 @@ export function StaleQuoteDialog({ change, onReview }: StaleQuoteDialogProps) {
   return (
     <Dialog open={change !== null} onOpenChange={(open) => (open ? undefined : onReview())}>
       {change ? (
-        <DialogContent showCloseButton={false} className="border-line-strong bg-ink">
+        <DialogContent showCloseButton={false} className="border-line bg-ink">
           <DialogHeader>
             <DialogTitle>Os valores mudaram</DialogTitle>
             <DialogDescription className="text-sand">

@@ -79,7 +79,7 @@ export function TextField<T extends FieldValues, TOut = T>({
             {prefix ? (
               <span
                 aria-hidden="true"
-                className="grid h-11 w-[78px] shrink-0 place-items-center border border-line-strong text-[15px] text-cream"
+                className="grid h-11 w-[78px] shrink-0 place-items-center border border-line text-[15px] text-cream"
               >
                 {prefix}
               </span>

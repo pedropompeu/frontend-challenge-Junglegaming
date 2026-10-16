@@ -80,7 +80,7 @@ export function ProfileSidebar() {
             </Unavailable>
           </li>
         ))}
-        <li className="shrink-0 lg:border-t lg:border-line-strong">
+        <li className="shrink-0 lg:border-t lg:border-line">
           <button
             type="button"
             onClick={() => void signOut()}

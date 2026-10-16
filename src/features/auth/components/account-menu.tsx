@@ -53,7 +53,7 @@ export function AccountMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full">
-        <Avatar size="lg" className="border border-line-strong">
+        <Avatar size="lg" className="border border-line">
           {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt="" /> : null}
           <AvatarFallback className="bg-surface-2 font-bold text-cream">
             {initials(user.displayName)}
@@ -61,7 +61,7 @@ export function AccountMenu() {
         </Avatar>
         <span className="sr-only">Conta de {user.displayName}</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 border-line-strong bg-surface text-cream">
+      <DropdownMenuContent align="end" className="w-56 border-line bg-surface text-cream">
         <DropdownMenuLabel>
           <span className="block font-bold">{user.displayName}</span>
           <span className="block text-xs font-normal text-sand">@{user.username}</span>

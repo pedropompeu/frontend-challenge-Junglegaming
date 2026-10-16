@@ -6,7 +6,7 @@ export function TitleBar({ title }: { title: string }) {
   const router = useRouter()
   const canGoBack = useCanGoBack()
   const back =
-    'grid size-10 place-items-center rounded-full border border-line-strong bg-surface-2 text-cream'
+    'grid size-10 place-items-center rounded-full border border-line bg-surface-2 text-cream'
   const icon = <ChevronLeftIcon aria-hidden="true" className="size-5" />
   return (
     <div className="relative flex h-12 items-center justify-center md:contents">

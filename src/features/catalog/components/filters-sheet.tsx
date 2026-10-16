@@ -41,7 +41,7 @@ export function FiltersSheet({ resultCount }: { resultCount?: number }) {
           <button
             type="button"
             onClick={clearFilters}
-            className="h-11 flex-1 rounded-md border border-line-strong text-sm text-cream"
+            className="h-11 flex-1 rounded-md border border-line text-sm text-cream"
           >
             Limpar filtros
           </button>

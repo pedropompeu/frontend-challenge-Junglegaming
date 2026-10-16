@@ -125,7 +125,7 @@ function NftDetailPage() {
                   <FavoriteButton
                     nftId={nft.id}
                     name={nft.name}
-                    className="grid size-11 place-items-center rounded-md border border-line-strong bg-surface-2 text-primary-hi transition-colors hover:bg-line"
+                    className="grid size-11 place-items-center rounded-md border border-line bg-surface-2 text-primary-hi transition-colors hover:bg-line"
                     iconClassName="size-5"
                   />
                 }
@@ -147,7 +147,7 @@ function MobileTopBar({ nftId, name }: { nftId: string; name: string }) {
   const router = useRouter()
   const canGoBack = useCanGoBack()
   const back =
-    'grid size-10 place-items-center rounded-full border border-line-strong bg-ink/70 text-cream'
+    'grid size-10 place-items-center rounded-full border border-line bg-ink/70 text-cream'
   return (
     <div className="absolute inset-x-4 top-4 z-10 flex items-center justify-between md:hidden">
       {canGoBack ? (

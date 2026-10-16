@@ -147,7 +147,7 @@ function HeaderSearch() {
           if (e.key === 'Escape') setOpen(false)
         }}
         className={cn(
-          'absolute top-full right-0 z-40 mt-3 w-80 rounded-lg border border-line-strong bg-surface p-2 shadow-xl',
+          'absolute top-full right-0 z-40 mt-3 w-80 rounded-lg border border-line bg-surface p-2 shadow-xl',
         )}
       >
         <label htmlFor="header-search-input" className="sr-only">

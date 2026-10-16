@@ -21,7 +21,7 @@ function toCatalogTop() {
 }
 
 const cell =
-  'grid size-9 place-items-center rounded-md border border-line-strong text-sm text-cream transition-colors hover:border-primary aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:font-bold aria-[current=page]:text-ink'
+  'grid size-9 place-items-center rounded-md border border-line text-sm text-cream transition-colors hover:border-primary aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:font-bold aria-[current=page]:text-ink'
 
 export function CatalogPagination({ page, totalPages }: { page: number; totalPages: number }) {
   if (totalPages <= 1) return null

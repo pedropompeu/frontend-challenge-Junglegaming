@@ -43,7 +43,7 @@ export function ProviderSelector({ value, onChange, disabled }: ProviderSelector
           return (
             <div
               key={provider}
-              className="flex items-center gap-3 rounded-[16px] border border-transparent bg-surface px-4 py-3 has-[[data-state=checked]]:border-primary-hi md:rounded-none md:border-line-strong md:bg-transparent"
+              className="flex items-center gap-3 rounded-[16px] border border-transparent bg-surface px-4 py-3 has-[[data-state=checked]]:border-primary-hi md:rounded-none md:border-line md:bg-transparent"
             >
               <ProviderMark provider={provider} />
               <label htmlFor={itemId} className="flex-1 cursor-pointer text-[15px]">

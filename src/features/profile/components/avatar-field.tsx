@@ -59,7 +59,7 @@ export function AvatarField({ userId, avatarUrl }: { userId: string; avatarUrl: 
         Avatar
       </p>
       <div className="flex items-center gap-6">
-        <span className="grid size-[50px] shrink-0 place-items-center overflow-hidden rounded-full border border-line-strong bg-surface-2 text-primary-hi">
+        <span className="grid size-[50px] shrink-0 place-items-center overflow-hidden rounded-full border border-line bg-surface-2 text-primary-hi">
           {avatarUrl ? (
             <img
               src={avatarUrl}
