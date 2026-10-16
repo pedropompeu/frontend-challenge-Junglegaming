@@ -100,11 +100,18 @@ function NftDetailPage() {
           </Link>
         </nav>
         <div className="grid gap-0 md:mt-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:gap-10">
-          <div className="relative -mx-6 md:mx-0">
+          {/* Topo do frame mobile: gradiente surface → surface-2 sob a arte, que a folha cobre em 30 px. */}
+          <div
+            data-testid="detail-hero"
+            className="relative -mx-6 bg-[linear-gradient(138deg,var(--color-surface),var(--color-surface-2))] md:mx-0 md:bg-none"
+          >
             <MobileTopBar nftId={nft.id} name={nft.name} />
-            <NftGallery images={nft.images} name={nft.name} className="px-6 pt-16 md:p-0" />
+            <NftGallery images={nft.images} name={nft.name} className="px-7 pt-[66px] md:p-0" />
           </div>
-          <div className="relative z-10 -mx-6 -mt-10 rounded-t-[32px] bg-surface px-6 pt-8 pb-6 md:mx-0 md:mt-0 md:rounded-none md:bg-transparent md:p-0">
+          <div
+            data-testid="detail-sheet"
+            className="relative z-10 -mx-6 -mt-[30px] rounded-t-[31px] bg-surface px-6 pt-8 pb-6 md:mx-0 md:mt-0 md:rounded-none md:bg-transparent md:p-0"
+          >
             <NftInfo nft={nft} edition={edition}>
               <EditionPicker
                 editions={nft.editions}

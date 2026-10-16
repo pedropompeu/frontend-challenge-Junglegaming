@@ -42,7 +42,7 @@ export function NftGallery({ images, name, className }: NftGalleryProps) {
           ))}
         </div>
       ) : null}
-      <div className="relative flex-1 bg-surface md:rounded-md md:p-3">
+      <div className="relative flex-1 rounded-3xl bg-surface md:rounded-md md:p-3">
         <img
           src={current.src}
           srcSet={`${smallSrc(current.src)} 400w, ${current.src} 800w`}
@@ -52,7 +52,7 @@ export function NftGallery({ images, name, className }: NftGalleryProps) {
           alt={alt}
           fetchPriority="high"
           decoding="async"
-          className="aspect-square w-full rounded-[28px] object-cover md:rounded-md"
+          className="aspect-[361/356] w-full rounded-3xl object-cover md:aspect-square md:rounded-md"
         />
         <Dialog>
           <DialogTrigger asChild>

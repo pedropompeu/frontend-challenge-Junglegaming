@@ -373,3 +373,28 @@ test('mobile title bar keeps the title on one line, clear of the back and demo b
   const demo = (await page.getByRole('button', { name: 'Cenários (demo)' }).boundingBox())!
   expect(demo.x - (titleBox.x + titleBox.width)).toBeGreaterThanOrEqual(4)
 })
+
+test('mobile detail art sits in the frame 28px margins over the hero gradient', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'a moldura da arte e o gradiente são do topo mobile')
+  await page.goto('/nft/nft_neon-vessel')
+  await expect(page.getByTestId('detail-hero')).toHaveCSS(
+    'background-image',
+    'linear-gradient(138deg, rgb(36, 22, 18), rgb(47, 29, 21))',
+  )
+  // x 28, y 66, 361×356 e r24 no frame "Detalhes do NFT".
+  const art = page.locator('img[fetchpriority="high"]')
+  const artEdges = await edges(page, art)
+  expect(artEdges.left).toBeCloseTo(28, 0)
+  expect(artEdges.right).toBeCloseTo(28, 0)
+  const artBox = (await art.boundingBox())!
+  expect(artBox.y).toBeCloseTo(66, 0)
+  expect(artBox.height).toBeCloseTo((artBox.width * 356) / 361, 0)
+  await expect(art).toHaveCSS('border-top-left-radius', '24px')
+  // A folha (r31) sobe 30 px sobre o pé da arte.
+  const sheet = page.getByTestId('detail-sheet')
+  const sheetBox = (await sheet.boundingBox())!
+  expect(artBox.y + artBox.height - sheetBox.y).toBeCloseTo(30, 0)
+  await expect(sheet).toHaveCSS('border-top-left-radius', '31px')
+})
