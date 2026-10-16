@@ -10,7 +10,7 @@ const gridClass =
 
 export function CatalogGridSkeleton({ count }: { count: number }) {
   return (
-    <div className={gridClass} aria-hidden="true">
+    <div data-testid="catalog-skeleton" className={gridClass} aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
         <NftCardSkeleton key={i} />
       ))}

@@ -5,7 +5,10 @@ export function NftCardSkeleton() {
   return (
     <div aria-hidden="true" className="flex flex-col">
       <div className="rounded-[24px] bg-surface p-1 md:rounded-[4px] md:p-0.5">
-        <SkeletonShimmer className="aspect-square w-full rounded-[20px] md:rounded-[16px]" />
+        <SkeletonShimmer
+          data-testid="nft-card-skeleton-media"
+          className="aspect-square w-full rounded-[20px] md:rounded-[16px]"
+        />
       </div>
       <div className="mt-3 space-y-2 px-2 md:px-0">
         <SkeletonShimmer className="h-4 w-3/4" />

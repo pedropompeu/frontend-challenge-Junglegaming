@@ -6,12 +6,17 @@ import {
   type ErrorComponentProps,
 } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
+import { lazy, Suspense } from 'react'
 import { SessionProvider } from '@/features/auth/session-provider'
 import { RealtimeProvider } from '@/features/realtime/realtime-provider'
 import { errorMessage } from '@/shared/lib/api-error'
 import { SiteLayout } from '@/shared/layout/site-layout'
 
 export type RouterContext = { queryClient: QueryClient }
+
+// Painel de cenários do backend simulado: fica fora do bundle quando os mocks estão desligados.
+const ScenarioPanel =
+  import.meta.env.VITE_ENABLE_MOCKS === 'true' ? lazy(() => import('@/mocks/scenario-panel')) : null
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
@@ -26,6 +31,11 @@ function RootComponent() {
         <SiteLayout>
           <Outlet />
         </SiteLayout>
+        {ScenarioPanel ? (
+          <Suspense fallback={null}>
+            <ScenarioPanel />
+          </Suspense>
+        ) : null}
       </RealtimeProvider>
     </SessionProvider>
   )

@@ -10,6 +10,8 @@ const HEAD = 'text-[15px] font-bold'
 export function CartTable({ items, quote }: CartTableProps) {
   return (
     <div>
+      {/* Liga o h1 da página aos h3 dos itens: sem ele a hierarquia salta um nível. */}
+      <h2 className="sr-only">Itens do carrinho</h2>
       <div
         aria-hidden="true"
         className="hidden grid-cols-[70px_minmax(0,1fr)_110px_150px_110px_44px] gap-x-4 border-b border-line pr-4 pb-3 md:grid"

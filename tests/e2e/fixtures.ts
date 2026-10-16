@@ -11,6 +11,18 @@ type FailNextOpts = Parameters<KurioMocksControl['failNext']>[1]
 export function mocks(page: Page) {
   const ready = () => page.waitForFunction(() => Boolean(window.__kurioMocks))
   return {
+    /** Troca o cenário (ou mantém o atual), recria o banco simulado e recarrega a página. */
+    async reset(scenario?: Parameters<KurioMocksControl['reset']>[0]) {
+      await ready()
+      await Promise.all([
+        page.waitForEvent('load'),
+        page.evaluate((s) => void window.__kurioMocks!.reset(s), scenario),
+      ])
+    },
+    async getScenario() {
+      await ready()
+      return page.evaluate(() => window.__kurioMocks!.getScenario())
+    },
     async failNext(endpoint: Parameters<KurioMocksControl['failNext']>[0], opts?: FailNextOpts) {
       await ready()
       await page.evaluate(([e, o]) => window.__kurioMocks!.failNext(e, o), [

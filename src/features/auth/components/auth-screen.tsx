@@ -1,4 +1,4 @@
-import { useRef, type MouseEvent } from 'react'
+import { useLayoutEffect, useRef, type MouseEvent } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useRouter } from '@tanstack/react-router'
 import { ChevronLeftIcon } from 'lucide-react'
@@ -27,6 +27,20 @@ const COPY: Record<AuthMode, { title: string; mobileTitle: string; description: 
   },
 }
 
+/**
+ * Quem abriu o login (o "Entrar" do header, por exemplo), para o foco voltar a ele quando o modal
+ * fecha: aberto pela rota, o diálogo não tem `DialogTrigger` para o Radix devolver o foco. Fica
+ * fora do componente porque alternar Entrar ⇄ Criar conta remonta a tela.
+ */
+let authOpener: HTMLElement | null = null
+
+function rememberOpener() {
+  const active = document.activeElement
+  // Troca de aba dentro do próprio diálogo: quem abriu continua sendo o mesmo.
+  if (active?.closest('[role="dialog"]')) return
+  authOpener = active instanceof HTMLElement && active !== document.body ? active : null
+}
+
 const tab =
   'flex-1 border-b-2 border-transparent pb-3 text-center font-bold text-sand transition-colors hover:text-cream aria-[current=page]:border-primary aria-[current=page]:text-cream'
 
@@ -44,12 +58,16 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
     return router.matchRoutes(pathname).some((m) => m.routeId === '/_auth')
   })
   const contentRef = useRef<HTMLDivElement>(null)
+  const closing = useRef(false)
+  // Antes dos efeitos do diálogo, que levam o foco ao primeiro campo.
+  useLayoutEffect(rememberOpener, [])
 
   function leave() {
     void router.navigate({ href: target, replace: true })
   }
 
   function close() {
+    closing.current = true
     void router.navigate({ href: closeTarget, replace: true })
   }
 
@@ -78,6 +96,10 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
             onOpenAutoFocus={(event) => {
               event.preventDefault()
               contentRef.current?.querySelector<HTMLInputElement>('input')?.focus()
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault()
+              if (closing.current && authOpener?.isConnected) authOpener.focus()
             }}
             className="max-h-[calc(100dvh-2rem)] gap-6 overflow-y-auto border-line-strong bg-surface p-8 text-cream sm:max-w-[480px]"
           >

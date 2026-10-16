@@ -50,10 +50,14 @@ const useFormField = () => {
     throw new Error('useFormField should be used within <FormField>')
   }
 
-  const { id } = itemContext
+  const { id, hasDescription, hasMessage, registerDescription, registerMessage } = itemContext
 
   return {
     id,
+    hasDescription,
+    hasMessage,
+    registerDescription,
+    registerMessage,
     name: fieldContext.name,
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
@@ -64,15 +68,32 @@ const useFormField = () => {
 
 type FormItemContextValue = {
   id: string
+  /** Se a descrição e a mensagem estão no DOM: o `aria-describedby` só aponta para ids que existem. */
+  hasDescription: boolean
+  hasMessage: boolean
+  registerDescription: (node: HTMLElement | null) => void
+  registerMessage: (node: HTMLElement | null) => void
 }
 
 const FormItemContext = React.createContext<FormItemContextValue>({} as FormItemContextValue)
 
 function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   const id = React.useId()
+  const [hasDescription, setHasDescription] = React.useState(false)
+  const [hasMessage, setHasMessage] = React.useState(false)
+  const registerDescription = React.useCallback((node: HTMLElement | null) => {
+    setHasDescription(node !== null)
+  }, [])
+  const registerMessage = React.useCallback((node: HTMLElement | null) => {
+    setHasMessage(node !== null)
+  }, [])
+  const value = React.useMemo(
+    () => ({ id, hasDescription, hasMessage, registerDescription, registerMessage }),
+    [id, hasDescription, hasMessage, registerDescription, registerMessage],
+  )
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={value}>
       <div data-slot="form-item" className={cn('grid gap-2', className)} {...props} />
     </FormItemContext.Provider>
   )
@@ -93,13 +114,18 @@ function FormLabel({ className, ...props }: React.ComponentProps<typeof LabelPri
 }
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
+  const { error, formItemId, formDescriptionId, formMessageId, hasDescription, hasMessage } =
+    useFormField()
+  const describedBy = [
+    hasDescription && formDescriptionId,
+    error && hasMessage && formMessageId,
+  ].filter(Boolean)
 
   return (
     <Slot.Root
       data-slot="form-control"
       id={formItemId}
-      aria-describedby={!error ? `${formDescriptionId}` : `${formDescriptionId} ${formMessageId}`}
+      aria-describedby={describedBy.length > 0 ? describedBy.join(' ') : undefined}
       aria-invalid={!!error}
       {...props}
     />
@@ -107,7 +133,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
 }
 
 function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
-  const { formDescriptionId } = useFormField()
+  const { formDescriptionId, registerDescription } = useFormField()
 
   return (
     <p
@@ -115,12 +141,13 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
       id={formDescriptionId}
       className={cn('text-sm text-muted-foreground', className)}
       {...props}
+      ref={registerDescription}
     />
   )
 }
 
 function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
-  const { error, formMessageId } = useFormField()
+  const { error, formMessageId, registerMessage } = useFormField()
   const body = error ? String(error?.message ?? '') : props.children
 
   if (!body) {
@@ -133,6 +160,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
       id={formMessageId}
       className={cn('text-sm text-destructive', className)}
       {...props}
+      ref={registerMessage}
     >
       {body}
     </p>

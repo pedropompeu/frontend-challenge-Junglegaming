@@ -147,7 +147,7 @@ export function CheckoutForm({
               <textarea
                 {...field}
                 rows={6}
-                className="w-full resize-y border border-line-strong bg-transparent px-4 py-3 text-base text-cream outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-[15px]"
+                className="w-full resize-y border border-line-strong bg-transparent px-4 py-3 text-base text-cream focus-visible:border-ring aria-invalid:border-destructive md:text-[15px]"
               />
             </FormControl>
             <FormDescription

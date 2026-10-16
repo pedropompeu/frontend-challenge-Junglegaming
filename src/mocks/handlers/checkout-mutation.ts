@@ -1,5 +1,4 @@
-import Big from 'big.js'
-import { findNft, mutateNft } from '../db/nfts'
+import { findNft, mutateNft, raisedPrice } from '../db/nfts'
 import { getDb } from '../db/store'
 import { consumeCheckoutMutation, getScenarioConfig } from '../scenarios/runtime'
 
@@ -18,10 +17,7 @@ export function maybeScheduleCheckoutMutation(userId: string): void {
     if (!item || !edition) return
     const patch =
       kind === 'price-change'
-        ? {
-            id: edition.id,
-            price: new Big(edition.price).times(1.15).round(4, Big.roundHalfUp).toFixed(),
-          }
+        ? { id: edition.id, price: raisedPrice(edition.price) }
         : { id: edition.id, available: 0 }
     mutateNft(item.nftId, { editions: [patch] })
   }, CHECKOUT_MUTATION_DELAY_MS)

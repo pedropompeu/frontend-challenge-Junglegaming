@@ -1,3 +1,4 @@
+import Big from 'big.js'
 import type { Nft, NftUpdatedEvent } from '@/contracts'
 import { emitNftUpdated } from '../socket/bus'
 import { getDb, mutate } from './store'
@@ -37,6 +38,11 @@ export function adjustStock(
     for (const nft of touched.values()) nft.version += 1
   })
   for (const nft of touched.values()) emitNftUpdated(nft)
+}
+
+/** Alta de 15% (4 casas, metade para cima): a do cenário de checkout e a do painel de cenários. */
+export function raisedPrice(price: string): string {
+  return new Big(price).times(1.15).round(4, Big.roundHalfUp).toFixed()
 }
 
 export function findNft(nftId: string): Nft | undefined {

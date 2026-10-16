@@ -16,7 +16,7 @@ export function PasswordInput({ className, ...props }: ComponentProps<'input'>) 
         type={visible ? 'text' : 'password'}
         data-slot="input"
         className={cn(
-          'w-full min-w-0 border outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive',
+          'w-full min-w-0 border focus-visible:border-ring aria-invalid:border-destructive',
           fieldClass,
           'pr-12',
           className,

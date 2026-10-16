@@ -52,7 +52,7 @@ export function AccountMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
+      <DropdownMenuTrigger className="rounded-full">
         <Avatar size="lg" className="border border-line-strong">
           {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt="" /> : null}
           <AvatarFallback className="bg-surface-2 font-bold text-cream">
