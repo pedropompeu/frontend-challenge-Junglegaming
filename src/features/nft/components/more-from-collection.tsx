@@ -25,7 +25,7 @@ export function MoreFromCollection({ collectionId, currentId }: MoreFromCollecti
     <section aria-labelledby="more-from-collection" className="mt-12 md:mt-16">
       <h2
         id="more-from-collection"
-        className="border-b border-line pb-2 text-lg font-bold text-primary-hi"
+        className="border-b border-line pb-2 text-lg md:border-divider font-bold text-primary-hi"
       >
         Mais desta coleção
       </h2>

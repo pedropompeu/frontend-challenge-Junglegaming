@@ -21,7 +21,7 @@ export function Header() {
   return (
     <header className="hidden md:block">
       <div className="page-container">
-        <div className="flex h-[68px] items-center justify-between gap-6 border-b border-line">
+        <div className="flex h-[68px] items-center justify-between gap-6 border-b border-divider">
           <Link to="/" className="text-sm font-bold tracking-[0.2em] text-cream">
             KURIO
           </Link>

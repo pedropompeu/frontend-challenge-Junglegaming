@@ -4,10 +4,15 @@ import { formatEth } from '@/shared/lib/money'
 import { cn } from '@/shared/lib/utils'
 import { CartSummarySkeleton } from './cart-summary-skeleton'
 
-type CartSummaryProps = { quote: Quote | undefined; isLoading: boolean }
+type CartSummaryProps = {
+  quote: Quote | undefined
+  isLoading: boolean
+  /** O frame do Pagamento (e não o do Carrinho) separa o Total das taxas com a divisória. */
+  dividedTotal?: boolean
+}
 
 /** Totais do carrinho, sempre os da cotação do servidor (nada é somado no cliente). */
-export function CartSummary({ quote, isLoading }: CartSummaryProps) {
+export function CartSummary({ quote, isLoading, dividedTotal = false }: CartSummaryProps) {
   if (isLoading || !quote) return <CartSummarySkeleton />
   const discountLabel = quote.coupon
     ? `Desconto do lançamento (${quote.coupon.percentOff}%)`
@@ -23,7 +28,7 @@ export function CartSummary({ quote, isLoading }: CartSummaryProps) {
       <SummaryRow label="Taxa de rede" testId="summary-fee" note="Taxa estimada">
         {formatEth(quote.networkFee)}
       </SummaryRow>
-      <SummaryRow label="Total" testId="summary-total" total>
+      <SummaryRow label="Total" testId="summary-total" total divided={dividedTotal}>
         {formatEth(quote.total)}
       </SummaryRow>
     </SummaryList>
@@ -39,16 +44,24 @@ export function SummaryRow({
   testId,
   note,
   total = false,
+  divided = false,
   children,
 }: {
   label: string
   testId?: string
   note?: string
   total?: boolean
+  divided?: boolean
   children: ReactNode
 }) {
   return (
-    <div className={cn('flex items-start justify-between gap-4', total && 'mt-3')}>
+    <div
+      className={cn(
+        'flex items-start justify-between gap-4',
+        total && 'mt-3',
+        divided && 'md:border-t md:border-divider md:pt-3',
+      )}
+    >
       <dt className={cn(total && 'font-bold')}>{label}</dt>
       <dd className="flex min-h-7 flex-col items-end text-right">
         <span data-testid={testId} className={cn('text-lg', total && 'font-bold text-primary-hi')}>

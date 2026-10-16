@@ -26,7 +26,7 @@ export function NftInfo({ nft, edition, children }: NftInfoProps) {
         <h1 className="text-[22px] leading-tight font-bold md:text-3xl">{nft.name}</h1>
         <Rating rating={nft.rating} reviewsCount={nft.reviewsCount} className="md:hidden" />
       </div>
-      <div className="hidden items-center justify-between gap-4 border-b border-line pb-3 md:flex">
+      <div className="hidden items-center justify-between gap-4 border-b border-divider pb-3 md:flex">
         <EthPrice value={edition.price} original={edition.originalPrice} size="lg" />
         <Rating rating={nft.rating} reviewsCount={nft.reviewsCount} />
       </div>

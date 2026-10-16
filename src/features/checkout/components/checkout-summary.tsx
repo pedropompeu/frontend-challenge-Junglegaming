@@ -24,7 +24,7 @@ export function CheckoutSummary({ items, quote, coupon, fallback }: CheckoutSumm
       </h2>
       <div
         aria-hidden="true"
-        className="mt-3 hidden justify-between border-b border-line pb-2 text-[15px] font-bold md:flex"
+        className="mt-3 hidden justify-between border-b border-divider pb-2 text-[15px] font-bold md:flex"
       >
         <span>NFTs</span>
         <span>Subtotal</span>
@@ -68,7 +68,7 @@ export function CheckoutSummary({ items, quote, coupon, fallback }: CheckoutSumm
       <div className="mt-4">{coupon}</div>
       <div className="mt-4">
         {fallback ??
-          (quote ? <CartSummary quote={quote} isLoading={false} /> : <CartSummarySkeleton />)}
+          (quote ? <CartSummary quote={quote} isLoading={false} dividedTotal /> : <CartSummarySkeleton />)}
       </div>
     </section>
   )

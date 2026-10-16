@@ -83,7 +83,7 @@ function CartPage() {
           >
             <h2
               id="cart-summary-title"
-              className="text-lg font-bold max-md:sr-only md:border-b md:border-line md:pb-3"
+              className="text-lg font-bold max-md:sr-only md:border-b md:border-divider md:pb-3"
             >
               Resumo da carteira
             </h2>

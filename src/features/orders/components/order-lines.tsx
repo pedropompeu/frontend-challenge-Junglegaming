@@ -13,7 +13,7 @@ export function OrderLines({ order }: { order: Order }) {
   return (
     <table aria-label="Itens do pedido" className="w-full border-collapse">
       <thead>
-        <tr className="border-b border-line text-[15px]">
+        <tr className="border-b border-line text-[15px] md:border-divider">
           <th scope="col" className="pb-3 text-left font-bold">
             NFTs
           </th>
@@ -89,7 +89,7 @@ export function OrderLines({ order }: { order: Order }) {
             {formatEth(order.networkFee)}
           </td>
         </tr>
-        <tr className="border-b border-line">
+        <tr className="border-b border-line md:border-divider">
           <th scope="row" className={`${footLabel} pb-3 font-bold`}>
             Total
           </th>

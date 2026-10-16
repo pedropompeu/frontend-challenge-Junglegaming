@@ -15,7 +15,7 @@ export function NftTabs({ nft }: { nft: Nft }) {
       : 'Contrato inteligente ERC-721 verificado'
   return (
     <Tabs defaultValue="details" className="gap-0">
-      <TabsList className="h-auto w-full justify-start gap-10 rounded-none border-b border-line bg-transparent p-0">
+      <TabsList className="h-auto w-full justify-start gap-10 rounded-none border-b border-divider bg-transparent p-0">
         <TabsTrigger value="details" className={trigger}>
           Detalhes do NFT
         </TabsTrigger>

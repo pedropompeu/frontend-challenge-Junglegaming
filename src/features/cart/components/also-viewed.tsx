@@ -15,7 +15,7 @@ export function AlsoViewed({ excludeIds }: { excludeIds: string[] }) {
   const cell = 'w-[44vw] max-w-[220px] shrink-0 snap-start md:w-auto md:max-w-none'
   return (
     <section aria-labelledby="also-viewed" className="mt-12 md:mt-24">
-      <h2 id="also-viewed" className="border-b border-line pb-2 text-lg font-bold text-primary-hi">
+      <h2 id="also-viewed" className="border-b border-line pb-2 text-lg font-bold text-primary-hi md:border-divider">
         Colecionadores também viram
       </h2>
       <ul
