@@ -12,6 +12,11 @@ declare module '@tanstack/react-router' {
   }
 }
 
+if (import.meta.env.VITE_ENABLE_MOCKS === 'true') {
+  const { enableMocks } = await import('@/mocks/browser')
+  await enableMocks()
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />

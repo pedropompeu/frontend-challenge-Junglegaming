@@ -5,6 +5,7 @@ import type { UserRecord } from '../db/schema'
 import { getDb, mutate, nextId, now } from '../db/store'
 import { apiError, json, route, unauthenticated } from '../route'
 import { getScenarioConfig } from '../scenarios/runtime'
+import { closeConnectionsForToken } from '../socket/server'
 import { parseBody } from './validate'
 
 const DEFAULT_TTL_MS = 2 * 60 * 60 * 1000
@@ -99,6 +100,7 @@ export const authHandlers = [
       mutate((db) => {
         db.sessions = db.sessions.filter((s) => s.token !== token)
       })
+      closeConnectionsForToken(token)
     }
     return new HttpResponse(null, { status: 204 })
   }),
