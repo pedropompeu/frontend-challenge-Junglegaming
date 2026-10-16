@@ -36,6 +36,22 @@ export function mocks(page: Page) {
       await ready()
       return page.evaluate(() => window.__kurioMocks!.connections())
     },
+    async setLatency(v: Parameters<KurioMocksControl['setLatency']>[0]) {
+      await ready()
+      await page.evaluate((x) => window.__kurioMocks!.setLatency(x), v)
+    },
+    /** A "extensão" desconecta a carteira: sessões invalidadas no servidor + aviso do provedor. */
+    async disconnectWallet() {
+      await ready()
+      await page.evaluate(() => window.__kurioMocks!.disconnectWallet())
+    },
+    /** Pedidos gravados no banco simulado (a verdade do servidor, não o que a tela mostra). */
+    async orders(): Promise<Array<{ id: string; status: string; idempotencyKey: string }>> {
+      return page.evaluate(() => {
+        const raw = localStorage.getItem('kurio:mockdb:v1')
+        return raw ? (JSON.parse(raw) as { orders: [] }).orders : []
+      })
+    },
   }
 }
 

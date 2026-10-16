@@ -100,6 +100,12 @@
   body {
     @apply min-h-dvh bg-ink font-mono text-cream antialiased;
   }
+  /* Mobile: a nav inferior fixa e os CTAs sticky não podem cobrir o elemento focado. */
+  @media (width < 48rem) {
+    html {
+      scroll-padding-bottom: 10rem;
+    }
+  }
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;

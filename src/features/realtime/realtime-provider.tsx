@@ -11,6 +11,7 @@ import { createEventGate } from '@/shared/lib/realtime-gate'
 import { getSessionSnapshot, subscribeSession } from '@/shared/lib/session-store'
 import { createSocket } from '@/shared/lib/socket'
 import { applyNftUpdate, describeCartLineChange } from './apply-nft-update'
+import { applyOrderUpdate } from './apply-order-update'
 import { RealtimeStatusContext, type RealtimeStatus } from './use-realtime-status'
 
 /**
@@ -78,6 +79,14 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
         })
         // Uma região viva só lê o último texto: junta tudo num anúncio.
         announce(messages.join('. '))
+      })
+
+      socket.on('order.updated', (raw: unknown) => {
+        const parsed = RealtimeEventSchema.safeParse(raw)
+        if (!parsed.success || parsed.data.type !== 'order.updated') return
+        const { userId } = owner.current
+        if (!userId || !gate.accept(parsed.data)) return
+        applyOrderUpdate(queryClient, parsed.data, { userId })
       })
     }
 

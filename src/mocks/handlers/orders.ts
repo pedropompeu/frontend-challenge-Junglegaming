@@ -80,7 +80,9 @@ export const orderHandlers = [
     const invalid = revalidate(quote, key)
     if (invalid) return invalid
 
-    const wallet = (db.wallets[userId] ?? []).find((w) => w.id === session.walletId)
+    const wallet = session.walletId
+      ? (db.wallets[userId] ?? []).find((w) => w.id === session.walletId)
+      : undefined
     const order: OrderRecord = {
       id: nextId('ord'),
       userId,
@@ -94,7 +96,7 @@ export const orderHandlers = [
       total: quote.total,
       network: quote.network,
       wallet: {
-        label: wallet?.nickname ?? 'Carteira',
+        label: wallet?.nickname ?? (session.walletId ? 'Carteira' : 'Carteira avulsa'),
         address: session.address,
         provider: session.provider,
       },

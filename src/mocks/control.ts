@@ -1,4 +1,5 @@
 import type { ApiErrorCode, NftUpdatedEvent, RealtimeEvent } from '@/contracts'
+import { emitWalletProviderEvent } from '@/shared/lib/wallet-provider'
 import { recentEvents } from './db/events-log'
 import { mutateNft, type NftPatch } from './db/nfts'
 import { getDb, mutate, now, resetDb } from './db/store'
@@ -79,7 +80,11 @@ export function createControl(): KurioMocksControl {
       )
       resend(updates.at(-2), `nft.updated anterior de ${nftId}`)
     },
-    disconnectWallet: () => disconnectAllWalletSessions(),
+    disconnectWallet() {
+      // A extensão desconecta: o servidor invalida as sessões e a página recebe o aviso do provedor.
+      disconnectAllWalletSessions()
+      emitWalletProviderEvent({ type: 'disconnect' })
+    },
     events: () => recentEvents(200),
   }
 }

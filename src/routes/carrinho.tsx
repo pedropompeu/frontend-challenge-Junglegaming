@@ -1,34 +1,24 @@
-import { useEffect } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, createFileRoute, useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router'
-import { ChevronLeftIcon } from 'lucide-react'
-import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useSession } from '@/features/auth/use-session'
 import { AlsoViewed } from '@/features/cart/components/also-viewed'
 import { CartSummary } from '@/features/cart/components/cart-summary'
 import { CartTable, CartTableSkeleton } from '@/features/cart/components/cart-table'
 import { CouponForm } from '@/features/cart/components/coupon-form'
 import { EmptyCart } from '@/features/cart/components/empty-cart'
-import {
-  availabilityMessage,
-  conflictAvailable,
-  isAvailabilityConflict,
-  useCart,
-} from '@/features/cart/queries'
+import { useCart } from '@/features/cart/queries'
+import { isCouponError, useQuoteRecovery } from '@/features/cart/use-quote-recovery'
 import { setCheckoutPrefs, useCheckoutPrefs } from '@/features/quote/checkout-prefs'
 import { quoteQuery, quoteRequestOf } from '@/features/quote/queries'
-import { errorMessage, isApiError } from '@/shared/lib/api-error'
-import { qk } from '@/shared/lib/query-keys'
+import { TitleBar } from '@/shared/layout/title-bar'
+import { RetryBox } from '@/shared/ui/retry-box'
 
 export const Route = createFileRoute('/carrinho')({
   component: CartPage,
 })
 
-const COUPON_ERRORS = new Set(['COUPON_INVALID', 'COUPON_EXPIRED'])
-
 function CartPage() {
   const { ownerKey } = useSession()
-  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const cart = useCart()
   const prefs = useCheckoutPrefs(ownerKey)
@@ -41,23 +31,9 @@ function CartPage() {
   })
 
   // Cupom salvo que deixou de valer (expirou entre visitas): sai das preferências com aviso.
-  const quoteError = quote.error
-  useEffect(() => {
-    if (!isApiError(quoteError)) return
-    if (COUPON_ERRORS.has(quoteError.code)) {
-      setCheckoutPrefs(ownerKey, { couponCode: null })
-      toast.error(
-        `${quoteError.fieldErrors?.couponCode ?? quoteError.message}. O cupom foi removido.`,
-      )
-    } else if (isAvailabilityConflict(quoteError)) {
-      const available = conflictAvailable(quoteError)
-      if (available !== null) toast.error(availabilityMessage(available))
-      void queryClient.invalidateQueries({ queryKey: qk.cart(ownerKey) })
-    }
-  }, [quoteError, ownerKey, queryClient])
+  useQuoteRecovery(quote.error, ownerKey)
 
-  const blockingQuoteError =
-    quote.isError && !(isApiError(quote.error) && COUPON_ERRORS.has(quote.error.code))
+  const blockingQuoteError = quote.isError && !isCouponError(quote.error)
   const canCheckout = Boolean(quote.data) && !quote.isFetching && !overStock && items.length > 0
 
   let list
@@ -91,7 +67,7 @@ function CartPage() {
         </Link>{' '}
         / <span aria-current="page">Carrinho</span>
       </nav>
-      <TitleBar />
+      <TitleBar title="Carrinho de NFTs" />
       <div className="mt-6 grid gap-8 md:mt-6 lg:grid-cols-[minmax(0,1fr)_332px] lg:gap-[86px]">
         <div>{list}</div>
         {showSummary ? (
@@ -145,58 +121,6 @@ function CartPage() {
         ) : null}
       </div>
       <AlsoViewed excludeIds={items.map((i) => i.nftId)} />
-    </div>
-  )
-}
-
-/** No mobile, voltar + título (o Figma não tem header); no desktop o título fica só para leitores. */
-function TitleBar() {
-  const router = useRouter()
-  const canGoBack = useCanGoBack()
-  const back =
-    'grid size-10 place-items-center rounded-full border border-line-strong bg-surface-2 text-cream'
-  const icon = <ChevronLeftIcon aria-hidden="true" className="size-5" />
-  return (
-    <div className="relative flex h-12 items-center justify-center md:contents">
-      {canGoBack ? (
-        <button
-          type="button"
-          aria-label="Voltar"
-          onClick={() => router.history.back()}
-          className={`${back} absolute left-0 md:hidden`}
-        >
-          {icon}
-        </button>
-      ) : (
-        <Link to="/" aria-label="Voltar" className={`${back} absolute left-0 md:hidden`}>
-          {icon}
-        </Link>
-      )}
-      <h1 className="text-xl font-bold md:sr-only">Carrinho de NFTs</h1>
-    </div>
-  )
-}
-
-function RetryBox({
-  title,
-  error,
-  onRetry,
-}: {
-  title: string
-  error: unknown
-  onRetry: () => void
-}) {
-  return (
-    <div role="alert" className="rounded-[10px] bg-surface px-6 py-8 text-center">
-      <p className="font-bold">{title}</p>
-      <p className="mt-2 text-sm text-sand">{errorMessage(error)}</p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-4 rounded-md bg-primary px-5 py-2 font-bold text-ink hover:bg-primary-hi"
-      >
-        Tentar novamente
-      </button>
     </div>
   )
 }

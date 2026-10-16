@@ -78,7 +78,8 @@ export type UpsertWalletBody = z.input<typeof UpsertWalletBodySchema>
 
 export const WalletSessionSchema = z.object({
   id: IdSchema,
-  walletId: IdSchema,
+  /** `null` quando a sessão é de uma carteira avulsa ("Usar outra carteira?"). */
+  walletId: IdSchema.nullable(),
   provider: WalletProviderSchema,
   network: NetworkSchema,
   address: z.string(),
@@ -86,9 +87,33 @@ export const WalletSessionSchema = z.object({
 })
 export type WalletSession = z.infer<typeof WalletSessionSchema>
 
-export const CreateWalletSessionBodySchema = z.object({
-  walletId: IdSchema,
-  provider: WalletProviderSchema,
-  network: NetworkSchema,
+export const CustomWalletSchema = z.object({
+  address: z.string().trim().min(1, 'Informe o endereço da carteira'),
+  walletType: WalletProviderSchema,
 })
+export type CustomWallet = z.infer<typeof CustomWalletSchema>
+
+/** Conecta uma carteira cadastrada (`walletId`) ou uma avulsa (`customWallet`), nunca as duas. */
+export const CreateWalletSessionBodySchema = z
+  .object({
+    walletId: IdSchema.optional(),
+    customWallet: CustomWalletSchema.optional(),
+    provider: WalletProviderSchema,
+    network: NetworkSchema,
+  })
+  .superRefine((v, ctx) => {
+    if (Boolean(v.walletId) === Boolean(v.customWallet)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['walletId'],
+        message: 'Escolha uma carteira cadastrada ou informe outra carteira',
+      })
+    } else if (v.customWallet && !isValidAddress(v.network, v.customWallet.address)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['customWallet', 'address'],
+        message: 'Endereço inválido para a rede escolhida',
+      })
+    }
+  })
 export type CreateWalletSessionBody = z.infer<typeof CreateWalletSessionBodySchema>

@@ -345,6 +345,50 @@ describe('wallets', () => {
     expect(r.status).toBe(409)
     expect(r.body.error.code).toBe('WALLET_REJECTED')
   })
+
+  it('custom wallet session validates the address and the order snapshots it as "Carteira avulsa"', async () => {
+    const custom = (address: string, network = 'polygon') =>
+      call('POST', '/api/wallet-sessions', {
+        token,
+        body: { customWallet: { address, walletType: 'coinbase' }, provider: 'coinbase', network },
+      })
+    const invalid = await custom('nao-e-endereco')
+    expect(invalid.status).toBe(422)
+    expect(invalid.body.error.fieldErrors['customWallet.address']).toBeDefined()
+    const neither = await call('POST', '/api/wallet-sessions', {
+      token,
+      body: { provider: 'metamask', network: 'ethereum' },
+    })
+    expect(neither.status).toBe(422)
+
+    const address = '0x1111111111111111111111111111111111111111'
+    const ok = await custom(address)
+    expect(ok.status).toBe(201)
+    const session = WalletSessionSchema.parse(ok.body)
+    expect(session).toMatchObject({ walletId: null, address, provider: 'coinbase' })
+
+    await call('POST', '/api/cart/items', { token, body: { nftId: NV, editionId, quantity: 1 } })
+    const q = QuoteSchema.parse(
+      (await call('POST', '/api/quotes', { token, body: { network: 'polygon' } })).body,
+    )
+    const fullBuyer = {
+      ...buyer,
+      username: 'ana_kurio',
+      profileName: 'ana_kurio',
+      ensName: 'anasouza',
+      referralCode: null,
+      secondaryAddress: null,
+      note: 'Presente',
+    }
+    const r = await createOrder('k-custom', {
+      quoteId: q.id,
+      walletSessionId: session.id,
+      buyer: fullBuyer,
+    })
+    expect(r.status).toBe(202)
+    expect(r.body.wallet).toEqual({ label: 'Carteira avulsa', address, provider: 'coinbase' })
+    expect(r.body.buyer).toEqual(fullBuyer)
+  })
 })
 
 describe('checkout mutation scenarios', () => {

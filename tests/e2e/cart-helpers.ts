@@ -7,12 +7,14 @@ const isQuote = (r: Response) => r.request().method() === 'POST' && r.url().ends
 
 /** Guarda a última cotação devolvida pelo servidor, para comparar com o resumo na tela. */
 export function trackQuotes(page: Page) {
-  const state: { last: Quote | null } = { last: null }
+  const state: { last: Quote | null; byId: Map<string, Quote> } = { last: null, byId: new Map() }
   page.on('response', async (r) => {
     if (!isQuote(r) || r.status() !== 201) return
     // Uma recarga no meio descarta o corpo: essa cotação nem chegou à tela.
     const quote = (await r.json().catch(() => null)) as Quote | null
-    if (quote) state.last = quote
+    if (!quote) return
+    state.last = quote
+    state.byId.set(quote.id, quote)
   })
   return state
 }

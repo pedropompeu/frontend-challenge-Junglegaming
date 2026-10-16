@@ -17,14 +17,21 @@ export const walletSessionHandlers = [
     if (!userId) return unauthenticated()
     const body = await parseBody(request, CreateWalletSessionBodySchema)
     if (!body.ok) return body.response
-    const wallet = (getDb().wallets[userId] ?? []).find((w) => w.id === body.data.walletId)
-    if (!wallet) return apiError(404, 'NOT_FOUND', 'Carteira não encontrada')
+    const { walletId, customWallet, provider, network } = body.data
+    let address: string
+    if (customWallet) {
+      address = customWallet.address
+    } else {
+      const wallet = (getDb().wallets[userId] ?? []).find((w) => w.id === walletId)
+      if (!wallet) return apiError(404, 'NOT_FOUND', 'Carteira não encontrada')
+      address = wallet.address
+    }
     const session: WalletSession = {
       id: nextId('wss'),
-      walletId: wallet.id,
-      provider: body.data.provider,
-      network: body.data.network,
-      address: wallet.address,
+      walletId: walletId ?? null,
+      provider,
+      network,
+      address,
       status: 'connected',
     }
     mutate((db) => {
