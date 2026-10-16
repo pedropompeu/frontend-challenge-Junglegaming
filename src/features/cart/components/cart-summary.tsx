@@ -72,7 +72,11 @@ export function SummaryRow({
       <dd className="flex min-h-7 flex-col items-end text-right">
         <span
           data-testid={testId}
-          className={cn(labelSized ? 'leading-7' : 'text-lg', total && 'font-bold text-primary-hi')}
+          className={cn(
+            // No mobile, Subtotal e Taxa ficam em 16 (o Total segue 18); no desktop, todos em 18.
+            labelSized ? 'leading-7' : total ? 'text-lg' : 'text-base leading-7 md:text-lg',
+            total && 'font-bold text-primary-hi',
+          )}
         >
           {children}
         </span>

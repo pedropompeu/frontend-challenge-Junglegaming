@@ -562,3 +562,26 @@ test('mobile coupon field is the frame 50px pill with the apply button inside', 
   await expect(apply).toHaveCSS('font-size', '15px')
   await expect(apply).toHaveCSS('font-weight', '700')
 })
+
+test('mobile cart summary is the frame 40px sheet with 16px values and a 60px CTA', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'a folha fixa do resumo é do carrinho mobile')
+  await addToCart(page, 'nft_neon-vessel')
+  await page.goto('/carrinho')
+  const sheet = page.getByRole('region', { name: 'Resumo da carteira' })
+  // "Payment Summary" do frame: rx 40 sem contorno. Fixa sobre os cards (da mesma cor), ela
+  // flutua na sombra da barra de compra para não sumir no card que passa por baixo.
+  await expect(sheet).toHaveCSS('border-top-left-radius', '40px')
+  await expectFrameShadow(sheet, '0px 0px 20px 0px')
+  // Subtotal e Taxa em 16; o Total segue 18 bold.
+  await expect(sheet.getByTestId('summary-subtotal')).toHaveCSS('font-size', '16px')
+  await expect(sheet.getByTestId('summary-fee')).toHaveCSS('font-size', '16px')
+  await expect(sheet.getByTestId('summary-total')).toHaveCSS('font-size', '18px')
+  // ~11 px da pílula do cupom à linha do Subtotal e CTA de 60 px.
+  const field = (await sheet.getByRole('textbox', { name: 'Código promocional' }).boundingBox())!
+  const subtotalTop = await labelTop(sheet, 'summary-subtotal')
+  expect(subtotalTop - (field.y + field.height)).toBeCloseTo(11, 0)
+  const cta = (await sheet.getByRole('button', { name: 'Conectar e finalizar' }).boundingBox())!
+  expect(cta.height).toBeCloseTo(60, 0)
+})

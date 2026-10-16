@@ -79,7 +79,7 @@ function CartPage() {
         {showSummary ? (
           <section
             aria-labelledby="cart-summary-title"
-            className="-mx-6 rounded-t-[32px] border-t border-line bg-surface px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-md:sticky max-md:bottom-0 max-md:z-20 md:mx-0 md:rounded-none md:border-0 md:bg-transparent md:p-0 lg:self-start"
+            className="-mx-6 rounded-t-[40px] bg-surface px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-float max-md:sticky max-md:bottom-0 max-md:z-20 md:mx-0 md:rounded-none md:bg-transparent md:p-0 md:shadow-none lg:self-start"
           >
             <h2
               id="cart-summary-title"
@@ -90,7 +90,7 @@ function CartPage() {
             <CouponForm
               appliedCode={prefs.couponCode}
               onRemove={() => setCheckoutPrefs(ownerKey, { couponCode: null })}
-              className="mb-5 md:mt-6"
+              className="mb-[11px] md:mt-6 md:mb-5"
             />
             {overStock ? (
               <p
@@ -112,7 +112,7 @@ function CartPage() {
               type="button"
               disabled={!canCheckout}
               onClick={() => void navigate({ to: '/checkout' })}
-              className="mt-6 h-14 w-full rounded-full cta-fill font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:rounded-md"
+              className="mt-6 h-[60px] w-full rounded-full cta-fill font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:rounded-md"
             >
               Conectar e finalizar
             </button>
