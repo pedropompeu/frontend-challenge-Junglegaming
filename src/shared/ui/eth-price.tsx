@@ -4,7 +4,8 @@ import { cn } from '@/shared/lib/utils'
 const SIZES = {
   sm: 'text-sm',
   md: 'text-base',
-  lg: 'text-2xl',
+  lg: 'text-xl',
+  xl: 'text-2xl',
 } as const
 
 type EthPriceProps = {

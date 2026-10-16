@@ -470,3 +470,28 @@ test('mobile edition chips are the frame 28px ellipses, 12px apart', async ({ pa
   const [a, b] = [(await chips.nth(0).boundingBox())!, (await chips.nth(1).boundingBox())!]
   expect(b.x - (a.x + a.width)).toBeCloseTo(12, 0)
 })
+
+test('mobile purchase bar uses the frame 40px sheet, 60px CTA and khaki cart', async ({ page }) => {
+  test.skip(!isMobile(page), 'a barra fixa é do mobile')
+  await page.goto('/nft/nft_neon-vessel')
+  const cta = page.getByRole('button', { name: 'Comprar NFT', exact: true })
+  const bar = cta.locator('xpath=../..')
+  // "Buy Bar" do frame: rx 40, "Qtd." 15/500 e preço 20 bold.
+  await expect(bar).toHaveCSS('border-top-left-radius', '40px')
+  const qtd = bar.getByText('Qtd.', { exact: true })
+  await expect(qtd).toHaveCSS('font-size', '15px')
+  await expect(qtd).toHaveCSS('font-weight', '500')
+  const price = bar.locator('span[aria-hidden="true"]').filter({ hasText: 'ETH' }).first()
+  await expect(price).toHaveCSS('font-size', '20px')
+  // CTA de 60 px com texto 16 bold; carrinho em círculo de 60 px com o ícone khaki.
+  expect((await cta.boundingBox())!.height).toBeCloseTo(60, 0)
+  await expect(cta).toHaveCSS('font-size', '16px')
+  const cart = bar.getByRole('button', { name: 'Adicionar ao carrinho' })
+  const cartBox = (await cart.boundingBox())!
+  expect([cartBox.width, cartBox.height]).toEqual([60, 60])
+  await expect(cart).toHaveCSS('color', KHAKI)
+  expect(cartBox.x - ((await cta.boundingBox())!.x + (await cta.boundingBox())!.width)).toBeCloseTo(
+    12,
+    0,
+  )
+})
