@@ -20,6 +20,7 @@ let rand = mulberry32(7)
 const failures = new Map<EndpointId, FailureSpec>()
 const hits = new Map<EndpointId, number>()
 const hung = new Set<EndpointId>()
+let checkoutMutationPending = true
 
 function readStorage(key: string): string | null {
   try {
@@ -62,6 +63,7 @@ export function setScenario(name: ScenarioName): void {
   failures.clear()
   hits.clear()
   hung.clear()
+  checkoutMutationPending = true
   rand = mulberry32(7)
 }
 
@@ -103,6 +105,13 @@ export function consumeHang(endpoint: EndpointId): boolean {
   return true
 }
 
+/** `true` uma única vez por ativação do cenário: só a 1ª conexão de carteira dispara a mutação. */
+export function consumeCheckoutMutation(): boolean {
+  if (!checkoutMutationPending) return false
+  checkoutMutationPending = false
+  return true
+}
+
 export function sampleLatency(): number {
   const l = latencyOverride ?? getScenarioConfig().latency
   if (typeof l === 'number') return l
@@ -117,5 +126,6 @@ export function resetRuntime(): void {
   failures.clear()
   hits.clear()
   hung.clear()
+  checkoutMutationPending = true
   rand = mulberry32(7)
 }
