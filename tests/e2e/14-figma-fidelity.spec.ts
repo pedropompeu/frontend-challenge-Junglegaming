@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { addToCart } from './cart-helpers'
 import { expect, isMobile, login, test } from './fixtures'
 
@@ -76,4 +76,44 @@ test('no control keeps the old primary-hi gradient', async ({ page }) => {
     )
     expect(offenders, url).toEqual([])
   }
+})
+
+const placeholderSize = (field: Locator) =>
+  field.evaluate((el) => getComputedStyle(el, '::placeholder').fontSize)
+
+/** O Tailwind compõe a sombra em camadas; "sem sombra" é toda camada transparente. */
+const hasVisibleShadow = (field: Locator) =>
+  field.evaluate((el) =>
+    getComputedStyle(el)
+      .boxShadow.split(/,(?![^(]*\))/)
+      .some((layer) => layer.trim() !== 'none' && !layer.trim().startsWith('rgba(0, 0, 0, 0)')),
+  )
+
+test('auth fields follow the frame: 50px r10 on mobile, 40px r5 on desktop, no fill', async ({
+  page,
+}) => {
+  await page.goto('/entrar')
+  const email = page.getByLabel('E-mail', { exact: true })
+  const password = page.getByLabel('Senha', { exact: true })
+  const [height, radius] = isMobile(page) ? ['50px', '10px'] : ['40px', '5px']
+  for (const field of [email, password]) {
+    await expect(field).toHaveCSS('height', height)
+    await expect(field).toHaveCSS('border-radius', radius)
+    await expect(field).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+    expect(await hasVisibleShadow(field)).toBe(false)
+  }
+  expect(await placeholderSize(email)).toBe('14px')
+})
+
+test('desktop form fields are 40px with r3 and a 22px required asterisk', async ({ page }) => {
+  test.skip(isMobile(page), 'o Figma não tem os formulários de perfil e pagamento no mobile')
+  await page.goto('/perfil/carteiras')
+  await login(page, 'ana@kurio.test')
+  const primary = page.getByRole('region', { name: 'Carteira principal' })
+  const address = primary.getByLabel('Endereço da carteira', { exact: true })
+  await expect(address).toHaveCSS('height', '40px')
+  await expect(address).toHaveCSS('border-radius', '3px')
+  expect(await hasVisibleShadow(address)).toBe(false)
+  expect(await placeholderSize(address)).toBe('14px')
+  await expect(primary.getByText('*', { exact: true }).first()).toHaveCSS('font-size', '22px')
 })

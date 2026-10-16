@@ -4,8 +4,9 @@ import { cn } from '@/shared/lib/utils'
 import { FacebookIcon } from '@/shared/layout/social-icons'
 import { Unavailable } from '@/shared/ui/unavailable'
 
+// Frames de Login e Cadastro: 50px raio 10 no mobile, 40px raio 5 no desktop, sem preenchimento.
 export const fieldClass =
-  'h-12 rounded-md border-line bg-ink px-4 text-base text-cream placeholder:text-khaki md:text-base'
+  'h-[50px] rounded-[10px] border-line bg-transparent px-4 text-base text-cream shadow-none placeholder:text-sm placeholder:text-khaki md:h-10 md:rounded-[5px] md:text-base'
 
 export function PasswordInput({ className, ...props }: ComponentProps<'input'>) {
   const [visible, setVisible] = useState(false)
