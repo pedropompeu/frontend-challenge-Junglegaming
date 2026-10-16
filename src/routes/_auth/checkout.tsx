@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, Navigate, createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import {
+  Link,
+  Navigate,
+  createFileRoute,
+  redirect,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router'
 import { useForm, useWatch, type FieldPath, type FieldPathValue } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -19,7 +26,12 @@ import { CartSummarySkeleton } from '@/features/cart/components/cart-summary-ske
 import { CouponForm } from '@/features/cart/components/coupon-form'
 import { availabilityMessage, conflictAvailable, useCart } from '@/features/cart/queries'
 import { isCouponError, useQuoteRecovery } from '@/features/cart/use-quote-recovery'
-import { bindAttempt, clearAttempt, getOrCreateAttempt } from '@/features/checkout/attempt-store'
+import {
+  bindAttempt,
+  clearAttempt,
+  getOrCreateAttempt,
+  resumableAttempt,
+} from '@/features/checkout/attempt-store'
 import { CheckoutForm } from '@/features/checkout/components/checkout-form'
 import { CheckoutSummary } from '@/features/checkout/components/checkout-summary'
 import { OrderReview } from '@/features/checkout/components/order-review'
@@ -153,8 +165,8 @@ function CheckoutLoader({ user }: { user: User }) {
 
 /**
  * editing → (formulário válido) reviewing → (confirmar) POST /orders.
- * `uncertain`: o envio ficou sem resposta (timeout/rede); só resta reenviar o MESMO corpo,
- * com a mesma chave, para descobrir se o pedido existe.
+ * `uncertain`: o envio ficou sem resposta (timeout/rede, recarga ou saída do checkout); só
+ * resta reenviar o MESMO corpo, com a mesma chave, para descobrir se o pedido existe.
  */
 type Mode =
   | { kind: 'editing' }
@@ -166,9 +178,25 @@ const STOCK_CHANGED = 'Um item não tem mais estoque suficiente — ajuste o car
 const noticeBox =
   'flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-coral/60 px-4 py-3 text-sm'
 
+/**
+ * Resposta do servidor sem pedido para a chave (ele devolve o existente antes de validar).
+ * Inclui o 401: depois de entrar de novo, a compra se confirma outra vez, não se reenvia sozinha.
+ */
+function rejectsAttempt(error: unknown): boolean {
+  return isApiError(error) && error.status !== null && error.status >= 400 && error.status < 500
+}
+
 function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const router = useRouter()
+  const mounted = useRef(false)
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+    }
+  }, [])
   const { ownerKey } = useSession()
   const prefs = useCheckoutPrefs(ownerKey)
   const cart = useCart()
@@ -215,7 +243,11 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
   const readySession = wallet.status === 'connected' && sessionMatches ? wallet.session : null
   const walletStatus = wallet.status === 'connected' && !sessionMatches ? 'idle' : wallet.status
 
-  const [mode, setMode] = useState<Mode>({ kind: 'editing' })
+  // Envio que ficou sem resposta antes desta montagem (recarga, saída do checkout).
+  const [resumed] = useState(() => resumableAttempt(user.id))
+  const [mode, setMode] = useState<Mode>(() =>
+    resumed ? { kind: 'uncertain', quote: resumed.quote, body: resumed.body } : { kind: 'editing' },
+  )
   const [stale, setStale] = useState<{ before: Quote; after: Quote } | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const latest = quote.data
@@ -228,9 +260,30 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
         ? (latest ?? mode.quote)
         : latest
   const order = useMutation({
-    mutationFn: ({ body, key }: { body: CreateOrderBody; key: string }) => createOrder(body, key),
+    mutationFn: ({ body, key }: { body: CreateOrderBody; key: string; userId: string }) =>
+      createOrder(body, key),
     // Mesma chave: repetir é seguro, mas só quando o servidor disse que a falha é passageira.
     retry: (failures, error) => isApiError(error) && error.code === 'TRANSIENT' && failures < 2,
+    // No hook, e não no `mutate`: roda mesmo com o checkout desmontado (o usuário saiu com o
+    // POST em voo), então o pedido criado nunca fica sem a marca local que impede outra compra.
+    onSuccess: (created, { userId }) => {
+      bindAttempt(userId, created.id)
+      queryClient.setQueryData(qk.order(userId, created.id), created)
+      if (created.status === 'pending') savePendingOrder(userId, created.id)
+      else settleLocalState(queryClient, userId, created)
+      if (mounted.current) return
+      toast.success('Pedido enviado', {
+        action: {
+          label: 'Ver pedido',
+          onClick: () =>
+            void router.navigate({ to: '/pedido/$orderId', params: { orderId: created.id } }),
+        },
+      })
+    },
+    onError: (error, { userId }) => {
+      // Recusa definitiva: a tentativa não criou pedido e não deve ser retomada.
+      if (rejectsAttempt(error)) clearAttempt(userId)
+    },
   })
   // Estoque que acabou durante a revisão: a cotação revisada não vale mais e o ajuste é no
   // carrinho. Depois do envio, quem consome o estoque é o próprio pedido.
@@ -310,16 +363,13 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
     if (sending.current) return
     sending.current = true
     setSubmitError(null)
-    // A chave é salva ANTES do POST: retry, recarga ou duplo clique reaproveitam a mesma.
-    const attempt = getOrCreateAttempt(user.id, body.quoteId, body)
+    // Chave, corpo e cotação são salvos ANTES do POST: retry, recarga, saída do checkout ou
+    // duplo clique reaproveitam a mesma chave.
+    const attempt = getOrCreateAttempt(user.id, body.quoteId, body, sentQuote)
     order.mutate(
-      { body, key: attempt.idempotencyKey },
+      { body, key: attempt.idempotencyKey, userId: user.id },
       {
         onSuccess: (created) => {
-          bindAttempt(user.id, created.id)
-          queryClient.setQueryData(qk.order(user.id, created.id), created)
-          if (created.status === 'pending') savePendingOrder(user.id, created.id)
-          else settleLocalState(queryClient, user.id, created)
           void navigate({ to: '/pedido/$orderId', params: { orderId: created.id } })
         },
         onError: (error) => handleOrderError(error, body, sentQuote),
@@ -383,6 +433,14 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
         void queryClient.invalidateQueries({ queryKey: quotesKeyOf(ownerKey) })
     }
   }
+
+  // Retoma o envio sem resposta uma única vez, ao montar: mesma chave, mesmo corpo.
+  const resumeSent = useRef(false)
+  useEffect(() => {
+    if (!resumed || resumeSent.current) return
+    resumeSent.current = true
+    send(resumed.body, resumed.quote)
+  })
 
   function confirm() {
     if (!confirmQuote || !readySession) return
@@ -558,10 +616,16 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
                   type="button"
                   onClick={() => send(mode.body, mode.quote)}
                   disabled={order.isPending}
+                  aria-busy={order.isPending || undefined}
                   className={primaryButton}
                 >
                   Tentar novamente
                 </button>
+                {order.isPending ? (
+                  <p role="status" className="text-center text-sand">
+                    Verificando o envio…
+                  </p>
+                ) : null}
               </div>
             ) : (
               <>

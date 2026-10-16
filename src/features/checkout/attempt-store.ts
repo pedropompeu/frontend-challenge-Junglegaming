@@ -1,16 +1,21 @@
-import type { CreateOrderBody } from '@/contracts'
+import { CreateOrderBodySchema, QuoteSchema, type CreateOrderBody, type Quote } from '@/contracts'
 import { readJson, removeItem, writeJson } from '@/shared/lib/storage'
 
 /**
- * Tentativa de compra: a chave de idempotência, o payload que ela protege e, depois que o
- * servidor respondeu, o pedido que ela criou.
+ * Tentativa de compra: a chave de idempotência, o payload que ela protege (o corpo e a
+ * cotação mostrada na revisão) e, depois que o servidor respondeu, o pedido que ela criou.
  */
 export type CheckoutAttempt = {
   idempotencyKey: string
   quoteId: string
   payloadHash: string
+  body?: CreateOrderBody
+  quote?: Quote
   orderId?: string
 }
+
+/** Envio sem resposta: o que basta para reenviar o MESMO corpo com a MESMA chave. */
+export type ResumableAttempt = { idempotencyKey: string; body: CreateOrderBody; quote: Quote }
 
 const keyOf = (userId: string) => `kurio:checkout-attempt:${userId}`
 
@@ -56,21 +61,42 @@ export function hashPayload(payload: CreateOrderBody): string {
 }
 
 /**
- * Chave de idempotência do envio, persistida ANTES do POST (sessionStorage, por usuário):
- * repetir o envio — duplo clique, timeout, recarga — reaproveita a chave enquanto cotação e
- * payload forem os mesmos; qualquer mudança neles é uma compra nova, com chave nova.
+ * Tentativa do envio, persistida ANTES do POST (sessionStorage, por usuário) com a chave, o
+ * corpo e a cotação: repetir o envio — duplo clique, timeout, recarga, volta ao checkout —
+ * reaproveita a chave enquanto cotação e payload forem os mesmos; qualquer mudança neles é
+ * uma compra nova, com chave nova.
  */
 export function getOrCreateAttempt(
   userId: string,
   quoteId: string,
   payload: CreateOrderBody,
+  quote?: Quote,
 ): CheckoutAttempt {
   const payloadHash = hashPayload(payload)
   const current = peekAttempt(userId)
   if (current && current.quoteId === quoteId && current.payloadHash === payloadHash) return current
-  const attempt: CheckoutAttempt = { idempotencyKey: crypto.randomUUID(), quoteId, payloadHash }
+  const attempt: CheckoutAttempt = {
+    idempotencyKey: crypto.randomUUID(),
+    quoteId,
+    payloadHash,
+    body: payload,
+    quote,
+  }
   writeJson('session', keyOf(userId), attempt)
   return attempt
+}
+
+/**
+ * Envio que ficou sem resposta (recarga, saída do checkout, timeout): devolve chave, corpo e
+ * cotação para reenviar. Tentativa já respondida, ou sem corpo salvo, não se retoma.
+ */
+export function resumableAttempt(userId: string): ResumableAttempt | null {
+  const current = peekAttempt(userId)
+  if (!current || current.orderId) return null
+  const body = CreateOrderBodySchema.safeParse(current.body)
+  const quote = QuoteSchema.safeParse(current.quote)
+  if (!body.success || !quote.success) return null
+  return { idempotencyKey: current.idempotencyKey, body: body.data, quote: quote.data }
 }
 
 /**

@@ -1,17 +1,43 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest'
-import type { CreateOrderBody } from '@/contracts'
+import type { CreateOrderBody, Quote } from '@/contracts'
 import {
   bindAttempt,
   clearAttempt,
   getOrCreateAttempt,
   peekAttempt,
+  resumableAttempt,
 } from '@/features/checkout/attempt-store'
 
 const p: CreateOrderBody = {
   quoteId: 'qte_1',
   walletSessionId: 'wss_1',
   buyer: { displayName: 'Ana Souza', email: 'ana@kurio.test' },
+}
+
+const quote: Quote = {
+  id: 'qte_1',
+  cartVersion: 3,
+  network: 'ethereum',
+  lines: [
+    {
+      cartItemId: 'cit_1',
+      nftId: 'nft_neon-vessel',
+      editionId: 'ed_1',
+      name: 'Neon Vessel',
+      editionKind: '1/10',
+      quantity: 1,
+      unitPrice: '0.5',
+      lineTotal: '0.5',
+    },
+  ],
+  subtotal: '0.5',
+  discount: '0',
+  coupon: null,
+  networkFee: '0.002',
+  total: '0.502',
+  createdAt: '2026-10-16T12:00:00.000Z',
+  expiresAt: '2026-10-16T12:10:00.000Z',
 }
 
 describe('attempt-store', () => {
@@ -63,5 +89,25 @@ describe('attempt-store', () => {
     bindAttempt('u', 'ord_1')
     expect(peekAttempt('u')).toMatchObject({ idempotencyKey: a.idempotencyKey, orderId: 'ord_1' })
     expect(getOrCreateAttempt('u', 'q1', p).idempotencyKey).toBe(a.idempotencyKey)
+  })
+
+  it('persists the body and the sent quote before the POST, so a reload can resend them', () => {
+    const a = getOrCreateAttempt('u', 'qte_1', p, quote)
+    expect(resumableAttempt('u')).toEqual({ idempotencyKey: a.idempotencyKey, body: p, quote })
+  })
+
+  it('an answered attempt is no longer resumable', () => {
+    getOrCreateAttempt('u', 'qte_1', p, quote)
+    bindAttempt('u', 'ord_1')
+    expect(resumableAttempt('u')).toBeNull()
+  })
+
+  it('an attempt stored without body is not resumable', () => {
+    sessionStorage.setItem(
+      'kurio:checkout-attempt:u',
+      JSON.stringify({ idempotencyKey: 'k', quoteId: 'qte_1', payloadHash: 'h' }),
+    )
+    expect(peekAttempt('u')?.idempotencyKey).toBe('k')
+    expect(resumableAttempt('u')).toBeNull()
   })
 })

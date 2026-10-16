@@ -74,6 +74,65 @@ test('timeout after creation recovers the same order', async ({ page }) => {
   expect(orders.map((o) => o.id)).toEqual([order.id])
 })
 
+test('reload while the order answer is missing resumes the same attempt', async ({ page }) => {
+  await page.clock.install()
+  await openCheckout(page, { scenario: 'order-timeout' })
+  await connectWallet(page)
+  await goToReview(page)
+  const isOrderPostRequest = (r: import('@playwright/test').Request) =>
+    r.method() === 'POST' && r.url().endsWith('/api/orders')
+  const firstPost = page.waitForRequest(isOrderPostRequest)
+  await confirmButton(page).click()
+  const key = (await firstPost).headers()['idempotency-key']
+  await expect.poll(async () => (await mocks(page).orders()).length).toBe(1)
+  await page.clock.fastForward(11_000)
+  const alert = main(page).getByRole('alert').filter({ hasText: 'Não confirmamos o envio' })
+  await expect(alert).toBeVisible()
+
+  // A recarga não esquece o envio: o checkout reenvia o mesmo corpo com a mesma chave.
+  const resent = page.waitForRequest(isOrderPostRequest)
+  await page.reload()
+  expect((await resent).headers()['idempotency-key']).toBe(key)
+  // O backend simulado recomeça a cada carga, então o 1º envio desta carga também fica sem
+  // resposta; o retry seguinte recebe o pedido que já existe.
+  await page.clock.fastForward(11_000)
+  await expect(alert).toBeVisible()
+  const retried = page.waitForResponse(isOrderPost)
+  await alert.getByRole('button', { name: 'Tentar novamente' }).click()
+  const response = await retried
+  expect(response.request().headers()['idempotency-key']).toBe(key)
+  expect(response.status()).toBe(200)
+  const order = (await response.json()) as Order
+  await expect(page).toHaveURL(new RegExp(`/pedido/${order.id}$`))
+  expect((await mocks(page).orders()).map((o) => o.id)).toEqual([order.id])
+})
+
+test('leaving the checkout while the order is in flight keeps a single order', async ({ page }) => {
+  await openCheckout(page, { scenario: 'payment-confirmed' })
+  await connectWallet(page)
+  await goToReview(page)
+  await mocks(page).setLatency(1500)
+  const created = page.waitForResponse(isOrderPost)
+  await confirmButton(page).click()
+  // Sai pelo próprio app, sem recarregar: a resposta chega com o checkout já desmontado.
+  await page
+    .getByRole('link', { name: 'Voltar' })
+    .or(page.getByRole('navigation', { name: 'Trilha' }).getByRole('link', { name: 'Início' }))
+    .filter({ visible: true })
+    .click()
+  await expect(page).not.toHaveURL(/\/checkout/)
+  const response = await created
+  expect(response.status()).toBe(202)
+  const order = (await response.json()) as Order
+  await page.getByRole('button', { name: 'Ver pedido' }).click()
+  await expect(page).toHaveURL(new RegExp(`/pedido/${order.id}$`))
+
+  // Voltar ao checkout com o pedido pendente leva a ele, não a uma segunda compra.
+  await page.goto('/checkout')
+  await expect(page).toHaveURL(new RegExp(`/pedido/${order.id}$`))
+  expect((await mocks(page).orders()).map((o) => o.id)).toEqual([order.id])
+})
+
 test('wallet rejection and disconnection', async ({ page }) => {
   await openCheckout(page, { scenario: 'wallet-rejected' })
   await page.getByRole('radio', { name: 'MetaMask', exact: true }).check()
