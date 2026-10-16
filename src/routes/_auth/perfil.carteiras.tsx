@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '@/app/page-head'
 import type { User } from '@/contracts'
 import { useSession } from '@/features/auth/use-session'
 import { WalletsPanel } from '@/features/wallets/components/wallets-panel'
@@ -9,6 +10,8 @@ import { RetryBox } from '@/shared/ui/retry-box'
 import { Skeleton } from '@/shared/ui/skeleton'
 
 export const Route = createFileRoute('/_auth/perfil/carteiras')({
+  head: () =>
+    pageHead('Carteiras', 'Conecte e gerencie as carteiras que você usa para pagar seus NFTs.'),
   validateSearch: walletsSearchSchema,
   component: WalletsPage,
 })

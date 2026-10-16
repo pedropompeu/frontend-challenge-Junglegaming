@@ -2,13 +2,15 @@ import axios, { AxiosError, type AxiosRequestConfig } from 'axios'
 import type { ZodType } from 'zod'
 import { ApiErrorBodySchema } from '@/contracts'
 import { ApiError } from './api-error'
+import { backendReady } from './backend-ready'
 import { getGuestId } from './guest'
 import { emitSessionExpired, getStoredSession } from './session-store'
 
 /** Instância Axios única do app. */
 export const http = axios.create({ baseURL: '/api', timeout: 10_000 })
 
-http.interceptors.request.use((config) => {
+http.interceptors.request.use(async (config) => {
+  await backendReady()
   const session = getStoredSession()
   if (session) config.headers.set('Authorization', `Bearer ${session.token}`)
   config.headers.set('X-Guest-Id', getGuestId())

@@ -1,4 +1,5 @@
 import type { Socket } from 'socket.io-client'
+import { backendReady } from './backend-ready'
 
 /**
  * Socket.IO do app. Só WebSocket: o servidor simulado (MSW) não intercepta long-polling.
@@ -6,9 +7,10 @@ import type { Socket } from 'socket.io-client'
  *
  * O cliente é importado sob demanda: o `engine.io-client` guarda `globalThis.WebSocket`
  * ao avaliar o módulo, e o MSW só troca essa classe ao subir. Carregado depois do boot,
- * ele usa a classe interceptada (e sai do bundle inicial).
+ * ele usa a classe interceptada (e sai do bundle inicial). Por isso espera o `backendReady()`.
  */
 export async function createSocket(token: string | null): Promise<Socket> {
+  await backendReady()
   const { io } = await import('socket.io-client')
   return io(location.origin, {
     path: '/socket.io',

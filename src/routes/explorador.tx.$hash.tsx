@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '@/app/page-head'
 import type { Order } from '@/contracts'
 import { useSession } from '@/features/auth/use-session'
 import { NETWORK_LABELS } from '@/features/catalog/components/filters-panel'
@@ -12,6 +13,8 @@ import { RetryBox } from '@/shared/ui/retry-box'
 import { Skeleton } from '@/shared/ui/skeleton'
 
 export const Route = createFileRoute('/explorador/tx/$hash')({
+  head: () =>
+    pageHead('Transação', 'Detalhes da transação de um pedido seu: status, valores e rede.'),
   component: ExplorerPage,
 })
 

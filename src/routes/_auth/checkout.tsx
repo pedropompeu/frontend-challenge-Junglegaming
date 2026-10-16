@@ -4,6 +4,7 @@ import { Link, Navigate, createFileRoute, redirect, useNavigate } from '@tanstac
 import { useForm, useWatch, type FieldPath, type FieldPathValue } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { pageHead } from '@/app/page-head'
 import {
   QuoteSchema,
   type CreateOrderBody,
@@ -66,6 +67,8 @@ import { RetryBox } from '@/shared/ui/retry-box'
 import { Skeleton } from '@/shared/ui/skeleton'
 
 export const Route = createFileRoute('/_auth/checkout')({
+  head: () =>
+    pageHead('Pagamento', 'Escolha a carteira e a rede e confirme a compra dos seus NFTs em ETH.'),
   // Pedido enviado e ainda sem resposta da carteira: o checkout leva a ele, não a outra compra.
   beforeLoad: async ({ context }) => {
     const userId = getStoredSession()?.userId

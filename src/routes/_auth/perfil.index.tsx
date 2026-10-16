@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '@/app/page-head'
 import type { User } from '@/contracts'
 import { useSession } from '@/features/auth/use-session'
 import { ProfileForm } from '@/features/profile/components/profile-form'
@@ -8,6 +9,7 @@ import { RetryBox } from '@/shared/ui/retry-box'
 import { Skeleton } from '@/shared/ui/skeleton'
 
 export const Route = createFileRoute('/_auth/perfil/')({
+  head: () => pageHead('Meu perfil', 'Seu perfil de colecionador na Kurio: nome, avatar e senha.'),
   component: ProfilePage,
 })
 

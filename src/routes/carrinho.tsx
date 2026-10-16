@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
+import { pageHead } from '@/app/page-head'
 import { useSession } from '@/features/auth/use-session'
 import { AlsoViewed } from '@/features/cart/components/also-viewed'
 import { CartSummary } from '@/features/cart/components/cart-summary'
@@ -14,6 +15,11 @@ import { TitleBar } from '@/shared/layout/title-bar'
 import { RetryBox } from '@/shared/ui/retry-box'
 
 export const Route = createFileRoute('/carrinho')({
+  head: () =>
+    pageHead(
+      'Carrinho',
+      'Revise os NFTs do seu carrinho, aplique um cupom e veja o total em ETH antes de pagar.',
+    ),
   component: CartPage,
 })
 

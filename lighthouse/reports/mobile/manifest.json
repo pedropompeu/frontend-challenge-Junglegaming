@@ -1,0 +1,74 @@
+[
+  {
+    "url": "http://localhost:4176/",
+    "isRepresentativeRun": false,
+    "htmlPath": "localhost--2026_10_16_13_22_56.report.html",
+    "jsonPath": "localhost--2026_10_16_13_22_56.report.json",
+    "summary": {
+      "performance": 0.77,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4176/",
+    "isRepresentativeRun": false,
+    "htmlPath": "localhost--2026_10_16_13_23_25.report.html",
+    "jsonPath": "localhost--2026_10_16_13_23_25.report.json",
+    "summary": {
+      "performance": 0.76,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4176/nft/nft_neon-vessel",
+    "isRepresentativeRun": false,
+    "htmlPath": "localhost-nft_nft_neon_vessel-2026_10_16_13_23_39.report.html",
+    "jsonPath": "localhost-nft_nft_neon_vessel-2026_10_16_13_23_39.report.json",
+    "summary": {
+      "performance": 0.77,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4176/nft/nft_neon-vessel",
+    "isRepresentativeRun": false,
+    "htmlPath": "localhost-nft_nft_neon_vessel-2026_10_16_13_24_04.report.html",
+    "jsonPath": "localhost-nft_nft_neon_vessel-2026_10_16_13_24_04.report.json",
+    "summary": {
+      "performance": 0.8,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4176/",
+    "isRepresentativeRun": true,
+    "htmlPath": "localhost--2026_10_16_13_23_11.report.html",
+    "jsonPath": "localhost--2026_10_16_13_23_11.report.json",
+    "summary": {
+      "performance": 0.76,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "http://localhost:4176/nft/nft_neon-vessel",
+    "isRepresentativeRun": true,
+    "htmlPath": "localhost-nft_nft_neon_vessel-2026_10_16_13_23_51.report.html",
+    "jsonPath": "localhost-nft_nft_neon_vessel-2026_10_16_13_23_51.report.json",
+    "summary": {
+      "performance": 0.79,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  }
+]

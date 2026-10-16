@@ -5,6 +5,27 @@ test('smoke: app boots with title', async ({ page }) => {
   await expect(page).toHaveTitle(/Kurio/)
 })
 
+test('each screen has its own title and a single meta description', async ({ page }) => {
+  const screens: Array<[string, string]> = [
+    ['/', 'Kurio — Marketplace de NFTs'],
+    ['/nft/nft_neon-vessel', 'Neon Vessel — Kurio'],
+    ['/carrinho', 'Carrinho — Kurio'],
+    ['/entrar', 'Entrar — Kurio'],
+    ['/cadastro', 'Criar conta — Kurio'],
+  ]
+  const descriptions = new Set<string | null>()
+  for (const [path, title] of screens) {
+    await page.goto(path)
+    await expect(page).toHaveTitle(title)
+    const meta = page.locator('meta[name="description"]')
+    await expect(meta).toHaveCount(1)
+    descriptions.add(await meta.getAttribute('content'))
+  }
+  // Uma descrição por tela, e a do detalhe fala do próprio NFT.
+  expect(descriptions.size).toBe(screens.length)
+  expect([...descriptions][1]).toContain('Neon Vessel')
+})
+
 test('smoke: mock control is available', async ({ page }) => {
   await page.goto('/')
   await expect

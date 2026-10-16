@@ -5,6 +5,7 @@ import { routeTree } from './routeTree.gen'
 import { createQueryClient } from './app/query-client'
 import { Providers } from './app/providers'
 import { parseSearch, stringifySearch } from './app/search-serializer'
+import { setBackendReady } from './shared/lib/backend-ready'
 import './index.css'
 
 const queryClient = createQueryClient()
@@ -24,9 +25,13 @@ declare module '@tanstack/react-router' {
 }
 
 if (import.meta.env.VITE_ENABLE_MOCKS === 'true') {
-  const { enableMocks } = await import('@/mocks/browser')
-  await enableMocks()
+  // O shell abre já, enquanto o backend simulado sobe; rede e socket esperam por ele.
+  setBackendReady(import('@/mocks/browser').then(({ enableMocks }) => enableMocks()))
 }
+
+// O index.html traz título e descrição para quem não executa JS (prévias de link). Com o app
+// no ar, vale o `head` de cada rota; as tags estáticas saem para não haver duas.
+document.head.querySelectorAll('title, meta[name="description"]').forEach((tag) => tag.remove())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

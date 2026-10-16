@@ -1,4 +1,5 @@
 import {
+  HeadContent,
   Link,
   Outlet,
   createRootRouteWithContext,
@@ -7,18 +8,24 @@ import {
 } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
 import { lazy, Suspense } from 'react'
+import { pageHead, SITE_DESCRIPTION } from '@/app/page-head'
 import { SessionProvider } from '@/features/auth/session-provider'
 import { RealtimeProvider } from '@/features/realtime/realtime-provider'
 import { errorMessage } from '@/shared/lib/api-error'
+import { backendReady } from '@/shared/lib/backend-ready'
 import { SiteLayout } from '@/shared/layout/site-layout'
 
 export type RouterContext = { queryClient: QueryClient }
 
 // Painel de cenários do backend simulado: fica fora do bundle quando os mocks estão desligados.
+// Lê o banco simulado direto, então só aparece depois que ele subiu.
 const ScenarioPanel =
-  import.meta.env.VITE_ENABLE_MOCKS === 'true' ? lazy(() => import('@/mocks/scenario-panel')) : null
+  import.meta.env.VITE_ENABLE_MOCKS === 'true'
+    ? lazy(() => backendReady().then(() => import('@/mocks/scenario-panel')))
+    : null
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  head: () => pageHead(null, SITE_DESCRIPTION),
   component: RootComponent,
   notFoundComponent: NotFound,
   errorComponent: RootError,
@@ -27,6 +34,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootComponent() {
   return (
     <SessionProvider>
+      <HeadContent />
       <RealtimeProvider>
         <SiteLayout>
           <Outlet />

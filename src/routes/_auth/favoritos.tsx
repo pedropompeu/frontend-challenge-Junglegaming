@@ -1,6 +1,7 @@
 import { useQueries } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { HeartIcon } from 'lucide-react'
+import { pageHead } from '@/app/page-head'
 import { NftCard } from '@/features/catalog/components/nft-card'
 import { NftCardSkeleton } from '@/features/catalog/components/nft-card-skeleton'
 import { useFavorites } from '@/features/favorites/queries'
@@ -9,6 +10,7 @@ import { toNftSummary } from '@/features/nft/summary'
 import { errorMessage } from '@/shared/lib/api-error'
 
 export const Route = createFileRoute('/_auth/favoritos')({
+  head: () => pageHead('Favoritos', 'Os NFTs que você marcou como favoritos na Kurio.'),
   component: FavoritesPage,
 })
 

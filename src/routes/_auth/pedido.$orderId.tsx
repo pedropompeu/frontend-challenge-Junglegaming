@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '@/app/page-head'
 import { useSession } from '@/features/auth/use-session'
 import { OrderStatus } from '@/features/orders/components/order-status'
 import { orderQuery } from '@/features/orders/queries'
@@ -10,6 +11,7 @@ import { RetryBox } from '@/shared/ui/retry-box'
 import { Skeleton } from '@/shared/ui/skeleton'
 
 export const Route = createFileRoute('/_auth/pedido/$orderId')({
+  head: () => pageHead('Pedido', 'Acompanhe em tempo real o status do seu pedido de NFTs.'),
   component: OrderPage,
 })
 

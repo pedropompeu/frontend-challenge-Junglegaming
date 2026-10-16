@@ -4,6 +4,7 @@ import { Link, createFileRoute, notFound, useCanGoBack, useRouter } from '@tanst
 import { ChevronLeftIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { pageHead } from '@/app/page-head'
 import type { Edition } from '@/contracts'
 import {
   availabilityMessage,
@@ -29,12 +30,16 @@ export const Route = createFileRoute('/nft/$nftId')({
   validateSearch: detailSearchSchema,
   loader: async ({ context, params }) => {
     try {
-      await context.queryClient.ensureQueryData(nftDetailQuery(params.nftId))
+      const nft = await context.queryClient.ensureQueryData(nftDetailQuery(params.nftId))
+      // Só o que o `head` usa: a tela lê a query, que o tempo real mantém atualizada.
+      return { name: nft.name, description: nft.description }
     } catch (error) {
       if (isApiError(error) && error.code === 'NOT_FOUND') throw notFound()
       throw error
     }
   },
+  // Sem dados (carregando ou inexistente), vale o `head` da raiz.
+  head: ({ loaderData }) => (loaderData ? pageHead(loaderData.name, loaderData.description) : {}),
   pendingComponent: NftDetailSkeleton,
   notFoundComponent: NftNotFound,
   component: NftDetailPage,
