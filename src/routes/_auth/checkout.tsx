@@ -159,6 +159,9 @@ type Mode =
   | { kind: 'uncertain'; quote: Quote; body: CreateOrderBody }
 
 const VALUES_CHANGED = 'Valores atualizados — revise antes de confirmar'
+const STOCK_CHANGED = 'Um item não tem mais estoque suficiente — ajuste o carrinho para continuar'
+const noticeBox =
+  'flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-coral/60 px-4 py-3 text-sm'
 
 function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
   const queryClient = useQueryClient()
@@ -221,14 +224,18 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
       : mode.kind === 'reviewing'
         ? (latest ?? mode.quote)
         : latest
-  // Mesmos valores revisados: envia a cotação mais recente (o id muda a cada recálculo).
-  const confirmQuote = mode.kind === 'reviewing' && !changed ? (latest ?? mode.quote) : null
-
   const order = useMutation({
     mutationFn: ({ body, key }: { body: CreateOrderBody; key: string }) => createOrder(body, key),
     // Mesma chave: repetir é seguro, mas só quando o servidor disse que a falha é passageira.
     retry: (failures, error) => isApiError(error) && error.code === 'TRANSIENT' && failures < 2,
   })
+  // Estoque que acabou durante a revisão: a cotação revisada não vale mais e o ajuste é no
+  // carrinho. Depois do envio, quem consome o estoque é o próprio pedido.
+  const stockBlocked =
+    mode.kind === 'reviewing' && overStock && !order.isPending && !order.isSuccess
+  // Mesmos valores revisados: envia a cotação mais recente (o id muda a cada recálculo).
+  const confirmQuote =
+    mode.kind === 'reviewing' && !changed && !stockBlocked ? (latest ?? mode.quote) : null
   const sending = useRef(false)
 
   const reviewHeading = useRef<HTMLHeadingElement>(null)
@@ -461,8 +468,15 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
               onEdit={edit}
               editDisabled={mode.kind === 'uncertain' || order.isPending}
               notice={
-                changed ? (
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-coral/60 px-4 py-3 text-sm">
+                stockBlocked ? (
+                  <div className={noticeBox}>
+                    <p className="font-bold text-coral">{STOCK_CHANGED}</p>
+                    <Link to="/carrinho" className="font-bold text-primary-hi hover:underline">
+                      Voltar ao carrinho
+                    </Link>
+                  </div>
+                ) : changed ? (
+                  <div className={noticeBox}>
                     <p className="font-bold text-coral">{VALUES_CHANGED}</p>
                     <button
                       type="button"
