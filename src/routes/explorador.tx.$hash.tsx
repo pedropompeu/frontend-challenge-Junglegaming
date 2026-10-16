@@ -43,7 +43,7 @@ function ExplorerPage() {
         <Link
           to="/entrar"
           search={{ redirect: `/explorador/tx/${hash}` }}
-          className="mt-6 inline-flex h-11 items-center rounded-md bg-gradient-to-r from-primary-hi to-primary px-6 font-bold text-ink"
+          className="mt-6 inline-flex h-11 items-center rounded-md cta-fill px-6 font-bold text-ink"
         >
           Entrar
         </Link>

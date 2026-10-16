@@ -103,7 +103,7 @@ export const Route = createFileRoute('/_auth/checkout')({
 const FORM_ID = 'checkout-form'
 
 const primaryButton =
-  'h-14 w-full rounded-full bg-gradient-to-r from-primary-hi to-primary font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:rounded-md'
+  'h-14 w-full rounded-full cta-fill font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:rounded-md'
 
 function CheckoutShell({ children }: { children: ReactNode }) {
   return (

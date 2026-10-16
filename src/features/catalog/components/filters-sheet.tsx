@@ -20,7 +20,7 @@ export function FiltersSheet({ resultCount }: { resultCount?: number }) {
   const { search, setFilters, clearFilters } = useCatalogNavigation()
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="grid size-12 shrink-0 place-items-center rounded-[14px] bg-gradient-to-br from-primary-hi to-primary text-ink">
+      <SheetTrigger className="grid size-12 shrink-0 place-items-center rounded-[14px] bg-[linear-gradient(to_bottom_right,rgb(210_138_76/0.45),var(--primary))] text-ink">
         <SlidersHorizontalIcon aria-hidden="true" className="size-5" />
         <span className="sr-only">Filtros</span>
       </SheetTrigger>

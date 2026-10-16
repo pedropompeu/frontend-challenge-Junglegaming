@@ -126,3 +126,12 @@
     padding-inline: 1.5rem;
   }
 }
+
+/* CTA de compra do Figma: #D28A4C sólido no desktop; no mobile, o frame esmaece até 80%. */
+@utility cta-fill {
+  background-image: linear-gradient(to right, var(--primary), rgb(210 138 76 / 0.8));
+  @variant md {
+    background-color: var(--primary);
+    background-image: none;
+  }
+}

@@ -75,7 +75,7 @@ export function PurchaseBar({
           type="button"
           disabled={blocked || isPending}
           onClick={onBuy}
-          className="h-14 flex-1 rounded-full bg-gradient-to-r from-primary-hi to-primary px-6 font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:flex-none md:rounded-md md:px-8 md:text-sm md:uppercase"
+          className="h-14 flex-1 rounded-full cta-fill px-6 font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:flex-none md:rounded-md md:px-8 md:text-sm md:uppercase"
         >
           {soldOut ? 'Edição indisponível' : 'Comprar NFT'}
         </button>

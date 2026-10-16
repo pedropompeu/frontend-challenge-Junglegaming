@@ -112,7 +112,7 @@ function CartPage() {
               type="button"
               disabled={!canCheckout}
               onClick={() => void navigate({ to: '/checkout' })}
-              className="mt-6 h-14 w-full rounded-full bg-gradient-to-r from-primary-hi to-primary font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:rounded-md"
+              className="mt-6 h-14 w-full rounded-full cta-fill font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:rounded-md"
             >
               Conectar e finalizar
             </button>

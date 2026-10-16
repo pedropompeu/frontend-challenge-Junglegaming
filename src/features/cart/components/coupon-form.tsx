@@ -80,7 +80,7 @@ export function CouponForm({ appliedCode, onRemove, className }: CouponFormProps
         <button
           type="submit"
           disabled={apply.isPending}
-          className="h-11 rounded-r-full bg-gradient-to-r from-primary-hi to-primary px-6 text-sm font-bold text-ink disabled:opacity-60 md:rounded-r-md"
+          className="h-11 rounded-r-full bg-[linear-gradient(to_right,rgb(210_138_76/0.54),var(--primary))] px-6 text-sm font-bold text-ink disabled:opacity-60 md:rounded-r-md md:bg-primary md:bg-none"
         >
           {apply.isPending ? 'Aplicando…' : 'Aplicar'}
         </button>

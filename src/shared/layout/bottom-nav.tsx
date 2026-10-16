@@ -46,7 +46,7 @@ export function BottomNav() {
           </Link>
         </li>
         <li className="-mt-10">
-          <Unavailable className="grid size-16 place-items-center rounded-full border-4 border-ink bg-gradient-to-br from-primary-hi to-primary text-ink shadow-lg">
+          <Unavailable className="grid size-16 place-items-center rounded-full border-4 border-ink bg-[linear-gradient(to_bottom,rgb(210_138_76/0.4),var(--primary))] text-ink shadow-lg">
             <ScanLineIcon aria-hidden="true" className="size-7" />
             <span className="sr-only">Escanear</span>
           </Unavailable>

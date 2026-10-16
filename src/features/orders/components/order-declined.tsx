@@ -25,7 +25,7 @@ export function OrderDeclined({ order }: { order: Order }) {
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
         <Link
           to="/carrinho"
-          className="inline-flex h-11 items-center rounded-md bg-gradient-to-r from-primary-hi to-primary px-6 font-bold text-ink"
+          className="inline-flex h-11 items-center rounded-md cta-fill px-6 font-bold text-ink"
         >
           Voltar ao carrinho
         </Link>
