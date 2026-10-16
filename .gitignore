@@ -20,3 +20,4 @@ blob-report/
 .env.local
 .netlify/
 *.tsbuildinfo
+.vitest/

@@ -47,3 +47,35 @@ test('smoke: mock socket.io server handshakes and pushes nft.updated', async ({ 
   expect(frames[1]).toMatch(/^40/)
   expect(frames[2]).toMatch(/^42\["nft\.updated",\{"eventId":"evt_/)
 })
+
+test('layout has no horizontal overflow at 390/768/1440', async ({ page }) => {
+  for (const width of [390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    await expect(page.getByRole('contentinfo')).toBeAttached()
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    ).toBe(true)
+  }
+})
+
+test('unknown route shows 404', async ({ page }) => {
+  await page.goto('/nao-existe')
+  await expect(page.getByRole('heading', { name: /página não encontrada/i })).toBeVisible()
+  await expect(page.getByRole('main').getByRole('link', { name: /início/i })).toBeVisible()
+})
+
+test('out-of-scope nav is marked unavailable', async ({ page }, testInfo) => {
+  await page.goto('/')
+  // O mobile do Figma não tem a nav do topo; lá o item fora de escopo é o Scan da bottom nav.
+  const target =
+    testInfo.project.name === 'chromium-mobile'
+      ? page.getByRole('navigation', { name: 'Navegação inferior' }).getByRole('button', {
+          name: 'Escanear',
+        })
+      : page.getByRole('link', { name: 'Criadores' })
+  await expect(target).toHaveAttribute('aria-disabled', 'true')
+  // O Playwright não clica em `aria-disabled` (semântica correta); o usuário ainda pode clicar.
+  await target.click({ force: true })
+  await expect(page.getByText('Indisponível nesta demonstração')).toBeVisible()
+})
