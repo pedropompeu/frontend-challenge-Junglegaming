@@ -74,10 +74,10 @@ export function AccountMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <a href="/favoritos">
+          <Link to="/favoritos">
             <HeartIcon aria-hidden="true" />
             Favoritos
-          </a>
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => void signOut()}>

@@ -5,6 +5,7 @@ import { ChevronLeftIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import type { Edition } from '@/contracts'
+import { FavoriteButton } from '@/features/favorites/components/favorite-button'
 import { EditionPicker } from '@/features/nft/components/edition-picker'
 import { MoreFromCollection } from '@/features/nft/components/more-from-collection'
 import { NftDetailSkeleton } from '@/features/nft/components/nft-detail-skeleton'
@@ -74,7 +75,7 @@ function NftDetailPage() {
         </nav>
         <div className="grid gap-0 md:mt-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:gap-10">
           <div className="relative -mx-4 md:mx-0">
-            <MobileTopBar />
+            <MobileTopBar nftId={nft.id} name={nft.name} />
             <NftGallery images={nft.images} name={nft.name} className="px-4 pt-16 md:p-0" />
           </div>
           <div className="relative z-10 -mx-4 -mt-10 rounded-t-[32px] bg-surface px-6 pt-8 pb-6 md:mx-0 md:mt-0 md:rounded-none md:bg-transparent md:p-0">
@@ -92,6 +93,14 @@ function NftDetailPage() {
                 onQuantityChange={setQuantity}
                 onBuy={addToCart}
                 onAddToCart={addToCart}
+                favoriteSlot={
+                  <FavoriteButton
+                    nftId={nft.id}
+                    name={nft.name}
+                    className="grid size-11 place-items-center rounded-md border border-line-strong bg-surface-2 text-primary-hi transition-colors hover:bg-line"
+                    iconClassName="size-5"
+                  />
+                }
               />
             </NftInfo>
           </div>
@@ -105,8 +114,8 @@ function NftDetailPage() {
   )
 }
 
-/** Voltar (e, na Task 14, favoritar) sobre a imagem: o mobile do detalhe não tem header. */
-function MobileTopBar() {
+/** Voltar e favoritar sobre a imagem: o mobile do detalhe não tem header. */
+function MobileTopBar({ nftId, name }: { nftId: string; name: string }) {
   const router = useRouter()
   const canGoBack = useCanGoBack()
   const back =
@@ -127,6 +136,7 @@ function MobileTopBar() {
           <ChevronLeftIcon aria-hidden="true" className="size-5" />
         </Link>
       )}
+      <FavoriteButton nftId={nftId} name={name} className={back} iconClassName="size-5" />
     </div>
   )
 }

@@ -1,8 +1,9 @@
 import type { ComponentType, ReactNode, SVGProps } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Unavailable } from '@/shared/ui/unavailable'
 import { FacebookIcon, InstagramIcon, LinkedinIcon, TwitterIcon, YoutubeIcon } from './social-icons'
 
-type FooterLink = { label: string; href?: string }
+type FooterLink = { label: string; href?: '/perfil' | '/favoritos' }
 
 const COLUMNS: Array<{ title: string; links: FooterLink[] }> = [
   {
@@ -49,9 +50,9 @@ function FooterAnchor({ link }: { link: FooterLink }) {
   const className = 'text-sm text-cream hover:text-primary-hi'
   if (link.href) {
     return (
-      <a href={link.href} className={className}>
+      <Link to={link.href} className={className}>
         {link.label}
-      </a>
+      </Link>
     )
   }
   return (

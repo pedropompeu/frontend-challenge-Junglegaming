@@ -1,14 +1,11 @@
 import { Link } from '@tanstack/react-router'
-import { HeartIcon } from 'lucide-react'
 import type { NftSummary } from '@/contracts'
+import { FavoriteButton } from '@/features/favorites/components/favorite-button'
 import { cn } from '@/shared/lib/utils'
 import { EthPrice } from '@/shared/ui/eth-price'
 
 type NftCardProps = {
   nft: NftSummary
-  isFavorite?: boolean
-  /** Sem handler, o coração não aparece (favoritos chegam na Task 14). */
-  onToggleFavorite?: (nft: NftSummary) => void
   /** Imagens acima da dobra carregam com prioridade (LCP). */
   priority?: boolean
   className?: string
@@ -23,13 +20,7 @@ function originalOfCheapest(nft: NftSummary): string | null {
   return nft.editions.find((e) => e.price === nft.fromPrice)?.originalPrice ?? null
 }
 
-export function NftCard({
-  nft,
-  isFavorite = false,
-  onToggleFavorite,
-  priority = false,
-  className,
-}: NftCardProps) {
+export function NftCard({ nft, priority = false, className }: NftCardProps) {
   const image = nft.images[0]!
   return (
     <article className={cn('group relative flex flex-col', className)}>
@@ -51,17 +42,11 @@ export function NftCard({
             RARO
           </span>
         ) : null}
-        {onToggleFavorite ? (
-          <button
-            type="button"
-            aria-pressed={isFavorite}
-            aria-label={isFavorite ? `Remover ${nft.name} dos favoritos` : `Favoritar ${nft.name}`}
-            onClick={() => onToggleFavorite(nft)}
-            className="absolute top-3 right-3 z-10 grid size-8 place-items-center rounded-full bg-ink/80 text-primary-hi transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100 md:aria-pressed:opacity-100"
-          >
-            <HeartIcon aria-hidden="true" className={cn('size-4', isFavorite && 'fill-current')} />
-          </button>
-        ) : null}
+        <FavoriteButton
+          nftId={nft.id}
+          name={nft.name}
+          className="absolute top-3 right-3 z-10 grid size-8 place-items-center rounded-full bg-ink/80 text-primary-hi transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100 md:aria-pressed:opacity-100"
+        />
       </div>
       <div className="mt-3 px-2 md:px-0">
         <h3 className="text-[15px] leading-tight">

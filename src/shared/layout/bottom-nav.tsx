@@ -56,12 +56,10 @@ export function BottomNav() {
           </Link>
         </li>
         <li>
-          <NavAnchor
-            href="/favoritos"
-            label="Favoritos"
-            Icon={HeartIcon}
-            active={pathname.startsWith('/favoritos')}
-          />
+          <Link to="/favoritos" className={item}>
+            <HeartIcon aria-hidden="true" className="size-6" />
+            <span className="sr-only">Favoritos</span>
+          </Link>
         </li>
         <li className="-mt-10">
           <Unavailable className="grid size-16 place-items-center rounded-full border-4 border-ink bg-gradient-to-br from-primary-hi to-primary text-ink shadow-lg">
@@ -78,12 +76,10 @@ export function BottomNav() {
           />
         </li>
         <li>
-          <NavAnchor
-            href="/perfil"
-            label="Perfil"
-            Icon={UserRoundIcon}
-            active={pathname.startsWith('/perfil')}
-          />
+          <Link to="/perfil" className={item}>
+            <UserRoundIcon aria-hidden="true" className="size-6" />
+            <span className="sr-only">Perfil</span>
+          </Link>
         </li>
       </ul>
     </nav>
