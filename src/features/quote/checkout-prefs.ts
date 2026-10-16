@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react'
 import { NetworkSchema, type Network } from '@/contracts'
-import { readJson, writeJson } from '@/shared/lib/storage'
+import { readJson, removeItem, writeJson } from '@/shared/lib/storage'
 
 export type CheckoutPrefs = { couponCode: string | null; network: Network }
 
@@ -33,6 +33,18 @@ export function setCheckoutPrefs(ownerKey: string, patch: Partial<CheckoutPrefs>
   cache.set(ownerKey, next)
   writeJson('local', keyOf(ownerKey), next)
   for (const listener of listeners) listener()
+}
+
+/**
+ * No login, o cupom aplicado como visitante passa ao usuário, junto com o carrinho mesclado.
+ * Ele vale sobre um cupom antigo do usuário: é o que estava na tela antes de entrar.
+ * A rede continua a do usuário (o visitante não chega ao checkout para escolher uma).
+ */
+export function moveGuestCoupon(guestKey: string, userKey: string): void {
+  const guest = readJson('local', keyOf(guestKey), isPrefs)
+  cache.delete(guestKey)
+  removeItem('local', keyOf(guestKey))
+  if (guest?.couponCode) setCheckoutPrefs(userKey, { couponCode: guest.couponCode })
 }
 
 function subscribe(listener: () => void) {

@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import type { LoginBody, RegisterBody, Session } from '@/contracts'
+import { moveGuestCoupon } from '@/features/quote/checkout-prefs'
 import { announce } from '@/shared/lib/announce'
 import { isApiError } from '@/shared/lib/api-error'
 import { getGuestId, rotateGuestId } from '@/shared/lib/guest'
@@ -83,6 +84,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       } catch {
         // O carrinho de visitante não é crítico para entrar.
       }
+      const guest = getGuestId()
+      moveGuestCoupon(ownerKeyOf(null, guest), ownerKeyOf(session.user.id, guest))
       setGuestId(rotateGuestId())
       queryClient.setQueryData(qk.session(), {
         user: session.user,

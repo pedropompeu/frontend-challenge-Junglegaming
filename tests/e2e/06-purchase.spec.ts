@@ -1,6 +1,6 @@
 import type { Order } from '../../src/contracts'
 import { formatEth } from '../../src/shared/lib/money'
-import { cartItem, main, trackQuotes } from './cart-helpers'
+import { addToCart, cartItem, main, trackQuotes } from './cart-helpers'
 import {
   ANA_ADDRESS,
   connectWallet,
@@ -107,4 +107,20 @@ test('form validation and review before submit', async ({ page }) => {
   await expect(displayName).toHaveValue('Ana S.')
   await expect(note).toHaveValue('Presente para minha irmã')
   expect(posts.count).toBe(0)
+})
+
+test('coupon applied as guest survives login to checkout', async ({ page }) => {
+  const quotes = trackQuotes(page)
+  await addToCart(page, 'nft_neon-vessel')
+  await page.goto('/carrinho')
+  await main(page).getByLabel('Código promocional').fill('kurio10')
+  await main(page).getByRole('button', { name: 'Aplicar' }).click()
+  await expect(main(page).getByText(/KURIO10 aplicado/)).toBeVisible()
+
+  await page.getByRole('button', { name: 'Conectar e finalizar' }).click()
+  await expect(page).toHaveURL(/\/entrar/)
+  await login(page, 'ana@kurio.test')
+  await expect(page).toHaveURL(/\/checkout$/)
+  await expect(main(page).getByText(/KURIO10 aplicado/)).toBeVisible()
+  await expect.poll(() => quotes.last?.coupon?.code).toBe('KURIO10')
 })
