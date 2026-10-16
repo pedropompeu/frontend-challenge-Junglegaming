@@ -21,7 +21,7 @@ export function CartTable({ items, quote }: CartTableProps) {
         <span className={HEAD}>Quantidade</span>
         <span className={HEAD}>Total</span>
       </div>
-      <ul aria-label="Itens do carrinho" className="grid gap-3 md:mt-3">
+      <ul aria-label="Itens do carrinho" className="grid gap-5 md:mt-3 md:gap-3">
         {items.map((item) => (
           <CartItemRow
             key={item.id}
@@ -36,13 +36,13 @@ export function CartTable({ items, quote }: CartTableProps) {
 
 export function CartTableSkeleton() {
   return (
-    <div aria-hidden="true" className="grid gap-3 md:mt-[42px]">
+    <div aria-hidden="true" className="grid gap-5 md:mt-[42px] md:gap-3">
       {Array.from({ length: 3 }, (_, i) => (
         <div
           key={i}
-          className="flex gap-3 overflow-hidden rounded-[20px] bg-surface md:rounded-none"
+          className="mx-1 flex gap-[9px] overflow-hidden rounded-[14px] bg-surface shadow-card md:mx-0 md:gap-3 md:rounded-none md:shadow-none"
         >
-          <SkeletonShimmer className="size-24 rounded-none md:size-[70px]" />
+          <SkeletonShimmer className="size-[100px] rounded-none md:size-[70px]" />
           <div className="flex flex-1 flex-col justify-center gap-2 py-3">
             <SkeletonShimmer className="h-4 w-1/2" />
             <SkeletonShimmer className="h-3 w-1/3" />

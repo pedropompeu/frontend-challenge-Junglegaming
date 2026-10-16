@@ -21,14 +21,17 @@ const pill = 'border-ink bg-primary text-ink shadow-step hover:opacity-90'
 
 const looks = {
   detail: {
+    group: 'gap-3',
     button: `h-[30px] w-5 md:h-[49.5px] md:w-[33px] ${pill}`,
     icon: 'size-4 md:size-6.5',
     value: 'text-lg font-medium md:text-xl md:font-normal',
   },
-  // O card mobile do frame usa círculos `surface-2` (A-035); a tabela desktop, as pílulas.
+  // O card mobile do frame usa círculos `surface-2` de 23 px + o contorno centrado (A-035), com 57 px
+  // entre os centros; a tabela desktop, as pílulas.
   cart: {
+    group: 'gap-1 md:gap-3',
     button:
-      'size-7 border-line bg-surface-2 text-cream hover:bg-line md:h-[30px] md:w-5 md:border-ink md:bg-primary md:text-ink md:shadow-step md:hover:bg-primary md:hover:opacity-90',
+      'size-6 border-line bg-surface-2 text-cream hover:bg-line md:h-[30px] md:w-5 md:border-ink md:bg-primary md:text-ink md:shadow-step md:hover:bg-primary md:hover:opacity-90',
     icon: 'size-4',
     value: 'md:text-[17px]',
   },
@@ -44,13 +47,13 @@ export function QuantityStepper({
   look,
   className,
 }: QuantityStepperProps) {
-  const { button, icon, value: valueClass } = looks[look]
+  const { group, button, icon, value: valueClass } = looks[look]
   const clamp = (n: number) => Math.min(Math.max(n, min), Math.max(min, max))
   return (
     <div
       role="group"
       aria-label={label}
-      className={cn('inline-flex items-center gap-3', className)}
+      className={cn('inline-flex items-center', group, className)}
     >
       <button
         type="button"

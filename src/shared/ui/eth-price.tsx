@@ -14,13 +14,21 @@ type EthPriceProps = {
   original?: string | null
   size?: keyof typeof SIZES
   className?: string
+  /** Classes do valor atual, para um tamanho que muda com o breakpoint. */
+  amountClassName?: string
 }
 
 /**
  * Preço em ETH. O texto visível fica `aria-hidden` e o leitor de tela recebe a frase
  * completa ("1.19 ETH, antes 1.5 ETH"), já que um `span` genérico não pode ter `aria-label`.
  */
-export function EthPrice({ value, original, size = 'md', className }: EthPriceProps) {
+export function EthPrice({
+  value,
+  original,
+  size = 'md',
+  className,
+  amountClassName,
+}: EthPriceProps) {
   const current = formatEth(value)
   const before = original ? formatEth(original) : null
   return (
@@ -28,7 +36,7 @@ export function EthPrice({ value, original, size = 'md', className }: EthPricePr
       <span className="sr-only">{before ? `${current}, antes ${before}` : current}</span>
       <span
         aria-hidden="true"
-        className={cn('font-bold whitespace-nowrap text-primary-hi', SIZES[size])}
+        className={cn('font-bold whitespace-nowrap text-primary-hi', SIZES[size], amountClassName)}
       >
         {current}
       </span>

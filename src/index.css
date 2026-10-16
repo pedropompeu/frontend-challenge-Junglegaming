@@ -36,6 +36,8 @@
   /* Filtros dos frames mobile: #0A0604 a 45%; o blur do CSS é o dobro do stdDeviation do SVG. */
   --shadow-dock: 0 -10px 30px rgb(10 6 4 / 0.45);
   --shadow-float: 0 0 20px rgb(10 6 4 / 0.45);
+  /* Cards do carrinho e o campo de cupom: dy 6 e stdDeviation 10. */
+  --shadow-card: 0 6px 20px rgb(10 6 4 / 0.45);
   /* Botões do stepper: ink a 15%, com o erode de 2 do frame como spread negativo. */
   --shadow-step: 0 4px 12px -2px rgb(20 13 10 / 0.15);
 

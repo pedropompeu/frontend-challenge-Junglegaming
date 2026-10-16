@@ -495,3 +495,42 @@ test('mobile purchase bar uses the frame 40px sheet, 60px CTA and khaki cart', a
     0,
   )
 })
+
+test('mobile cart items are the frame 100px cards with square art and the stepper by the price', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'o card é do carrinho mobile; o desktop é a tabela')
+  await addToCart(page, 'nft_neon-vessel')
+  await addToCart(page, 'nft_eco-dourado')
+  await page.goto('/carrinho')
+  const cards = page.getByRole('list', { name: 'Itens do carrinho' }).locator(':scope > li')
+  await expect(cards).toHaveCount(2)
+  const card = cards.first()
+  // "Item 1" do frame: x 28, 358×100, rx 14, sombra dy 6 / blur 20 a 45%, 20 px até o próximo.
+  const cardEdges = await edges(page, card)
+  expect(cardEdges.left).toBeCloseTo(28, 0)
+  expect(cardEdges.right).toBeCloseTo(28, 0)
+  const box = (await card.boundingBox())!
+  expect(box.height).toBeCloseTo(100, 0)
+  await expect(card).toHaveCSS('border-top-left-radius', '14px')
+  // O Tailwind antepõe as camadas vazias de ring: a do frame é a última.
+  await expect(card).toHaveCSS('box-shadow', /rgba\(10, 6, 4, 0\.45\) 0px 6px 20px 0px$/)
+  expect((await cards.nth(1).boundingBox())!.y - (box.y + box.height)).toBeCloseTo(20, 0)
+  // Arte quadrada de 100 px e preço 18 bold.
+  const art = (await card.locator('img').boundingBox())!
+  expect([art.x, art.width, art.height]).toEqual([box.x, 100, 100])
+  const price = card.locator('span[aria-hidden="true"]').filter({ hasText: 'ETH' }).first()
+  await expect(price).toHaveCSS('font-size', '18px')
+  // Stepper em círculos de 24 px (23 + o contorno centrado), a 16 px da borda e na linha do preço.
+  const plus = card.getByRole('button', { name: 'Aumentar quantidade' })
+  const plusBox = (await plus.boundingBox())!
+  expect([plusBox.width, plusBox.height]).toEqual([24, 24])
+  expect(box.x + box.width - (plusBox.x + plusBox.width)).toBeCloseTo(16, 0)
+  const priceBox = (await price.boundingBox())!
+  expect(plusBox.y + 12).toBeCloseTo(priceBox.y + priceBox.height / 2, 0)
+  // A lixeira continua em todos os itens, acima do stepper.
+  const trash = (await card
+    .getByRole('button', { name: 'Remover Neon Vessel do carrinho' })
+    .boundingBox())!
+  expect(trash.y + trash.height).toBeLessThanOrEqual(plusBox.y)
+})
