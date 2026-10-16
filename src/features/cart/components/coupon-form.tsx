@@ -64,7 +64,8 @@ export function CouponForm({ appliedCode, onRemove, className }: CouponFormProps
       <label htmlFor={`${id}-code`} className="mb-2 block text-sm font-bold max-md:sr-only">
         Código promocional
       </label>
-      <div className="flex">
+      {/* Mobile: a pílula de 50 px do frame com o "Aplicar" sobre a ponta direita. Desktop: campo + botão. */}
+      <div className="relative flex">
         <input
           id={`${id}-code`}
           name="couponCode"
@@ -75,12 +76,12 @@ export function CouponForm({ appliedCode, onRemove, className }: CouponFormProps
           placeholder="Digite o código promocional..."
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="h-11 min-w-0 flex-1 rounded-l-full border border-line bg-transparent px-4 text-sm placeholder:text-khaki aria-invalid:border-coral md:rounded-l-md md:border-primary"
+          className="h-[50px] min-w-0 flex-1 rounded-[25px] border border-line bg-transparent pr-[105px] pl-4 text-base text-ellipsis shadow-card placeholder:text-khaki aria-invalid:border-coral max-md:placeholder:text-[13px] md:h-11 md:rounded-l-md md:rounded-r-none md:border-primary md:pr-4 md:text-sm md:shadow-none"
         />
         <button
           type="submit"
           disabled={apply.isPending}
-          className="h-11 rounded-r-full bg-[linear-gradient(to_right,rgb(210_138_76/0.54),var(--primary))] px-6 text-sm font-bold text-ink disabled:opacity-60 md:rounded-r-md md:bg-primary md:bg-none"
+          className="absolute inset-y-0 right-0 min-w-[97px] rounded-[25px] px-4 text-[15px] font-bold whitespace-nowrap text-ink cta-fill disabled:opacity-60 md:static md:h-11 md:min-w-0 md:rounded-l-none md:rounded-r-md md:px-6 md:text-sm"
         >
           {apply.isPending ? 'Aplicando…' : 'Aplicar'}
         </button>

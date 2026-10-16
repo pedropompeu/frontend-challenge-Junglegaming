@@ -534,3 +534,31 @@ test('mobile cart items are the frame 100px cards with square art and the steppe
     .boundingBox())!
   expect(trash.y + trash.height).toBeLessThanOrEqual(plusBox.y)
 })
+
+test('mobile coupon field is the frame 50px pill with the apply button inside', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'a pílula é do cupom mobile; o desktop é o campo r3')
+  await addToCart(page, 'nft_neon-vessel')
+  await page.goto('/carrinho')
+  const field = page.getByRole('textbox', { name: 'Código promocional' })
+  // "Promo Input" do frame: 366×50 nas margens de 24, rx 25, contorno line e a sombra dos cards.
+  const fieldEdges = await edges(page, field)
+  expect(fieldEdges.left).toBeCloseTo(24, 0)
+  expect(fieldEdges.right).toBeCloseTo(24, 0)
+  const box = (await field.boundingBox())!
+  expect(box.height).toBeCloseTo(50, 0)
+  await expect(field).toHaveCSS('border-top-left-radius', '25px')
+  await expect(field).toHaveCSS('border-top-color', LINE)
+  await expect(field).toHaveCSS('box-shadow', /rgba\(10, 6, 4, 0\.45\) 0px 6px 20px 0px$/)
+  expect(await placeholderSize(field)).toBe('13px')
+  // "Aplicar" em pílula de 97×50 sobre a ponta direita do campo, texto 15 bold.
+  const apply = page.getByRole('button', { name: 'Aplicar', exact: true })
+  const applyBox = (await apply.boundingBox())!
+  expect(applyBox.height).toBeCloseTo(50, 0)
+  expect(applyBox.width).toBeCloseTo(97, 0)
+  expect(applyBox.y).toBeCloseTo(box.y, 0)
+  expect(applyBox.x + applyBox.width).toBeCloseTo(box.x + box.width, 0)
+  await expect(apply).toHaveCSS('font-size', '15px')
+  await expect(apply).toHaveCSS('font-weight', '700')
+})
