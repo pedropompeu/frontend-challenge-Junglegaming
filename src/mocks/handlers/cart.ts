@@ -20,7 +20,11 @@ export function ownerOf(ctx: Pick<RouteContext, 'userId' | 'guestId'>): CartOwne
 
 export const ownerKey = (o: CartOwner) => `${o.type}:${o.id}`
 
-export function findEdition(db: MockDbState, nftId: string, editionId: string): { nft: Nft; edition: Edition } | null {
+export function findEdition(
+  db: MockDbState,
+  nftId: string,
+  editionId: string,
+): { nft: Nft; edition: Edition } | null {
   const nft = db.nfts.find((n) => n.id === nftId)
   const edition = nft?.editions.find((e) => e.id === editionId)
   return nft && edition ? { nft, edition } : null
@@ -31,7 +35,13 @@ function ensureCart(owner: CartOwner): CartRecord {
   const existing = getDb().carts[key]
   if (existing) return existing
   return mutate((db) => {
-    const cart: CartRecord = { id: nextId('cart'), owner, items: [], version: 0, updatedAt: now().toISOString() }
+    const cart: CartRecord = {
+      id: nextId('cart'),
+      owner,
+      items: [],
+      version: 0,
+      updatedAt: now().toISOString(),
+    }
     db.carts[key] = cart
     return cart
   })
@@ -111,7 +121,8 @@ export const cartHandlers = [
     if (!item) return notFound('Item')
     const found = findEdition(getDb(), item.nftId, item.editionId)
     if (!found) return notFound('Edição')
-    if (body.data.quantity > found.edition.available) return availabilityConflict(found.edition, item.nftId)
+    if (body.data.quantity > found.edition.available)
+      return availabilityConflict(found.edition, item.nftId)
     mutate(() => {
       item.quantity = body.data.quantity
       touch(cart)

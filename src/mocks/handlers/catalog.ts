@@ -1,5 +1,12 @@
 import Big from 'big.js'
-import { NftListParamsSchema, type Collection, type Nft, type NftListParams, type NftSummary, type Page } from '@/contracts'
+import {
+  NftListParamsSchema,
+  type Collection,
+  type Nft,
+  type NftListParams,
+  type NftSummary,
+  type Page,
+} from '@/contracts'
 import { getDb } from '../db/store'
 import { apiError, json, route } from '../route'
 import { validate } from './validate'
@@ -8,15 +15,14 @@ const NEW_SINCE = Date.parse('2026-09-15T00:00:00.000Z')
 const TRENDING_MIN = 70
 
 export function normalize(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim()
+  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 }
 
 export function fromPrice(nft: Nft): string {
-  return nft.editions.reduce((min, e) => (new Big(e.price).lt(min) ? e.price : min), nft.editions[0]!.price)
+  return nft.editions.reduce(
+    (min, e) => (new Big(e.price).lt(min) ? e.price : min),
+    nft.editions[0]!.price,
+  )
 }
 
 export function toSummary(nft: Nft): NftSummary {
@@ -34,7 +40,10 @@ export function toSummary(nft: Nft): NftSummary {
 }
 
 function csv(v: string | null): string[] | undefined {
-  const list = v?.split(',').map((s) => s.trim()).filter(Boolean)
+  const list = v
+    ?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
   return list?.length ? list : undefined
 }
 
@@ -73,7 +82,8 @@ export function listNfts(params: NftListParams): Page<NftSummary> {
 
   const filtered = getDb()
     .nfts.filter((n) => {
-      if (q && !normalize(n.name).includes(q) && !normalize(n.collectionName).includes(q)) return false
+      if (q && !normalize(n.name).includes(q) && !normalize(n.collectionName).includes(q))
+        return false
       if (params.collections && !params.collections.includes(n.collectionId)) return false
       if (params.networks && !params.networks.includes(n.network)) return false
       if (params.tab === 'new' && Date.parse(n.createdAt) < NEW_SINCE) return false
@@ -97,7 +107,11 @@ export function listNfts(params: NftListParams): Page<NftSummary> {
       case 'rating':
         return b.n.rating - a.n.rating || b.n.reviewsCount - a.n.reviewsCount || byId(a.n, b.n)
       default:
-        return relevance(b.n, q) - relevance(a.n, q) || b.n.trendingScore - a.n.trendingScore || byId(a.n, b.n)
+        return (
+          relevance(b.n, q) - relevance(a.n, q) ||
+          b.n.trendingScore - a.n.trendingScore ||
+          byId(a.n, b.n)
+        )
     }
   })
 

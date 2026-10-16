@@ -72,7 +72,9 @@ export function createControl(): KurioMocksControl {
       )
     },
     emitStale(nftId) {
-      const updates = getDb().eventLog.filter((e) => e.type === 'nft.updated' && e.resource.id === nftId)
+      const updates = getDb().eventLog.filter(
+        (e) => e.type === 'nft.updated' && e.resource.id === nftId,
+      )
       resend(updates.at(-2), `nft.updated anterior de ${nftId}`)
     },
     disconnectWallet: () => disconnectAllWalletSessions(),

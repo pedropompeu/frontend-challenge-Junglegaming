@@ -1,4 +1,10 @@
-import { QuoteRequestSchema, type Coupon, type Network, type Quote, type QuoteLine } from '@/contracts'
+import {
+  QuoteRequestSchema,
+  type Coupon,
+  type Network,
+  type Quote,
+  type QuoteLine,
+} from '@/contracts'
 import { add, cmp, mul, pct, sub } from '@/shared/lib/money'
 import { NETWORK_FEES } from '../fixtures/coupons'
 import type { QuoteRecord } from '../db/schema'
@@ -18,20 +24,28 @@ export function resolveCoupon(code: string | undefined): Result<Coupon | null> {
   if (!rec) {
     return {
       ok: false,
-      response: apiError(422, 'COUPON_INVALID', 'Cupom inválido', { fieldErrors: { couponCode: 'Cupom inválido' } }),
+      response: apiError(422, 'COUPON_INVALID', 'Cupom inválido', {
+        fieldErrors: { couponCode: 'Cupom inválido' },
+      }),
     }
   }
   if (Date.parse(rec.expiresAt) <= now().getTime()) {
     return {
       ok: false,
-      response: apiError(422, 'COUPON_EXPIRED', 'Este cupom expirou', { fieldErrors: { couponCode: 'Este cupom expirou' } }),
+      response: apiError(422, 'COUPON_EXPIRED', 'Este cupom expirou', {
+        fieldErrors: { couponCode: 'Este cupom expirou' },
+      }),
     }
   }
   return { ok: true, value: { code: rec.code, percentOff: rec.percentOff } }
 }
 
 /** Calcula e persiste uma cotação a partir do carrinho atual do dono. */
-export function createQuote(key: string, network: Network, couponCode: string | undefined): Result<Quote> {
+export function createQuote(
+  key: string,
+  network: Network,
+  couponCode: string | undefined,
+): Result<Quote> {
   const db = getDb()
   const cart = db.carts[key]
   if (!cart || cart.items.length === 0) {
@@ -41,7 +55,11 @@ export function createQuote(key: string, network: Network, couponCode: string | 
   const lines: QuoteLine[] = []
   for (const item of cart.items) {
     const found = findEdition(db, item.nftId, item.editionId)
-    if (!found) return { ok: false, response: apiError(404, 'NOT_FOUND', 'Um item do carrinho não existe mais') }
+    if (!found)
+      return {
+        ok: false,
+        response: apiError(404, 'NOT_FOUND', 'Um item do carrinho não existe mais'),
+      }
     if (item.quantity > found.edition.available) {
       return { ok: false, response: availabilityConflict(found.edition, item.nftId) }
     }

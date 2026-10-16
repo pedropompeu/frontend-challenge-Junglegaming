@@ -65,7 +65,8 @@ export const SCENARIOS: Record<ScenarioName, ScenarioConfig> = {
   },
   'server-errors': {
     label: 'Erros do servidor',
-    description: 'As duas primeiras leituras de cada endpoint respondem 503; o retry manual recupera.',
+    description:
+      'As duas primeiras leituras de cada endpoint respondem 503; o retry manual recupera.',
     latency: FAST,
     restError: { status: 503 },
     settle: CONFIRM,
@@ -121,7 +122,8 @@ export const SCENARIOS: Record<ScenarioName, ScenarioConfig> = {
   },
   'order-timeout': {
     label: 'Timeout do pedido',
-    description: 'O pedido é criado, mas a 1ª resposta nunca chega; o retry com a mesma chave recupera o pedido.',
+    description:
+      'O pedido é criado, mas a 1ª resposta nunca chega; o retry com a mesma chave recupera o pedido.',
     latency: FAST,
     settle: CONFIRM,
     overrides: { 'POST /orders': 'hang-first' },

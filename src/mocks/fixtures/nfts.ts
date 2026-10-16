@@ -5,21 +5,68 @@ import { COLLECTIONS } from './collections'
 import { nftImage } from './images'
 
 const NAMES = [
-  'Neon Vessel', 'Brisa de Cobre', 'Rei do Asfalto', 'Eco Dourado', 'Lua de Jade', 'Sopro Âmbar',
-  'Ritmo Selvagem', 'Guardião Lilás', 'Vinil Eterno', 'Sombra Verde', 'Coroa de Musgo', 'Pulso Urbano',
-  'Maré Noturna', 'Chama Serena', 'Bambu Elétrico', 'Faísca Rara', 'Sax ao Luar', 'Trilha de Ouro',
-  'Monge Digital', 'Grafite Vivo', 'Néctar Solar', 'Raiz Profunda', 'Fumaça Azul', 'Dínamo Gentil',
-  'Velho Sábio', 'Jazz de Bolso', 'Pedra Fundamental', 'Aurora Cítrica', 'Bruma Rosa', 'Totem Moderno',
-  'Mestre do Groove', 'Selo Imperial', 'Garoa Fina', 'Pixel Ancestral', 'Fera Mansa', 'Baile de Máscaras',
-  'Cânion Sonoro', 'Lenda Urbana', 'Orvalho Neon', 'Farol Tropical', 'Cacau Cósmico', 'Bússola Antiga',
-  'Vento Norte', 'Caderno de Rimas', 'Ponte de Vidro', 'Último Acorde', 'Cartógrafo', 'Relicário',
-  'Mosaico Vivo', 'Andarilho',
+  'Neon Vessel',
+  'Brisa de Cobre',
+  'Rei do Asfalto',
+  'Eco Dourado',
+  'Lua de Jade',
+  'Sopro Âmbar',
+  'Ritmo Selvagem',
+  'Guardião Lilás',
+  'Vinil Eterno',
+  'Sombra Verde',
+  'Coroa de Musgo',
+  'Pulso Urbano',
+  'Maré Noturna',
+  'Chama Serena',
+  'Bambu Elétrico',
+  'Faísca Rara',
+  'Sax ao Luar',
+  'Trilha de Ouro',
+  'Monge Digital',
+  'Grafite Vivo',
+  'Néctar Solar',
+  'Raiz Profunda',
+  'Fumaça Azul',
+  'Dínamo Gentil',
+  'Velho Sábio',
+  'Jazz de Bolso',
+  'Pedra Fundamental',
+  'Aurora Cítrica',
+  'Bruma Rosa',
+  'Totem Moderno',
+  'Mestre do Groove',
+  'Selo Imperial',
+  'Garoa Fina',
+  'Pixel Ancestral',
+  'Fera Mansa',
+  'Baile de Máscaras',
+  'Cânion Sonoro',
+  'Lenda Urbana',
+  'Orvalho Neon',
+  'Farol Tropical',
+  'Cacau Cósmico',
+  'Bússola Antiga',
+  'Vento Norte',
+  'Caderno de Rimas',
+  'Ponte de Vidro',
+  'Último Acorde',
+  'Cartógrafo',
+  'Relicário',
+  'Mosaico Vivo',
+  'Andarilho',
 ] as const
 
 const NETWORKS: Network[] = ['ethereum', 'polygon', 'solana']
 const FUNDOS = ['Creme', 'Sálvia', 'Areia', 'Menta', 'Terracota']
 const ROUPAS = ['Jaqueta college', 'Blazer creme', 'Moletom lilás', 'Bomber creme', 'Gola alta']
-const ACESSORIOS = ['Óculos redondos', 'Fones de ouvido', 'Chapéu bucket', 'Brinco de ouro', 'Corrente de jade']
+const ACESSORIOS = [
+  'Óculos redondos',
+  'Fones de ouvido',
+  'Chapéu bucket',
+  'Brinco de ouro',
+  'Corrente de jade',
+]
 const EXPRESSOES = ['Sereno', 'Confiante', 'Pensativo', 'Sorridente', 'Desconfiado']
 
 function slug(name: string): string {
@@ -41,7 +88,7 @@ const DAY = 86_400_000
 
 export function buildNfts(): Nft[] {
   const rand = mulberry32(42)
-  const pick = <T,>(arr: readonly T[]): T => arr[Math.floor(rand() * arr.length)]!
+  const pick = <T>(arr: readonly T[]): T => arr[Math.floor(rand() * arr.length)]!
   const int = (min: number, max: number) => min + Math.floor(rand() * (max - min + 1))
 
   return NAMES.map((name, i): Nft => {
@@ -90,7 +137,11 @@ export function buildNfts(): Nft[] {
       collectionName: collection.name,
       network,
       rarity,
-      images: [nftImage(main), nftImage(base + ((tone + 1) % 4) * 4), nftImage(base + ((tone + 2) % 4) * 4)],
+      images: [
+        nftImage(main),
+        nftImage(base + ((tone + 1) % 4) * 4),
+        nftImage(base + ((tone + 2) % 4) * 4),
+      ],
       rating: Math.round((3.6 + rand() * 1.4) * 10) / 10,
       reviewsCount: int(0, 64),
       tokenId: `#${String(1000 + i * 37).padStart(4, '0')}`,

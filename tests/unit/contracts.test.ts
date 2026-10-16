@@ -10,7 +10,14 @@ import {
   UpsertWalletBodySchema,
 } from '@/contracts'
 
-const edition = { id: 'ed_1', kind: '1/10', price: '1.2', originalPrice: null, supply: 10, available: 4 }
+const edition = {
+  id: 'ed_1',
+  kind: '1/10',
+  price: '1.2',
+  originalPrice: null,
+  supply: 10,
+  available: 4,
+}
 const nft = {
   id: 'nft_neon-vessel',
   name: 'Neon Vessel',
@@ -70,9 +77,15 @@ describe('contracts', () => {
   })
   it('requires matching and strong passwords on register', () => {
     expect(RegisterBodySchema.safeParse(validRegister).success).toBe(true)
-    expect(RegisterBodySchema.safeParse({ ...validRegister, confirmPassword: 'x' }).success).toBe(false)
+    expect(RegisterBodySchema.safeParse({ ...validRegister, confirmPassword: 'x' }).success).toBe(
+      false,
+    )
     expect(
-      RegisterBodySchema.safeParse({ ...validRegister, password: 'fraca', confirmPassword: 'fraca' }).success,
+      RegisterBodySchema.safeParse({
+        ...validRegister,
+        password: 'fraca',
+        confirmPassword: 'fraca',
+      }).success,
     ).toBe(false)
   })
   it('validates wallet address by network', () => {
@@ -91,7 +104,11 @@ describe('contracts', () => {
     expect(UpsertWalletBodySchema.safeParse(base).success).toBe(true)
     expect(UpsertWalletBodySchema.safeParse({ ...base, address: '0x123' }).success).toBe(false)
     expect(
-      UpsertWalletBodySchema.safeParse({ ...base, network: 'solana', address: '0x' + 'a'.repeat(40) }).success,
+      UpsertWalletBodySchema.safeParse({
+        ...base,
+        network: 'solana',
+        address: '0x' + 'a'.repeat(40),
+      }).success,
     ).toBe(false)
     expect(
       UpsertWalletBodySchema.safeParse({

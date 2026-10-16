@@ -18,8 +18,12 @@ describe('mock db', () => {
     expect(new Set(s.nfts.map((n) => n.network)).size).toBe(3)
     expect(s.collections.length).toBeGreaterThanOrEqual(6)
     expect(s.users).toHaveLength(2)
-    expect(s.nfts.filter((n) => n.editions.some((e) => e.available === 0)).length).toBeGreaterThanOrEqual(3)
-    expect(s.nfts.filter((n) => n.editions.some((e) => e.originalPrice)).length).toBeGreaterThanOrEqual(2)
+    expect(
+      s.nfts.filter((n) => n.editions.some((e) => e.available === 0)).length,
+    ).toBeGreaterThanOrEqual(3)
+    expect(
+      s.nfts.filter((n) => n.editions.some((e) => e.originalPrice)).length,
+    ).toBeGreaterThanOrEqual(2)
     expect(s.nfts.some((n) => n.editions.length < 3)).toBe(true)
     for (const n of s.nfts) NftSchema.parse(n)
   })

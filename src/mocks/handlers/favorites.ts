@@ -12,7 +12,8 @@ export const favoritesHandlers = [
   route('PUT /favorites/:nftId', ({ userId, params }) => {
     if (!userId) return unauthenticated()
     const nftId = params.nftId!
-    if (!getDb().nfts.some((n) => n.id === nftId)) return apiError(404, 'NOT_FOUND', 'NFT não encontrado')
+    if (!getDb().nfts.some((n) => n.id === nftId))
+      return apiError(404, 'NOT_FOUND', 'NFT não encontrado')
     mutate((db) => {
       const list = (db.favorites[userId] ??= [])
       if (!list.includes(nftId)) list.push(nftId)
@@ -23,7 +24,8 @@ export const favoritesHandlers = [
   route('DELETE /favorites/:nftId', ({ userId, params }) => {
     if (!userId) return unauthenticated()
     const nftId = params.nftId!
-    if (!getDb().nfts.some((n) => n.id === nftId)) return apiError(404, 'NOT_FOUND', 'NFT não encontrado')
+    if (!getDb().nfts.some((n) => n.id === nftId))
+      return apiError(404, 'NOT_FOUND', 'NFT não encontrado')
     mutate((db) => {
       db.favorites[userId] = (db.favorites[userId] ?? []).filter((id) => id !== nftId)
     })

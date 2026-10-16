@@ -65,7 +65,11 @@ describe('socket bus envelope', () => {
   it('event envelope carries stable id, resource and version', () => {
     const nft = getDb().nfts[0]!
     const e = emitNftUpdated(nft)
-    expect(e).toMatchObject({ type: 'nft.updated', resource: { type: 'nft', id: nft.id }, version: nft.version })
+    expect(e).toMatchObject({
+      type: 'nft.updated',
+      resource: { type: 'nft', id: nft.id },
+      version: nft.version,
+    })
     expect(e.eventId).toMatch(/^evt_/)
     expect(RealtimeEventSchema.parse(e)).toBeTruthy()
     expect(getDb().eventLog.at(-1)?.eventId).toBe(e.eventId)

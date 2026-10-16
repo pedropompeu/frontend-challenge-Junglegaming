@@ -17,7 +17,9 @@ const url = (p: string) => `${location.origin}/api${p}`
 
 const server = setupServer(
   route('GET /nfts', () => json({ ok: true })),
-  route('GET /me', ({ userId }) => (userId ? json({ userId }) : apiError(401, 'UNAUTHENTICATED', 'Faça login'))),
+  route('GET /me', ({ userId }) =>
+    userId ? json({ userId }) : apiError(401, 'UNAUTHENTICATED', 'Faça login'),
+  ),
   route('GET /teapot', () => apiError(418 as number, 'TRANSIENT', 'x', { details: { a: 1 } })),
   route('POST /orders', () => json({ id: 'ord_1' }, 201)),
 )
@@ -131,7 +133,11 @@ describe('route middleware', () => {
 
   it('resolves the user from a valid bearer token', async () => {
     mutate((db) => {
-      db.sessions.push({ token: 'tok_ok', userId: 'usr_ana', expiresAt: '2999-01-01T00:00:00.000Z' })
+      db.sessions.push({
+        token: 'tok_ok',
+        userId: 'usr_ana',
+        expiresAt: '2999-01-01T00:00:00.000Z',
+      })
     })
     const r = await fetch(url('/me'), { headers: { Authorization: 'Bearer tok_ok' } })
     expect(await r.json()).toEqual({ userId: 'usr_ana' })
@@ -140,7 +146,11 @@ describe('route middleware', () => {
 
   it('expired session yields SESSION_EXPIRED', async () => {
     mutate((db) => {
-      db.sessions.push({ token: 'tok_old', userId: 'usr_ana', expiresAt: '2020-01-01T00:00:00.000Z' })
+      db.sessions.push({
+        token: 'tok_old',
+        userId: 'usr_ana',
+        expiresAt: '2020-01-01T00:00:00.000Z',
+      })
     })
     const r = await fetch(url('/me'), { headers: { Authorization: 'Bearer tok_old' } })
     expect(r.status).toBe(401)

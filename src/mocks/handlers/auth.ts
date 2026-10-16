@@ -1,5 +1,11 @@
 import { HttpResponse } from 'msw'
-import { LoginBodySchema, RegisterBodySchema, type Session, type SessionInfo, type User } from '@/contracts'
+import {
+  LoginBodySchema,
+  RegisterBodySchema,
+  type Session,
+  type SessionInfo,
+  type User,
+} from '@/contracts'
 import { hashPassword, verifyPassword } from '../db/crypto'
 import type { UserRecord } from '../db/schema'
 import { getDb, mutate, nextId, now } from '../db/store'
@@ -80,7 +86,14 @@ export const authHandlers = [
       d.users.push(rec)
       d.favorites[id] = []
       d.wallets[id] = []
-      d.profiles[id] = { displayName: username, username, email, ens: null, nickname: null, avatarUrl: null }
+      d.profiles[id] = {
+        displayName: username,
+        username,
+        email,
+        ens: null,
+        nickname: null,
+        avatarUrl: null,
+      }
     })
     return json(issueSession(rec), 201)
   }),

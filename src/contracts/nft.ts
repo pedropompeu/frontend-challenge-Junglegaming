@@ -57,7 +57,11 @@ export const NftSummarySchema = NftSchema.pick({
 }).extend({ fromPrice: EthAmountSchema })
 export type NftSummary = z.infer<typeof NftSummarySchema>
 
-export const CollectionSchema = z.object({ id: IdSchema, name: z.string(), count: z.number().int().min(0) })
+export const CollectionSchema = z.object({
+  id: IdSchema,
+  name: z.string(),
+  count: z.number().int().min(0),
+})
 export type Collection = z.infer<typeof CollectionSchema>
 
 export const NftSortSchema = z.enum(['relevance', 'price-asc', 'price-desc', 'newest', 'rating'])

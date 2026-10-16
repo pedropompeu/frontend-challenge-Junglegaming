@@ -22,7 +22,9 @@ export function mutateNft(nftId: string, patch: NftPatch): NftUpdatedEvent {
 }
 
 /** Ajusta o estoque de várias edições (negativo reserva, positivo devolve), um evento por NFT. */
-export function adjustStock(lines: Array<{ nftId: string; editionId: string; delta: number }>): void {
+export function adjustStock(
+  lines: Array<{ nftId: string; editionId: string; delta: number }>,
+): void {
   const touched = new Map<string, Nft>()
   mutate((db) => {
     for (const l of lines) {

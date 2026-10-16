@@ -18,16 +18,24 @@ export function validate<S extends z.ZodTypeAny>(schema: S, input: unknown): Par
   if (r.success) return { ok: true, data: r.data }
   return {
     ok: false,
-    response: apiError(422, 'VALIDATION_ERROR', 'Dados inválidos', { fieldErrors: toFieldErrors(r.error) }),
+    response: apiError(422, 'VALIDATION_ERROR', 'Dados inválidos', {
+      fieldErrors: toFieldErrors(r.error),
+    }),
   }
 }
 
-export async function parseBody<S extends z.ZodTypeAny>(request: Request, schema: S): Promise<Parsed<z.infer<S>>> {
+export async function parseBody<S extends z.ZodTypeAny>(
+  request: Request,
+  schema: S,
+): Promise<Parsed<z.infer<S>>> {
   let raw: unknown
   try {
     raw = await request.json()
   } catch {
-    return { ok: false, response: apiError(422, 'VALIDATION_ERROR', 'Corpo da requisição inválido') }
+    return {
+      ok: false,
+      response: apiError(422, 'VALIDATION_ERROR', 'Corpo da requisição inválido'),
+    }
   }
   return validate(schema, raw)
 }

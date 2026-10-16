@@ -60,7 +60,11 @@ export const UpsertWalletBodySchema = z
   })
   .superRefine((v, ctx) => {
     if (!isValidAddress(v.network, v.address)) {
-      ctx.addIssue({ code: 'custom', path: ['address'], message: 'Endereço inválido para a rede escolhida' })
+      ctx.addIssue({
+        code: 'custom',
+        path: ['address'],
+        message: 'Endereço inválido para a rede escolhida',
+      })
     }
     if (v.secondaryAddress && !isValidAddress(v.network, v.secondaryAddress)) {
       ctx.addIssue({

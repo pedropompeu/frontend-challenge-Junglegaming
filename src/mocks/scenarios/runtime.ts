@@ -41,7 +41,8 @@ function writeStorage(key: string, value: string): void {
 /** Cenário ativo: `?scenario=` na carga (persistido) → `kurio:mock-scenario` → `default`. */
 export function getScenario(): ScenarioName {
   if (current) return current
-  const fromUrl = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('scenario')
+  const fromUrl =
+    typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('scenario')
   if (isScenarioName(fromUrl)) {
     writeStorage(SCENARIO_STORAGE_KEY, fromUrl)
     current = fromUrl

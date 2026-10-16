@@ -8,14 +8,18 @@ test('smoke: app boots with title', async ({ page }) => {
 test('smoke: mock control is available', async ({ page }) => {
   await page.goto('/')
   await expect
-    .poll(() => page.evaluate(() => typeof (window as unknown as { __kurioMocks?: unknown }).__kurioMocks))
+    .poll(() =>
+      page.evaluate(() => typeof (window as unknown as { __kurioMocks?: unknown }).__kurioMocks),
+    )
     .toBe('object')
 })
 
 test('smoke: mock socket.io server handshakes and pushes nft.updated', async ({ page }) => {
   await page.goto('/')
   await expect
-    .poll(() => page.evaluate(() => typeof (window as unknown as { __kurioMocks?: unknown }).__kurioMocks))
+    .poll(() =>
+      page.evaluate(() => typeof (window as unknown as { __kurioMocks?: unknown }).__kurioMocks),
+    )
     .toBe('object')
   const frames = await page.evaluate(async () => {
     type Control = { mutateNft(id: string, p: unknown): unknown }

@@ -20,7 +20,10 @@ export const QuoteLineSchema = z.object({
 })
 export type QuoteLine = z.infer<typeof QuoteLineSchema>
 
-export const CouponSchema = z.object({ code: z.string(), percentOff: z.number().positive().max(100) })
+export const CouponSchema = z.object({
+  code: z.string(),
+  percentOff: z.number().positive().max(100),
+})
 export type Coupon = z.infer<typeof CouponSchema>
 
 export const QuoteSchema = z.object({

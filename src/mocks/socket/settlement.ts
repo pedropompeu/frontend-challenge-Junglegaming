@@ -23,7 +23,10 @@ function hashSeed(text: string): number {
 export function txHashFor(orderId: string): string {
   const rand = mulberry32(hashSeed(orderId))
   let hex = ''
-  while (hex.length < 64) hex += Math.floor(rand() * 0x100000000).toString(16).padStart(8, '0')
+  while (hex.length < 64)
+    hex += Math.floor(rand() * 0x100000000)
+      .toString(16)
+      .padStart(8, '0')
   return `0x${hex.slice(0, 64)}`
 }
 
@@ -37,10 +40,13 @@ function arm(orderId: string, delayMs: number, status: 'confirmed' | 'declined')
   clearTimeout(timers.get(orderId))
   timers.set(
     orderId,
-    setTimeout(() => {
-      timers.delete(orderId)
-      settleOrder(orderId, status)
-    }, Math.max(0, delayMs)),
+    setTimeout(
+      () => {
+        timers.delete(orderId)
+        settleOrder(orderId, status)
+      },
+      Math.max(0, delayMs),
+    ),
   )
 }
 
@@ -77,7 +83,9 @@ export function settleOrder(orderId: string, status: 'confirmed' | 'declined'): 
   timers.delete(orderId)
 
   if (status === 'declined') {
-    adjustStock(order.lines.map((l) => ({ nftId: l.nftId, editionId: l.editionId, delta: l.quantity })))
+    adjustStock(
+      order.lines.map((l) => ({ nftId: l.nftId, editionId: l.editionId, delta: l.quantity })),
+    )
   }
   mutate((db) => {
     order.status = status
@@ -91,7 +99,9 @@ export function settleOrder(orderId: string, status: 'confirmed' | 'declined'): 
       const cart = db.carts[`user:${order.userId}`]
       if (cart) {
         for (const line of order.lines) {
-          const item = cart.items.find((i) => i.nftId === line.nftId && i.editionId === line.editionId)
+          const item = cart.items.find(
+            (i) => i.nftId === line.nftId && i.editionId === line.editionId,
+          )
           if (item) item.quantity -= line.quantity
         }
         cart.items = cart.items.filter((i) => i.quantity > 0)

@@ -15,19 +15,25 @@ const notFound = () => apiError(404, 'NOT_FOUND', 'Pedido não encontrado')
 function revalidate(quote: Quote, key: string): Response | null {
   const db = getDb()
   for (const line of quote.lines) {
-    const edition = db.nfts.find((n) => n.id === line.nftId)?.editions.find((e) => e.id === line.editionId)
+    const edition = db.nfts
+      .find((n) => n.id === line.nftId)
+      ?.editions.find((e) => e.id === line.editionId)
     if (!edition) return apiError(404, 'NOT_FOUND', 'Um item da cotação não existe mais')
     if (line.quantity > edition.available) return availabilityConflict(edition, line.nftId)
   }
   const expired = Date.parse(quote.expiresAt) <= now().getTime()
   const priceChanged = quote.lines.some((line) => {
-    const edition = db.nfts.find((n) => n.id === line.nftId)!.editions.find((e) => e.id === line.editionId)!
+    const edition = db.nfts
+      .find((n) => n.id === line.nftId)!
+      .editions.find((e) => e.id === line.editionId)!
     return edition.price !== line.unitPrice
   })
   const coupon = quote.coupon ? db.coupons.find((c) => c.code === quote.coupon!.code) : null
   const couponChanged =
     quote.coupon !== null &&
-    (!coupon || coupon.percentOff !== quote.coupon.percentOff || Date.parse(coupon.expiresAt) <= now().getTime())
+    (!coupon ||
+      coupon.percentOff !== quote.coupon.percentOff ||
+      Date.parse(coupon.expiresAt) <= now().getTime())
   if (!expired && !priceChanged && !couponChanged) return null
 
   const fresh = createQuote(key, quote.network, couponChanged ? undefined : quote.coupon?.code)
@@ -64,7 +70,11 @@ export const orderHandlers = [
 
     const session = db.walletSessions.find((s) => s.id === walletSessionId && s.userId === userId)
     if (!session || !session.connected) {
-      return apiError(409, 'WALLET_REJECTED', 'Carteira desconectada. Conecte novamente para continuar.')
+      return apiError(
+        409,
+        'WALLET_REJECTED',
+        'Carteira desconectada. Conecte novamente para continuar.',
+      )
     }
 
     const invalid = revalidate(quote, key)
@@ -83,7 +93,11 @@ export const orderHandlers = [
       networkFee: quote.networkFee,
       total: quote.total,
       network: quote.network,
-      wallet: { label: wallet?.nickname ?? 'Carteira', address: session.address, provider: session.provider },
+      wallet: {
+        label: wallet?.nickname ?? 'Carteira',
+        address: session.address,
+        provider: session.provider,
+      },
       buyer,
       txHash: null,
       explorerUrl: null,
@@ -99,7 +113,9 @@ export const orderHandlers = [
       d.orders.push(order)
       d.idempotency[scopedKey] = { payloadHash, orderId: order.id }
     })
-    adjustStock(order.lines.map((l) => ({ nftId: l.nftId, editionId: l.editionId, delta: -l.quantity })))
+    adjustStock(
+      order.lines.map((l) => ({ nftId: l.nftId, editionId: l.editionId, delta: -l.quantity })),
+    )
     scheduleSettlement(order)
     return json(toOrder(order), 202)
   }),

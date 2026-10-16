@@ -1,7 +1,13 @@
 import { delay, http, HttpResponse, type HttpHandler } from 'msw'
 import type { ApiErrorBody, ApiErrorCode } from '@/contracts'
 import { getDb, now } from './db/store'
-import { consumeFailure, consumeHang, countHit, getScenarioConfig, sampleLatency } from './scenarios/runtime'
+import {
+  consumeFailure,
+  consumeHang,
+  countHit,
+  getScenarioConfig,
+  sampleLatency,
+} from './scenarios/runtime'
 import type { EndpointId } from './scenarios/scenarios'
 
 export type RouteContext = {
@@ -62,7 +68,11 @@ export function route(endpoint: EndpointId, resolver: Resolver): HttpHandler {
 
     if (scenario.restError && method === 'GET' && countHit(endpoint) <= 2) {
       await delay(sampleLatency())
-      return apiError(scenario.restError.status, 'TRANSIENT', 'Serviço temporariamente indisponível')
+      return apiError(
+        scenario.restError.status,
+        'TRANSIENT',
+        'Serviço temporariamente indisponível',
+      )
     }
 
     await delay(sampleLatency())

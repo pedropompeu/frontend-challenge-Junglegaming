@@ -24,5 +24,8 @@ export const OrderUpdatedEventSchema = z.object({
 })
 export type OrderUpdatedEvent = z.infer<typeof OrderUpdatedEventSchema>
 
-export const RealtimeEventSchema = z.discriminatedUnion('type', [NftUpdatedEventSchema, OrderUpdatedEventSchema])
+export const RealtimeEventSchema = z.discriminatedUnion('type', [
+  NftUpdatedEventSchema,
+  OrderUpdatedEventSchema,
+])
 export type RealtimeEvent = z.infer<typeof RealtimeEventSchema>

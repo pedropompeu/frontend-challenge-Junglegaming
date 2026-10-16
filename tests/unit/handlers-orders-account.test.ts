@@ -1,10 +1,22 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { OrderSchema, ProfileSchema, QuoteSchema, WalletSchema, WalletSessionSchema, type RealtimeEvent } from '@/contracts'
+import {
+  OrderSchema,
+  ProfileSchema,
+  QuoteSchema,
+  WalletSchema,
+  WalletSessionSchema,
+  type RealtimeEvent,
+} from '@/contracts'
 import { getDb, mutate } from '@/mocks/db/store'
 import { setScenario } from '@/mocks/scenarios/runtime'
 import { subscribe } from '@/mocks/socket/bus'
-import { cancelSettlements, resumeSettlements, scheduleSettlement, settleOrder } from '@/mocks/socket/settlement'
+import {
+  cancelSettlements,
+  resumeSettlements,
+  scheduleSettlement,
+  settleOrder,
+} from '@/mocks/socket/settlement'
 import { call, get, login, setupMockApi } from './helpers/mock-api'
 
 setupMockApi('payment-confirmed')
@@ -47,7 +59,10 @@ async function prepare(quantity = 2, network = 'ethereum') {
 const createOrder = (key: string | null, body: object) =>
   call('POST', '/api/orders', { token, body, headers: key ? { 'Idempotency-Key': key } : {} })
 
-const available = () => getDb().nfts.find((n) => n.id === NV)!.editions.find((e) => e.id === editionId)!.available
+const available = () =>
+  getDb()
+    .nfts.find((n) => n.id === NV)!
+    .editions.find((e) => e.id === editionId)!.available
 
 describe('orders', () => {
   it('requires an Idempotency-Key header', async () => {
@@ -61,7 +76,12 @@ describe('orders', () => {
     const r = await createOrder('k1', { quoteId: quote.id, walletSessionId: session.id, buyer })
     expect(r.status).toBe(202)
     const order = OrderSchema.parse(r.body)
-    expect(order).toMatchObject({ status: 'pending', total: quote.total, userId: 'usr_ana', txHash: null })
+    expect(order).toMatchObject({
+      status: 'pending',
+      total: quote.total,
+      userId: 'usr_ana',
+      txHash: null,
+    })
     expect(order.wallet.address).toBe(session.address)
     expect(available()).toBe(8)
     const upd = events.find((e) => e.type === 'nft.updated' && e.resource.id === NV)
@@ -143,7 +163,11 @@ describe('orders', () => {
     const cart = (await get('/api/cart', token)).body
     expect(cart.items[0].quantity).toBe(1)
     const ev = events.find((e) => e.type === 'order.updated')
-    expect(ev).toMatchObject({ type: 'order.updated', userId: 'usr_ana', resource: { id: order.id } })
+    expect(ev).toMatchObject({
+      type: 'order.updated',
+      userId: 'usr_ana',
+      resource: { id: order.id },
+    })
     expect((await get(`/api/orders/by-tx/${order.txHash}`, token)).body.id).toBe(order.id)
   })
 
@@ -154,7 +178,11 @@ describe('orders', () => {
     settleOrder(r.body.id, 'declined')
     expect(available()).toBe(10)
     const order = getDb().orders.find((o) => o.id === r.body.id)!
-    expect(order).toMatchObject({ status: 'declined', declineReason: 'Pagamento recusado pela carteira', txHash: null })
+    expect(order).toMatchObject({
+      status: 'declined',
+      declineReason: 'Pagamento recusado pela carteira',
+      txHash: null,
+    })
   })
 
   it('terminal orders do not change', async () => {
@@ -205,19 +233,39 @@ describe('profile', () => {
   it('reads and updates the profile, rejecting a taken username', async () => {
     const p = ProfileSchema.parse((await get('/api/profile', token)).body)
     expect(p.username).toBe('ana_kurio')
-    const taken = await call('PATCH', '/api/profile', { token, body: { ...p, username: 'bruno_lima' } })
+    const taken = await call('PATCH', '/api/profile', {
+      token,
+      body: { ...p, username: 'bruno_lima' },
+    })
     expect(taken.status).toBe(409)
-    expect(taken.body.error).toMatchObject({ code: 'USERNAME_TAKEN', fieldErrors: { username: expect.any(String) } })
-    const ok = await call('PATCH', '/api/profile', { token, body: { ...p, displayName: 'Ana S.', ens: '' } })
+    expect(taken.body.error).toMatchObject({
+      code: 'USERNAME_TAKEN',
+      fieldErrors: { username: expect.any(String) },
+    })
+    const ok = await call('PATCH', '/api/profile', {
+      token,
+      body: { ...p, displayName: 'Ana S.', ens: '' },
+    })
     expect(ok.body).toMatchObject({ displayName: 'Ana S.', ens: null })
     expect((await get('/api/session', token)).body.user.displayName).toBe('Ana S.')
   })
 
   it('sets and clears the avatar', async () => {
     const dataUrl = 'data:image/png;base64,iVBORw0KGgo='
-    expect((await call('PUT', '/api/profile/avatar', { token, body: { dataUrl } })).body.avatarUrl).toBe(dataUrl)
-    expect((await call('PUT', '/api/profile/avatar', { token, body: { dataUrl: null } })).body.avatarUrl).toBeNull()
-    expect((await call('PUT', '/api/profile/avatar', { token, body: { dataUrl: 'data:text/html;base64,x' } })).status).toBe(422)
+    expect(
+      (await call('PUT', '/api/profile/avatar', { token, body: { dataUrl } })).body.avatarUrl,
+    ).toBe(dataUrl)
+    expect(
+      (await call('PUT', '/api/profile/avatar', { token, body: { dataUrl: null } })).body.avatarUrl,
+    ).toBeNull()
+    expect(
+      (
+        await call('PUT', '/api/profile/avatar', {
+          token,
+          body: { dataUrl: 'data:text/html;base64,x' },
+        })
+      ).status,
+    ).toBe(422)
   })
 
   it('wrong current password', async () => {
@@ -232,7 +280,11 @@ describe('profile', () => {
   it('changes the password', async () => {
     const r = await call('POST', '/api/profile/password', {
       token,
-      body: { currentPassword: 'Kurio@123', newPassword: 'NovaSenha1', confirmPassword: 'NovaSenha1' },
+      body: {
+        currentPassword: 'Kurio@123',
+        newPassword: 'NovaSenha1',
+        confirmPassword: 'NovaSenha1',
+      },
     })
     expect(r.status).toBe(204)
     expect(await login('ana@kurio.test', 'NovaSenha1')).toBeTruthy()
@@ -257,12 +309,19 @@ describe('wallets', () => {
     expect(WalletSchema.array().parse((await get('/api/wallets', token)).body)).toHaveLength(1)
     const r = await call('PUT', '/api/wallets/secondary', { token, body: wallet })
     expect(r.status).toBe(200)
-    expect(WalletSchema.parse(r.body)).toMatchObject({ slot: 'secondary', secondaryAddress: null, ensName: null })
+    expect(WalletSchema.parse(r.body)).toMatchObject({
+      slot: 'secondary',
+      secondaryAddress: null,
+      ensName: null,
+    })
     expect((await get('/api/wallets', token)).body).toHaveLength(2)
   })
 
   it('validates the address against the network', async () => {
-    const r = await call('PUT', '/api/wallets/primary', { token, body: { ...wallet, network: 'solana' } })
+    const r = await call('PUT', '/api/wallets/primary', {
+      token,
+      body: { ...wallet, network: 'solana' },
+    })
     expect(r.status).toBe(422)
     expect(r.body.error.fieldErrors.address).toBeDefined()
   })
@@ -295,7 +354,9 @@ describe('checkout mutation scenarios', () => {
     await new Promise((r) => setTimeout(r, 1600))
     const upd = events.filter((e) => e.type === 'nft.updated' && e.resource.id === NV)
     expect(upd).toHaveLength(1)
-    const edition = getDb().nfts.find((n) => n.id === NV)!.editions.find((e) => e.id === editionId)!
+    const edition = getDb()
+      .nfts.find((n) => n.id === NV)!
+      .editions.find((e) => e.id === editionId)!
     expect(edition.price).toBe('0.575')
     const r = await createOrder('km', { quoteId: quote.id, walletSessionId: session.id, buyer })
     expect(r.body.error.code).toBe('QUOTE_STALE')

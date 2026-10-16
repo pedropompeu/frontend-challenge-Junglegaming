@@ -18,7 +18,10 @@ export function maybeScheduleCheckoutMutation(userId: string): void {
     if (!item || !edition) return
     const patch =
       kind === 'price-change'
-        ? { id: edition.id, price: new Big(edition.price).times(1.15).round(4, Big.roundHalfUp).toFixed() }
+        ? {
+            id: edition.id,
+            price: new Big(edition.price).times(1.15).round(4, Big.roundHalfUp).toFixed(),
+          }
         : { id: edition.id, available: 0 }
     mutateNft(item.nftId, { editions: [patch] })
   }, CHECKOUT_MUTATION_DELAY_MS)

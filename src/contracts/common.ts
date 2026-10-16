@@ -19,4 +19,10 @@ export function PageSchema<T extends z.ZodTypeAny>(item: T) {
     totalPages: z.number().int().min(0),
   })
 }
-export type Page<T> = { items: T[]; page: number; pageSize: number; total: number; totalPages: number }
+export type Page<T> = {
+  items: T[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}

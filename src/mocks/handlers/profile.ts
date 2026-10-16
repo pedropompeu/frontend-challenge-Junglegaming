@@ -1,5 +1,10 @@
 import { HttpResponse } from 'msw'
-import { AvatarBodySchema, ChangePasswordBodySchema, UpdateProfileBodySchema, type Profile } from '@/contracts'
+import {
+  AvatarBodySchema,
+  ChangePasswordBodySchema,
+  UpdateProfileBodySchema,
+  type Profile,
+} from '@/contracts'
 import { hashPassword, verifyPassword } from '../db/crypto'
 import { getDb, mutate } from '../db/store'
 import { apiError, json, route, unauthenticated } from '../route'
@@ -34,7 +39,13 @@ export const profileHandlers = [
     }
     const profile = mutate((db) => {
       const p = db.profiles[userId]!
-      Object.assign(p, { displayName: data.displayName, username: data.username, email, ens: data.ens, nickname: data.nickname })
+      Object.assign(p, {
+        displayName: data.displayName,
+        username: data.username,
+        email,
+        ens: data.ens,
+        nickname: data.nickname,
+      })
       const u = db.users.find((x) => x.id === userId)
       if (u) Object.assign(u, { displayName: data.displayName, username: data.username, email })
       return p

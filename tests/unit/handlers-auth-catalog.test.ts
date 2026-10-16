@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { CollectionSchema, NftSchema, NftSummarySchema, PageSchema, SessionSchema } from '@/contracts'
+import {
+  CollectionSchema,
+  NftSchema,
+  NftSummarySchema,
+  PageSchema,
+  SessionSchema,
+} from '@/contracts'
 import { call, get, login, setupMockApi } from './helpers/mock-api'
 
 setupMockApi()
@@ -14,7 +20,9 @@ const newUser = {
 
 describe('auth handlers', () => {
   it('logs in with demo credentials and returns a valid Session', async () => {
-    const r = await call('POST', '/api/auth/login', { body: { email: 'ana@kurio.test', password: 'Kurio@123' } })
+    const r = await call('POST', '/api/auth/login', {
+      body: { email: 'ana@kurio.test', password: 'Kurio@123' },
+    })
     expect(r.status).toBe(200)
     const s = SessionSchema.parse(r.body)
     expect(s.user.id).toBe('usr_ana')
@@ -22,9 +30,14 @@ describe('auth handlers', () => {
   })
 
   it('rejects wrong password with a generic message', async () => {
-    const r = await call('POST', '/api/auth/login', { body: { email: 'ana@kurio.test', password: 'errada' } })
+    const r = await call('POST', '/api/auth/login', {
+      body: { email: 'ana@kurio.test', password: 'errada' },
+    })
     expect(r.status).toBe(401)
-    expect(r.body.error).toMatchObject({ code: 'UNAUTHENTICATED', message: 'E-mail ou senha inválidos' })
+    expect(r.body.error).toMatchObject({
+      code: 'UNAUTHENTICATED',
+      message: 'E-mail ou senha inválidos',
+    })
   })
 
   it('accepts e-mail case-insensitively', async () => {
@@ -39,21 +52,27 @@ describe('auth handlers', () => {
   })
 
   it('register conflict on existing email', async () => {
-    const r = await call('POST', '/api/auth/register', { body: { ...newUser, email: 'ana@kurio.test' } })
+    const r = await call('POST', '/api/auth/register', {
+      body: { ...newUser, email: 'ana@kurio.test' },
+    })
     expect(r.status).toBe(409)
     expect(r.body.error.code).toBe('EMAIL_TAKEN')
     expect(r.body.error.fieldErrors.email).toBeDefined()
   })
 
   it('register conflict on existing username', async () => {
-    const r = await call('POST', '/api/auth/register', { body: { ...newUser, username: 'ana_kurio' } })
+    const r = await call('POST', '/api/auth/register', {
+      body: { ...newUser, username: 'ana_kurio' },
+    })
     expect(r.status).toBe(409)
     expect(r.body.error.code).toBe('USERNAME_TAKEN')
     expect(r.body.error.fieldErrors.username).toBeDefined()
   })
 
   it('register validates the body with field errors', async () => {
-    const r = await call('POST', '/api/auth/register', { body: { ...newUser, confirmPassword: 'outra' } })
+    const r = await call('POST', '/api/auth/register', {
+      body: { ...newUser, confirmPassword: 'outra' },
+    })
     expect(r.status).toBe(422)
     expect(r.body.error.code).toBe('VALIDATION_ERROR')
     expect(r.body.error.fieldErrors.confirmPassword).toBe('As senhas não conferem')
@@ -99,13 +118,17 @@ describe('catalog handlers', () => {
   it('searches by name or collection, accent- and case-insensitive', async () => {
     const r = await get('/api/nfts?q=ATELIE&page=1&pageSize=48')
     expect(r.body.items.length).toBeGreaterThan(0)
-    expect(r.body.items.every((n: { collectionName: string }) => n.collectionName === 'Ateliê Noturno')).toBe(true)
+    expect(
+      r.body.items.every((n: { collectionName: string }) => n.collectionName === 'Ateliê Noturno'),
+    ).toBe(true)
     const byName = await get('/api/nfts?q=neon%20vessel&page=1&pageSize=48')
     expect(byName.body.items[0].id).toBe('nft_neon-vessel')
   })
 
   it('filters by collections CSV and tab', async () => {
-    const r = await get('/api/nfts?collections=col_clube-do-jazz,col_selva-dourada&page=1&pageSize=48')
+    const r = await get(
+      '/api/nfts?collections=col_clube-do-jazz,col_selva-dourada&page=1&pageSize=48',
+    )
     const ids = new Set(r.body.items.map((n: { collectionName: string }) => n.collectionName))
     expect([...ids].sort()).toEqual(['Clube do Jazz', 'Selva Dourada'])
     const fresh = await get('/api/nfts?tab=new&page=1&pageSize=48')

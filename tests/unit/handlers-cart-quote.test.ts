@@ -35,10 +35,18 @@ describe('cart handlers', () => {
 
   it('guest cart starts empty and expands items with current NFT data', async () => {
     const empty = await call('GET', '/api/cart', { guestId: 'g1' })
-    expect(CartSchema.parse(empty.body)).toMatchObject({ items: [], owner: { type: 'guest', id: 'g1' } })
+    expect(CartSchema.parse(empty.body)).toMatchObject({
+      items: [],
+      owner: { type: 'guest', id: 'g1' },
+    })
     const r = await addItem({ nftId: NV, editionId: open.id, quantity: 2 }, { guestId: 'g1' })
     const cart = CartSchema.parse(r.body)
-    expect(cart.items[0]).toMatchObject({ unitPrice: '1.25', available: 5, quantity: 2, name: 'Neon Vessel' })
+    expect(cart.items[0]).toMatchObject({
+      unitPrice: '1.25',
+      available: 5,
+      quantity: 2,
+      name: 'Neon Vessel',
+    })
     expect(cart.version).toBeGreaterThan(empty.body.version)
   })
 
@@ -50,29 +58,47 @@ describe('cart handlers', () => {
   })
 
   it('rejects quantity beyond availability', async () => {
-    const r = await addItem({ nftId: NV, editionId: open.id, quantity: open.available + 1 }, { guestId: 'g1' })
+    const r = await addItem(
+      { nftId: NV, editionId: open.id, quantity: open.available + 1 },
+      { guestId: 'g1' },
+    )
     expect(r.status).toBe(409)
     expect(r.body.error).toMatchObject({ code: 'AVAILABILITY_CONFLICT', details: { available: 5 } })
   })
 
   it('rejects a sum that exceeds availability', async () => {
     await addItem({ nftId: NV, editionId: open.id, quantity: 4 }, { guestId: 'g1' })
-    expect((await addItem({ nftId: NV, editionId: open.id, quantity: 2 }, { guestId: 'g1' })).status).toBe(409)
+    expect(
+      (await addItem({ nftId: NV, editionId: open.id, quantity: 2 }, { guestId: 'g1' })).status,
+    ).toBe(409)
   })
 
   it('404 for unknown nft or edition', async () => {
-    expect((await addItem({ nftId: 'nope', editionId: open.id, quantity: 1 }, { guestId: 'g1' })).status).toBe(404)
-    expect((await addItem({ nftId: NV, editionId: 'nope', quantity: 1 }, { guestId: 'g1' })).status).toBe(404)
+    expect(
+      (await addItem({ nftId: 'nope', editionId: open.id, quantity: 1 }, { guestId: 'g1' })).status,
+    ).toBe(404)
+    expect(
+      (await addItem({ nftId: NV, editionId: 'nope', quantity: 1 }, { guestId: 'g1' })).status,
+    ).toBe(404)
   })
 
   it('patch and delete items, each bumping the version', async () => {
     const a = await addItem({ nftId: NV, editionId: open.id, quantity: 1 }, { guestId: 'g1' })
     const itemId = a.body.items[0].id
-    const p = await call('PATCH', `/api/cart/items/${itemId}`, { guestId: 'g1', body: { quantity: 4 } })
+    const p = await call('PATCH', `/api/cart/items/${itemId}`, {
+      guestId: 'g1',
+      body: { quantity: 4 },
+    })
     expect(p.body.items[0].quantity).toBe(4)
     expect(p.body.version).toBe(a.body.version + 1)
-    expect((await call('PATCH', `/api/cart/items/${itemId}`, { guestId: 'g1', body: { quantity: 6 } })).status).toBe(409)
-    expect((await call('PATCH', `/api/cart/items/${itemId}`, { guestId: 'g1', body: { quantity: 0 } })).status).toBe(422)
+    expect(
+      (await call('PATCH', `/api/cart/items/${itemId}`, { guestId: 'g1', body: { quantity: 6 } }))
+        .status,
+    ).toBe(409)
+    expect(
+      (await call('PATCH', `/api/cart/items/${itemId}`, { guestId: 'g1', body: { quantity: 0 } }))
+        .status,
+    ).toBe(422)
     const d = await call('DELETE', `/api/cart/items/${itemId}`, { guestId: 'g1' })
     expect(d.body.items).toEqual([])
     expect(d.body.version).toBe(p.body.version + 1)
@@ -137,7 +163,12 @@ describe('quote handlers', () => {
   it('network only changes the fee; coupon is optional and case-insensitive', async () => {
     await fill()
     const poly = await quote({ network: 'polygon' })
-    expect(poly).toMatchObject({ networkFee: '0.002', discount: '0', total: '2.8353', coupon: null })
+    expect(poly).toMatchObject({
+      networkFee: '0.002',
+      discount: '0',
+      total: '2.8353',
+      coupon: null,
+    })
     expect((await quote({ network: 'solana', couponCode: 'kurio10' })).networkFee).toBe('0.001')
   })
 
@@ -147,7 +178,9 @@ describe('quote handlers', () => {
     expect(expired.status).toBe(422)
     expect(expired.body.error.code).toBe('COUPON_EXPIRED')
     expect(expired.body.error.fieldErrors.couponCode).toBeDefined()
-    expect((await quoteRaw({ couponCode: 'NOPE', network: 'ethereum' })).body.error.code).toBe('COUPON_INVALID')
+    expect((await quoteRaw({ couponCode: 'NOPE', network: 'ethereum' })).body.error.code).toBe(
+      'COUPON_INVALID',
+    )
   })
 
   it('empty cart is a validation error', async () => {
