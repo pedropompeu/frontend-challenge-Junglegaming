@@ -106,7 +106,13 @@ function NftDetailPage() {
             className="relative -mx-6 bg-[linear-gradient(138deg,var(--color-surface),var(--color-surface-2))] md:mx-0 md:bg-none"
           >
             <MobileTopBar nftId={nft.id} name={nft.name} />
-            <NftGallery images={nft.images} name={nft.name} className="px-7 pt-[66px] md:p-0" />
+            {/* Outro NFT recomeça na primeira imagem. */}
+            <NftGallery
+              key={nft.id}
+              images={nft.images}
+              name={nft.name}
+              className="px-7 pt-[66px] md:p-0"
+            />
           </div>
           <div
             data-testid="detail-sheet"

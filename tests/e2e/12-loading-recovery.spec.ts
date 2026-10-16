@@ -40,7 +40,7 @@ test('skeletons show during slow loading with reserved dimensions', async ({ pag
   const detailSkeleton = page.getByRole('status', { name: 'Carregando NFT' })
   await expect(detailSkeleton).toBeVisible({ timeout: 10_000 })
   const media = await boxOf(detailSkeleton.getByTestId('nft-detail-skeleton-media'))
-  const image = page.getByRole('img', { name: /^Neon Vessel:/ })
+  const image = page.getByRole('img', { name: /^Neon Vessel:/ }).first()
   await expect(image).toBeVisible({ timeout: 15_000 })
   expectSameBox(await boxOf(image), media, 'imagem do detalhe')
 

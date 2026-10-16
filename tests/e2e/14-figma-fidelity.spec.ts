@@ -398,3 +398,34 @@ test('mobile detail art sits in the frame 28px margins over the hero gradient', 
   expect(artBox.y + artBox.height - sheetBox.y).toBeCloseTo(30, 0)
   await expect(sheet).toHaveCSS('border-top-left-radius', '31px')
 })
+
+test('mobile detail gallery scrolls between images under the frame dots', async ({ page }) => {
+  test.skip(!isMobile(page), 'no desktop as miniaturas trocam a imagem')
+  await page.goto('/nft/nft_neon-vessel')
+  const strip = page.getByRole('list', { name: 'Imagens de Neon Vessel' })
+  const art = (await strip.boundingBox())!
+  // Pílula de 28×7 na imagem atual e círculos de 7 px, todos #D28A4C, 7 px entre si, centralizados
+  // a 50 px do pé da arte (Group 62 do frame).
+  const dots = page.getByTestId('gallery-dots').locator('span')
+  await expect(dots).toHaveCount(3)
+  const boxes = await Promise.all([0, 1, 2].map(async (i) => (await dots.nth(i).boundingBox())!))
+  expect(boxes.map((b) => [b.width, b.height])).toEqual([
+    [28, 7],
+    [7, 7],
+    [7, 7],
+  ])
+  expect(boxes[1]!.x - (boxes[0]!.x + 28)).toBeCloseTo(7, 0)
+  expect(boxes[2]!.x - (boxes[1]!.x + 7)).toBeCloseTo(7, 0)
+  expect((boxes[0]!.x + boxes[2]!.x + 7) / 2).toBeCloseTo(art.x + art.width / 2, 0)
+  expect(art.y + art.height - (boxes[0]!.y + 7)).toBeCloseTo(50, 0)
+  await expect(dots.nth(1)).toHaveCSS('background-color', PRIMARY)
+
+  // O teclado rola a faixa como o dedo: a seta leva à próxima imagem, que o zoom passa a mostrar.
+  await strip.focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(dots.nth(1)).toHaveCSS('width', '28px')
+  await expect(dots.nth(0)).toHaveCSS('width', '7px')
+  const second = await strip.getByRole('img').nth(1).getAttribute('src')
+  await page.getByRole('button', { name: 'Ampliar imagem' }).click()
+  await expect(page.getByRole('dialog').getByRole('img')).toHaveAttribute('src', second!)
+})
