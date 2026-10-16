@@ -23,6 +23,7 @@ export const qk = {
   cart: (ownerKey: string) => ['private', ownerKey, 'cart'] as const,
   quote: (ownerKey: string, req: QuoteRequest) => ['private', ownerKey, 'quote', req] as const,
   order: (userId: string, orderId: string) => ['private', userId, 'order', orderId] as const,
+  orderByTx: (userId: string, hash: string) => ['private', userId, 'tx', hash] as const,
   profile: (userId: string) => ['private', userId, 'profile'] as const,
   wallets: (userId: string) => ['private', userId, 'wallets'] as const,
 }

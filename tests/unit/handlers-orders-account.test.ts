@@ -205,6 +205,22 @@ describe('orders', () => {
     expect((await get(`/api/orders/${r.body.id}`, token)).body.lines[0].unitPrice).toBe('0.5')
   })
 
+  it('receipt lines keep the token id and artwork seen at purchase', async () => {
+    const { quote, session } = await prepare()
+    const nft = getDb().nfts.find((n) => n.id === NV)!
+    const seen = { tokenId: nft.tokenId, image: { ...nft.images[0]! } }
+    expect(quote.lines[0]).toMatchObject(seen)
+    const r = await createOrder('k9b', { quoteId: quote.id, walletSessionId: session.id, buyer })
+    settleOrder(r.body.id, 'confirmed')
+    mutate((db) => {
+      const n = db.nfts.find((x) => x.id === NV)!
+      n.tokenId = '#9999'
+      n.images[0] = { ...n.images[0]!, src: '/assets/nfts/99-800.webp' }
+    })
+    const order = OrderSchema.parse((await get(`/api/orders/${r.body.id}`, token)).body)
+    expect(order.lines[0]).toMatchObject(seen)
+  })
+
   it("another user's order is not found", async () => {
     const { quote, session } = await prepare()
     const r = await createOrder('k10', { quoteId: quote.id, walletSessionId: session.id, buyer })

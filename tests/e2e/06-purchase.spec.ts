@@ -55,7 +55,8 @@ test('full purchase from catalog to confirmed receipt', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Pedido confirmado' })).toBeVisible()
   const quote = quotes.byId.get(order.quoteId)
   expect(quote, 'o pedido usa uma cotação vista pela página').toBeDefined()
-  const items = main(page).getByRole('list', { name: 'Itens do pedido' }).getByRole('listitem')
+  // No desktop o recibo é um modal (portal fora do main): a tabela é buscada na página.
+  const items = page.getByRole('table', { name: 'Itens do pedido' }).locator('tbody tr')
   await expect(items).toHaveCount(quote!.lines.length)
   for (const line of quote!.lines) {
     await expect(items.filter({ hasText: line.name })).toContainText(`x ${line.quantity}`)

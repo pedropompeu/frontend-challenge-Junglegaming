@@ -72,6 +72,8 @@ export function createQuote(
       quantity: item.quantity,
       unitPrice: found.edition.price,
       lineTotal: mul(found.edition.price, item.quantity),
+      tokenId: found.nft.tokenId,
+      image: { ...found.nft.images[0]! },
     })
   }
 

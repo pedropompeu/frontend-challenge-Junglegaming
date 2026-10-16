@@ -35,3 +35,7 @@ export async function createOrder(body: CreateOrderBody, idempotencyKey: string)
 export function fetchOrder(orderId: string, signal?: AbortSignal): Promise<Order> {
   return request(OrderSchema, { url: `/orders/${encodeURIComponent(orderId)}`, signal })
 }
+
+export function fetchOrderByTx(hash: string, signal?: AbortSignal): Promise<Order> {
+  return request(OrderSchema, { url: `/orders/by-tx/${encodeURIComponent(hash)}`, signal })
+}

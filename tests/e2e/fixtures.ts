@@ -1,4 +1,5 @@
 import { test as base, expect, type Page } from '@playwright/test'
+import type { RealtimeEvent } from '../../src/contracts'
 import type { KurioMocksControl } from '../../src/mocks/control'
 
 export const test = base
@@ -45,8 +46,38 @@ export function mocks(page: Page) {
       await ready()
       await page.evaluate(() => window.__kurioMocks!.disconnectWallet())
     },
+    /** Liquida o pedido no servidor simulado (emite `order.updated` para quem estiver conectado). */
+    async settleOrder(orderId: string, status: 'confirmed' | 'declined') {
+      await ready()
+      await page.evaluate(([id, s]) => window.__kurioMocks!.settleOrder(id, s), [
+        orderId,
+        status,
+      ] as const)
+    },
+    /** Reenvia um evento já emitido (mesmo `eventId` e versão). */
+    async emitDuplicate(eventId: string) {
+      await ready()
+      await page.evaluate((id) => window.__kurioMocks!.emitDuplicate(id), eventId)
+    },
+    /** Reenvia o `nft.updated` anterior ao último do NFT (versão velha). */
+    async emitStale(nftId: string) {
+      await ready()
+      await page.evaluate((id) => window.__kurioMocks!.emitStale(id), nftId)
+    },
+    async events(): Promise<RealtimeEvent[]> {
+      await ready()
+      return page.evaluate(() => window.__kurioMocks!.events())
+    },
     /** Pedidos gravados no banco simulado (a verdade do servidor, não o que a tela mostra). */
-    async orders(): Promise<Array<{ id: string; status: string; idempotencyKey: string }>> {
+    async orders(): Promise<
+      Array<{
+        id: string
+        status: string
+        idempotencyKey: string
+        txHash: string | null
+        explorerUrl: string | null
+      }>
+    > {
       return page.evaluate(() => {
         const raw = localStorage.getItem('kurio:mockdb:v1')
         return raw ? (JSON.parse(raw) as { orders: [] }).orders : []

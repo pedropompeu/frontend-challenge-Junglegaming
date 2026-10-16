@@ -19,6 +19,7 @@ import { Route as AuthFavoritosRouteImport } from './routes/_auth/favoritos'
 import { Route as AuthPerfilRouteImport } from './routes/_auth/perfil'
 import { Route as NftNftIdRouteImport } from './routes/nft.$nftId'
 import { Route as AuthPedidoOrderIdRouteImport } from './routes/_auth/pedido.$orderId'
+import { Route as ExploradorTxHashRouteImport } from './routes/explorador.tx.$hash'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +70,11 @@ const AuthPedidoOrderIdRoute = AuthPedidoOrderIdRouteImport.update({
   path: '/pedido/$orderId',
   getParentRoute: () => AuthRoute,
 } as any)
+const ExploradorTxHashRoute = ExploradorTxHashRouteImport.update({
+  id: '/explorador/tx/$hash',
+  path: '/explorador/tx/$hash',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof AuthPerfilRoute
   '/nft/$nftId': typeof NftNftIdRoute
   '/pedido/$orderId': typeof AuthPedidoOrderIdRoute
+  '/explorador/tx/$hash': typeof ExploradorTxHashRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof AuthPerfilRoute
   '/nft/$nftId': typeof NftNftIdRoute
   '/pedido/$orderId': typeof AuthPedidoOrderIdRoute
+  '/explorador/tx/$hash': typeof ExploradorTxHashRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/_auth/perfil': typeof AuthPerfilRoute
   '/nft/$nftId': typeof NftNftIdRoute
   '/_auth/pedido/$orderId': typeof AuthPedidoOrderIdRoute
+  '/explorador/tx/$hash': typeof ExploradorTxHashRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/nft/$nftId'
     | '/pedido/$orderId'
+    | '/explorador/tx/$hash'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/nft/$nftId'
     | '/pedido/$orderId'
+    | '/explorador/tx/$hash'
   id:
     | '__root__'
     | '/'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/_auth/perfil'
     | '/nft/$nftId'
     | '/_auth/pedido/$orderId'
+    | '/explorador/tx/$hash'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -149,6 +161,7 @@ export interface RootRouteChildren {
   CarrinhoRoute: typeof CarrinhoRoute
   EntrarRoute: typeof EntrarRoute
   NftNftIdRoute: typeof NftNftIdRoute
+  ExploradorTxHashRoute: typeof ExploradorTxHashRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthPedidoOrderIdRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/explorador/tx/$hash': {
+      id: '/explorador/tx/$hash'
+      path: '/explorador/tx/$hash'
+      fullPath: '/explorador/tx/$hash'
+      preLoaderRoute: typeof ExploradorTxHashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -249,6 +269,7 @@ const rootRouteChildren: RootRouteChildren = {
   CarrinhoRoute: CarrinhoRoute,
   EntrarRoute: EntrarRoute,
   NftNftIdRoute: NftNftIdRoute,
+  ExploradorTxHashRoute: ExploradorTxHashRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

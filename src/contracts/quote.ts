@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { EthAmountSchema, IdSchema, IsoDateSchema, NetworkSchema } from './common'
-import { EditionKindSchema } from './nft'
+import { EditionKindSchema, NftImageSchema } from './nft'
 
 export const QuoteRequestSchema = z.object({
   couponCode: z.string().trim().min(1).optional(),
@@ -17,6 +17,9 @@ export const QuoteLineSchema = z.object({
   quantity: z.number().int().min(1),
   unitPrice: EthAmountSchema,
   lineTotal: EthAmountSchema,
+  /** Snapshot para o recibo: o pedido nunca relê o catálogo. Opcionais por compatibilidade. */
+  tokenId: z.string().optional(),
+  image: NftImageSchema.optional(),
 })
 export type QuoteLine = z.infer<typeof QuoteLineSchema>
 

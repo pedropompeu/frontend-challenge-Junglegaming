@@ -1,4 +1,5 @@
 import type { Page, Request, Response } from '@playwright/test'
+import type { Order } from '../../src/contracts'
 import { expect, login } from './fixtures'
 
 export const ANA_ADDRESS = '0x8f3a21c4b9e07d5a6c12f0e9b4d7a3c5e1f2b6d9'
@@ -50,4 +51,17 @@ export const review = (page: Page) => page.getByRole('region', { name: 'Revise s
 export async function goToReview(page: Page) {
   await page.getByRole('button', { name: 'Revisar pedido' }).click()
   await expect(review(page)).toBeVisible()
+}
+
+/** Do checkout aberto até o pedido criado (202), já na tela de acompanhamento. */
+export async function placeOrder(page: Page): Promise<Order> {
+  await connectWallet(page)
+  await goToReview(page)
+  const created = page.waitForResponse(isOrderPost)
+  await page.getByRole('button', { name: 'Confirmar compra' }).click()
+  const response = await created
+  expect(response.status()).toBe(202)
+  const order = (await response.json()) as Order
+  await expect(page).toHaveURL(new RegExp(`/pedido/${order.id}$`))
+  return order
 }
