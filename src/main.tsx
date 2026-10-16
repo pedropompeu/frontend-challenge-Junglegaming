@@ -4,10 +4,17 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 import { createQueryClient } from './app/query-client'
 import { Providers } from './app/providers'
+import { parseSearch, stringifySearch } from './app/search-serializer'
 import './index.css'
 
 const queryClient = createQueryClient()
-const router = createRouter({ routeTree, defaultPreload: 'intent', scrollRestoration: true })
+const router = createRouter({
+  routeTree,
+  defaultPreload: 'intent',
+  scrollRestoration: true,
+  parseSearch,
+  stringifySearch,
+})
 
 declare module '@tanstack/react-router' {
   interface Register {

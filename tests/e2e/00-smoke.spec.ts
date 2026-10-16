@@ -73,7 +73,7 @@ test('out-of-scope nav is marked unavailable', async ({ page }, testInfo) => {
       ? page.getByRole('navigation', { name: 'Navegação inferior' }).getByRole('button', {
           name: 'Escanear',
         })
-      : page.getByRole('link', { name: 'Criadores' })
+      : page.getByRole('link', { name: 'Criadores', exact: true })
   await expect(target).toHaveAttribute('aria-disabled', 'true')
   // O Playwright não clica em `aria-disabled` (semântica correta); o usuário ainda pode clicar.
   await target.click({ force: true })

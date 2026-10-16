@@ -36,7 +36,14 @@ export function Header({ cartCount = 0 }: HeaderProps) {
                 </Link>
               </li>
               <li className="h-full">
-                <Link to="/" className={navLink} aria-current={current(inMarket)}>
+                {/* Com hash, o Link não se marca ativo sozinho em `/` (ele força aria-current). */}
+                <Link
+                  to="/"
+                  hash="catalogo"
+                  activeOptions={{ includeHash: true }}
+                  className={navLink}
+                  aria-current={current(inMarket)}
+                >
                   Mercado
                 </Link>
               </li>

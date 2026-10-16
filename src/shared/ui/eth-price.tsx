@@ -23,13 +23,16 @@ export function EthPrice({ value, original, size = 'md', className }: EthPricePr
   const current = formatEth(value)
   const before = original ? formatEth(original) : null
   return (
-    <span className={cn('inline-flex items-baseline gap-2', className)}>
+    <span className={cn('inline-flex flex-wrap items-baseline gap-x-2', className)}>
       <span className="sr-only">{before ? `${current}, antes ${before}` : current}</span>
-      <span aria-hidden="true" className={cn('font-bold text-primary-hi', SIZES[size])}>
+      <span
+        aria-hidden="true"
+        className={cn('font-bold whitespace-nowrap text-primary-hi', SIZES[size])}
+      >
         {current}
       </span>
       {before ? (
-        <s aria-hidden="true" className="text-sm text-khaki">
+        <s aria-hidden="true" className="text-sm whitespace-nowrap text-khaki">
           {before}
         </s>
       ) : null}
