@@ -1,4 +1,4 @@
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryObserver } from '@tanstack/react-query'
 import { describe, expect, it } from 'vitest'
 import type {
   Cart,
@@ -161,6 +161,33 @@ describe('applyNftUpdate', () => {
       { cartItemId: 'ci_1', name: 'Neon Vessel (1/10)', kind: 'availability', from: '3', to: '1' },
     ])
     expect(qc.getQueryData<Cart>(qk.cart(OWNER))!.items[0]!.available).toBe(1)
+  })
+
+  it('refetches the quote on screen only while the cart still fits the stock', async () => {
+    const qc = new QueryClient()
+    seed(qc)
+    let fetches = 0
+    const observer = new QueryObserver(qc, {
+      queryKey: QUOTE_KEY,
+      queryFn: () => {
+        fetches += 1
+        return { quoteId: `q${fetches + 1}` }
+      },
+      staleTime: Infinity,
+    })
+    const unsubscribe = observer.subscribe(() => {})
+    const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
+
+    applyNftUpdate(qc, ev(4, { ed_10: { price: '1.38' } }), { ownerKey: OWNER })
+    await settle()
+    expect(fetches).toBe(1)
+
+    // 2 no carrinho e 1 em estoque: o servidor recusaria a cotação (409). Ela só fica velha.
+    applyNftUpdate(qc, ev(5, { ed_10: { available: 1 } }), { ownerKey: OWNER })
+    await settle()
+    expect(fetches).toBe(1)
+    expect(qc.getQueryState(QUOTE_KEY)?.isInvalidated).toBe(true)
+    unsubscribe()
   })
 
   it('leaves other NFTs and the quote alone when the cart does not hold the NFT', () => {

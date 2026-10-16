@@ -79,7 +79,13 @@ export function applyNftUpdate(
       }
     })
     qc.setQueryData<Cart>(cartKey, { ...cart, items })
-    void qc.invalidateQueries({ queryKey: quotesKeyOf(ctx.ownerKey) })
+    // Item acima do estoque: o servidor recusaria a cotação (409). Ela só fica marcada como
+    // velha e volta a ser pedida quando o carrinho couber de novo.
+    const overStock = items.some((i) => i.quantity > i.available)
+    void qc.invalidateQueries({
+      queryKey: quotesKeyOf(ctx.ownerKey),
+      refetchType: overStock ? 'none' : 'active',
+    })
   }
 
   return { changedCartLines }
