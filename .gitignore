@@ -21,3 +21,4 @@ blob-report/
 .netlify/
 *.tsbuildinfo
 .vitest/
+.tanstack/
