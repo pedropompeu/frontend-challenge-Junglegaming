@@ -4,14 +4,13 @@ import {
   NetworkSchema,
   UsernameSchema,
   WalletProviderSchema,
+  isEnsName,
   isValidAddress,
   type Buyer,
   type CreateWalletSessionBody,
 } from '@/contracts'
 
 export const NOTE_MAX = 280
-
-const ENS_OR_ADDRESS = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.eth$/
 
 /**
  * "Perfil do colecionador" do checkout (frame Desktop/Pagamento). Carteira cadastrada
@@ -53,7 +52,7 @@ export const CheckoutFormSchema = z
     if (
       v.secondaryAddress &&
       !isValidAddress(v.network, v.secondaryAddress) &&
-      !ENS_OR_ADDRESS.test(v.secondaryAddress)
+      !isEnsName(v.secondaryAddress)
     ) {
       issue('secondaryAddress', 'Use um endereço da rede ou um nome .eth')
     }

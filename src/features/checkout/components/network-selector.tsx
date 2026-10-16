@@ -2,7 +2,7 @@ import type { Network } from '@/contracts'
 import { NETWORK_LABELS } from '@/features/catalog/components/filters-panel'
 import { FormControl } from '@/shared/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select'
-import { selectTriggerClass } from './field-styles'
+import { selectTriggerClass } from '@/shared/ui/field-styles'
 
 type NetworkSelectorProps = {
   value: Network

@@ -3,3 +3,5 @@ export const inputClass =
 
 export const selectTriggerClass =
   'h-11 w-full rounded-none border-line-strong bg-transparent px-4 text-[15px] text-cream data-[placeholder]:text-khaki data-[size=default]:h-11'
+
+export const fieldErrorClass = 'text-xs font-bold text-coral'

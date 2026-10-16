@@ -333,6 +333,20 @@ describe('wallets', () => {
     expect((await get('/api/wallets', token)).body).toHaveLength(2)
   })
 
+  it('secondary address takes a network address or a .eth name, like the checkout', async () => {
+    const put = (secondaryAddress: string) =>
+      call('PUT', '/api/wallets/secondary', { token, body: { ...wallet, secondaryAddress } })
+    const ens = await put('cofre.eth')
+    expect(ens.status).toBe(200)
+    expect(WalletSchema.parse(ens.body).secondaryAddress).toBe('cofre.eth')
+    expect((await put('0x2222222222222222222222222222222222222222')).status).toBe(200)
+    const invalid = await put('nao vale')
+    expect(invalid.status).toBe(422)
+    expect(invalid.body.error.fieldErrors.secondaryAddress).toBe(
+      'Use um endereço da rede ou um nome .eth',
+    )
+  })
+
   it('validates the address against the network', async () => {
     const r = await call('PUT', '/api/wallets/primary', {
       token,

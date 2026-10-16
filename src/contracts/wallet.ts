@@ -31,6 +31,13 @@ export function isValidAddress(network: z.infer<typeof NetworkSchema>, address: 
   return network === 'solana' ? SOLANA_ADDRESS.test(address) : EVM_ADDRESS.test(address)
 }
 
+const ENS_NAME = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.eth$/
+
+/** Nome ENS completo (`cofre.eth`), aceito onde o Figma pede "ENS ou carteira secundária". */
+export function isEnsName(value: string): boolean {
+  return ENS_NAME.test(value)
+}
+
 const nullableText = (max: number) =>
   z
     .string()
@@ -41,10 +48,18 @@ const nullableText = (max: number) =>
 
 export const UpsertWalletBodySchema = z
   .object({
-    displayName: z.string().trim().min(1, 'Informe o nome de exibição').max(60),
-    nickname: z.string().trim().min(1, 'Informe o apelido').max(40),
+    displayName: z
+      .string()
+      .trim()
+      .min(1, 'Informe o nome de exibição')
+      .max(60, 'Use até 60 caracteres'),
+    nickname: z.string().trim().min(1, 'Informe o apelido').max(40, 'Use até 40 caracteres'),
     network: NetworkSchema,
-    profileName: z.string().trim().min(1, 'Informe o nome do perfil').max(60),
+    profileName: z
+      .string()
+      .trim()
+      .min(1, 'Informe o nome do perfil')
+      .max(60, 'Use até 60 caracteres'),
     address: z.string().trim().min(1, 'Informe o endereço da carteira'),
     secondaryAddress: nullableText(64),
     walletType: WalletProviderSchema,
@@ -54,7 +69,7 @@ export const UpsertWalletBodySchema = z
       .string()
       .trim()
       .regex(/^[a-z0-9-]*$/, 'Use letras minúsculas, números e hífen')
-      .max(40)
+      .max(40, 'Use até 40 caracteres')
       .transform((v) => (v === '' ? null : v))
       .nullable(),
   })
@@ -66,11 +81,15 @@ export const UpsertWalletBodySchema = z
         message: 'Endereço inválido para a rede escolhida',
       })
     }
-    if (v.secondaryAddress && !isValidAddress(v.network, v.secondaryAddress)) {
+    if (
+      v.secondaryAddress &&
+      !isValidAddress(v.network, v.secondaryAddress) &&
+      !isEnsName(v.secondaryAddress)
+    ) {
       ctx.addIssue({
         code: 'custom',
         path: ['secondaryAddress'],
-        message: 'Endereço inválido para a rede escolhida',
+        message: 'Use um endereço da rede ou um nome .eth',
       })
     }
   })

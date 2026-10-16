@@ -1,8 +1,9 @@
 import type { Page } from '@playwright/test'
 import { expect, login, mocks, test } from './fixtures'
 
-/** O header (escondido no mobile) também cita o nome; o perfil fica no `main`. */
-const profileName = (page: Page) => page.getByRole('main').getByText('Ana Souza')
+/** O perfil carregado: o nome de exibição preenche o formulário do `main`. */
+const profileName = (page: Page) =>
+  page.getByRole('main').getByLabel('Nome de exibição', { exact: true })
 
 test('register validates fields and maps the email conflict to the field', async ({ page }) => {
   await page.goto('/cadastro')
@@ -45,7 +46,7 @@ test('login returns to previous flow', async ({ page }) => {
   await expect(page).toHaveURL(/\/entrar\?redirect=/)
   await login(page, 'ana@kurio.test')
   await expect(page).toHaveURL(/\/perfil$/)
-  await expect(profileName(page)).toBeVisible()
+  await expect(profileName(page)).toHaveValue('Ana Souza')
 })
 
 test('session survives reload', async ({ page }) => {
@@ -54,13 +55,13 @@ test('session survives reload', async ({ page }) => {
   await expect(page).toHaveURL(/\/perfil$/)
   await page.reload()
   await expect(page).toHaveURL(/\/perfil$/)
-  await expect(profileName(page)).toBeVisible()
+  await expect(profileName(page)).toHaveValue('Ana Souza')
 })
 
 test('session expiry redirects to login and resumes the flow', async ({ page }) => {
   await page.goto('/perfil')
   await login(page, 'ana@kurio.test')
-  await expect(profileName(page)).toBeVisible()
+  await expect(profileName(page)).toHaveValue('Ana Souza')
   await mocks(page).expireSession()
   await page.goto('/perfil')
   await expect(page).toHaveURL(/\/entrar\?.*motivo=expirada/)

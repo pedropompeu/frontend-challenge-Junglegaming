@@ -19,6 +19,8 @@ import { Route as AuthFavoritosRouteImport } from './routes/_auth/favoritos'
 import { Route as AuthPerfilRouteImport } from './routes/_auth/perfil'
 import { Route as NftNftIdRouteImport } from './routes/nft.$nftId'
 import { Route as AuthPedidoOrderIdRouteImport } from './routes/_auth/pedido.$orderId'
+import { Route as AuthPerfilIndexRouteImport } from './routes/_auth/perfil.index'
+import { Route as AuthPerfilCarteirasRouteImport } from './routes/_auth/perfil.carteiras'
 import { Route as ExploradorTxHashRouteImport } from './routes/explorador.tx.$hash'
 
 const IndexRoute = IndexRouteImport.update({
@@ -70,6 +72,16 @@ const AuthPedidoOrderIdRoute = AuthPedidoOrderIdRouteImport.update({
   path: '/pedido/$orderId',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthPerfilIndexRoute = AuthPerfilIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthPerfilRoute,
+} as any)
+const AuthPerfilCarteirasRoute = AuthPerfilCarteirasRouteImport.update({
+  id: '/carteiras',
+  path: '/carteiras',
+  getParentRoute: () => AuthPerfilRoute,
+} as any)
 const ExploradorTxHashRoute = ExploradorTxHashRouteImport.update({
   id: '/explorador/tx/$hash',
   path: '/explorador/tx/$hash',
@@ -83,10 +95,12 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/checkout': typeof AuthCheckoutRoute
   '/favoritos': typeof AuthFavoritosRoute
-  '/perfil': typeof AuthPerfilRoute
+  '/perfil': typeof AuthPerfilRouteWithChildren
   '/nft/$nftId': typeof NftNftIdRoute
   '/pedido/$orderId': typeof AuthPedidoOrderIdRoute
+  '/perfil/carteiras': typeof AuthPerfilCarteirasRoute
   '/explorador/tx/$hash': typeof ExploradorTxHashRoute
+  '/perfil/': typeof AuthPerfilIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -95,10 +109,11 @@ export interface FileRoutesByTo {
   '/entrar': typeof EntrarRoute
   '/checkout': typeof AuthCheckoutRoute
   '/favoritos': typeof AuthFavoritosRoute
-  '/perfil': typeof AuthPerfilRoute
   '/nft/$nftId': typeof NftNftIdRoute
   '/pedido/$orderId': typeof AuthPedidoOrderIdRoute
+  '/perfil/carteiras': typeof AuthPerfilCarteirasRoute
   '/explorador/tx/$hash': typeof ExploradorTxHashRoute
+  '/perfil': typeof AuthPerfilIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -109,10 +124,12 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/_auth/checkout': typeof AuthCheckoutRoute
   '/_auth/favoritos': typeof AuthFavoritosRoute
-  '/_auth/perfil': typeof AuthPerfilRoute
+  '/_auth/perfil': typeof AuthPerfilRouteWithChildren
   '/nft/$nftId': typeof NftNftIdRoute
   '/_auth/pedido/$orderId': typeof AuthPedidoOrderIdRoute
+  '/_auth/perfil/carteiras': typeof AuthPerfilCarteirasRoute
   '/explorador/tx/$hash': typeof ExploradorTxHashRoute
+  '/_auth/perfil/': typeof AuthPerfilIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,7 +143,9 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/nft/$nftId'
     | '/pedido/$orderId'
+    | '/perfil/carteiras'
     | '/explorador/tx/$hash'
+    | '/perfil/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -135,10 +154,11 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/checkout'
     | '/favoritos'
-    | '/perfil'
     | '/nft/$nftId'
     | '/pedido/$orderId'
+    | '/perfil/carteiras'
     | '/explorador/tx/$hash'
+    | '/perfil'
   id:
     | '__root__'
     | '/'
@@ -151,7 +171,9 @@ export interface FileRouteTypes {
     | '/_auth/perfil'
     | '/nft/$nftId'
     | '/_auth/pedido/$orderId'
+    | '/_auth/perfil/carteiras'
     | '/explorador/tx/$hash'
+    | '/_auth/perfil/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -236,6 +258,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthPedidoOrderIdRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/perfil/': {
+      id: '/_auth/perfil/'
+      path: '/'
+      fullPath: '/perfil/'
+      preLoaderRoute: typeof AuthPerfilIndexRouteImport
+      parentRoute: typeof AuthPerfilRoute
+    }
+    '/_auth/perfil/carteiras': {
+      id: '/_auth/perfil/carteiras'
+      path: '/carteiras'
+      fullPath: '/perfil/carteiras'
+      preLoaderRoute: typeof AuthPerfilCarteirasRouteImport
+      parentRoute: typeof AuthPerfilRoute
+    }
     '/explorador/tx/$hash': {
       id: '/explorador/tx/$hash'
       path: '/explorador/tx/$hash'
@@ -246,17 +282,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthPerfilRouteChildren {
+  AuthPerfilCarteirasRoute: typeof AuthPerfilCarteirasRoute
+  AuthPerfilIndexRoute: typeof AuthPerfilIndexRoute
+}
+
+const AuthPerfilRouteChildren: AuthPerfilRouteChildren = {
+  AuthPerfilCarteirasRoute: AuthPerfilCarteirasRoute,
+  AuthPerfilIndexRoute: AuthPerfilIndexRoute,
+}
+
+const AuthPerfilRouteWithChildren = AuthPerfilRoute._addFileChildren(
+  AuthPerfilRouteChildren,
+)
+
 interface AuthRouteChildren {
   AuthCheckoutRoute: typeof AuthCheckoutRoute
   AuthFavoritosRoute: typeof AuthFavoritosRoute
-  AuthPerfilRoute: typeof AuthPerfilRoute
+  AuthPerfilRoute: typeof AuthPerfilRouteWithChildren
   AuthPedidoOrderIdRoute: typeof AuthPedidoOrderIdRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthCheckoutRoute: AuthCheckoutRoute,
   AuthFavoritosRoute: AuthFavoritosRoute,
-  AuthPerfilRoute: AuthPerfilRoute,
+  AuthPerfilRoute: AuthPerfilRouteWithChildren,
   AuthPedidoOrderIdRoute: AuthPedidoOrderIdRoute,
 }
 

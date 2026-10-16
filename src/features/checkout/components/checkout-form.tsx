@@ -1,6 +1,6 @@
-import { useId, type ReactNode } from 'react'
-import { useFormContext, useWatch, type FieldPath } from 'react-hook-form'
-import type { Network, WalletProvider } from '@/contracts'
+import { useId } from 'react'
+import { useFormContext, useWatch } from 'react-hook-form'
+import type { Network } from '@/contracts'
 import { cn } from '@/shared/lib/utils'
 import { Checkbox } from '@/shared/ui/checkbox'
 import {
@@ -11,101 +11,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/ui/form'
-import { Input } from '@/shared/ui/input'
+import { FieldLabel, SelectField, TextField } from '@/shared/ui/form-fields'
 import { Label } from '@/shared/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select'
 import { PROVIDER_LABELS } from '../labels'
 import { NOTE_MAX, type CheckoutFormValues } from '../schemas'
-import { inputClass, selectTriggerClass } from './field-styles'
+import { fieldErrorClass } from '@/shared/ui/field-styles'
 import { NetworkSelector } from './network-selector'
-
-type TextName = Exclude<
-  FieldPath<CheckoutFormValues>,
-  'network' | 'useCustomWallet' | 'walletType' | 'provider'
->
-
-/** Rótulo com asterisco fora do `<label>`: o nome acessível fica só com o texto. */
-function FieldLabel({
-  children,
-  required,
-  srOnly,
-}: {
-  children: ReactNode
-  required?: boolean
-  srOnly?: boolean
-}) {
-  return (
-    <div className={cn('flex items-baseline gap-3', srOnly && 'sr-only')}>
-      <FormLabel className="text-[15px] font-normal text-cream">{children}</FormLabel>
-      {required ? (
-        <span aria-hidden="true" className="text-coral">
-          *
-        </span>
-      ) : null}
-    </div>
-  )
-}
-
-type TextFieldProps = {
-  name: TextName
-  label: string
-  required?: boolean
-  srOnlyLabel?: boolean
-  placeholder?: string
-  autoComplete?: string
-  readOnly?: boolean
-  description?: string
-  suffix?: string
-}
-
-function TextField({
-  name,
-  label,
-  required,
-  srOnlyLabel,
-  placeholder,
-  autoComplete,
-  readOnly,
-  description,
-  suffix,
-}: TextFieldProps) {
-  const { control } = useFormContext<CheckoutFormValues>()
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="content-start">
-          <FieldLabel required={required} srOnly={srOnlyLabel}>
-            {label}
-          </FieldLabel>
-          <div className="flex items-center">
-            <FormControl>
-              <Input
-                {...field}
-                value={field.value as string}
-                placeholder={placeholder}
-                autoComplete={autoComplete ?? 'off'}
-                readOnly={readOnly}
-                aria-required={required ? true : undefined}
-                className={cn(inputClass, suffix && 'max-w-56')}
-              />
-            </FormControl>
-            {suffix ? (
-              <span aria-hidden="true" className="ml-2 text-sand">
-                {suffix}
-              </span>
-            ) : null}
-          </div>
-          {description ? (
-            <FormDescription className="text-xs text-sand">{description}</FormDescription>
-          ) : null}
-          <FormMessage className="text-xs font-bold text-coral" />
-        </FormItem>
-      )}
-    />
-  )
-}
 
 type CheckoutFormProps = {
   id: string
@@ -135,8 +46,20 @@ export function CheckoutForm({
         Perfil do colecionador
       </h2>
       <div className="mt-4 grid gap-x-6 gap-y-5 md:grid-cols-2">
-        <TextField name="displayName" label="Nome de exibição" required autoComplete="name" />
-        <TextField name="username" label="Nome de usuário" required autoComplete="username" />
+        <TextField
+          control={form.control}
+          name="displayName"
+          label="Nome de exibição"
+          required
+          autoComplete="name"
+        />
+        <TextField
+          control={form.control}
+          name="username"
+          label="Nome de usuário"
+          required
+          autoComplete="username"
+        />
         <FormField
           control={form.control}
           name="network"
@@ -151,12 +74,13 @@ export function CheckoutForm({
                   onNetworkChange(network)
                 }}
               />
-              <FormMessage className="text-xs font-bold text-coral" />
+              <FormMessage className={fieldErrorClass} />
             </FormItem>
           )}
         />
-        <TextField name="profileName" label="Nome do perfil" required />
+        <TextField control={form.control} name="profileName" label="Nome do perfil" required />
         <TextField
+          control={form.control}
           name="walletAddress"
           label="Endereço da carteira"
           required
@@ -169,48 +93,31 @@ export function CheckoutForm({
           }
         />
         <TextField
+          control={form.control}
           name="secondaryAddress"
           label="ENS ou carteira secundária (opcional)"
           srOnlyLabel
           placeholder="ENS ou carteira secundária (opcional)"
           readOnly={lockedWallet}
         />
-        <FormField
+        <SelectField
           control={form.control}
           name="walletType"
-          render={({ field }) => (
-            <FormItem className="content-start">
-              <FieldLabel required>Tipo de carteira</FieldLabel>
-              <Select
-                value={field.value}
-                onValueChange={(v) => field.onChange(v as WalletProvider)}
-                disabled={lockedWallet}
-              >
-                <FormControl>
-                  <SelectTrigger
-                    ref={field.ref}
-                    onBlur={field.onBlur}
-                    aria-required="true"
-                    className={selectTriggerClass}
-                  >
-                    <SelectValue placeholder="Selecione uma carteira" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {(Object.keys(PROVIDER_LABELS) as WalletProvider[]).map((p) => (
-                    <SelectItem key={p} value={p}>
-                      {PROVIDER_LABELS[p]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage className="text-xs font-bold text-coral" />
-            </FormItem>
-          )}
+          label="Tipo de carteira"
+          required
+          options={PROVIDER_LABELS}
+          placeholder="Selecione uma carteira"
+          disabled={lockedWallet}
         />
-        <TextField name="referralCode" label="Código de indicação" />
-        <TextField name="email" label="E-mail" required autoComplete="email" />
-        <TextField name="ensName" label="Nome ENS" suffix=".eth" />
+        <TextField control={form.control} name="referralCode" label="Código de indicação" />
+        <TextField
+          control={form.control}
+          name="email"
+          label="E-mail"
+          required
+          autoComplete="email"
+        />
+        <TextField control={form.control} name="ensName" label="Nome ENS" prefix=".eth" />
       </div>
 
       <div className="mt-6 flex items-center gap-3">
@@ -247,7 +154,7 @@ export function CheckoutForm({
             >
               {note.length}/{NOTE_MAX}
             </FormDescription>
-            <FormMessage className="text-xs font-bold text-coral" />
+            <FormMessage className={fieldErrorClass} />
           </FormItem>
         )}
       />

@@ -1,36 +1,18 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useSession } from '@/features/auth/use-session'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { ProfileSidebar } from '@/features/profile/components/profile-sidebar'
 
 export const Route = createFileRoute('/_auth/perfil')({
-  component: ProfilePage,
+  component: AccountLayout,
 })
 
-/** Perfil provisório: a Task 19 traz coleção, carteiras e pedidos. */
-function ProfilePage() {
-  const { user, logout } = useSession()
-  const navigate = useNavigate()
-
-  async function signOut() {
-    await logout()
-    void navigate({ to: '/' })
-  }
-
+/** Área da conta: "Meu perfil" ao lado (acima, no mobile) de dados do perfil ou carteiras. */
+function AccountLayout() {
   return (
-    <section className="page-container py-10">
-      <h1 className="text-2xl font-bold md:text-4xl">Perfil do colecionador</h1>
-      {user ? (
-        <div className="mt-6 grid gap-1">
-          <p className="text-lg font-bold">{user.displayName}</p>
-          <p className="text-sand">@{user.username}</p>
-        </div>
-      ) : null}
-      <button
-        type="button"
-        onClick={() => void signOut()}
-        className="mt-8 inline-flex h-11 items-center rounded-md border border-line-strong px-6 font-bold hover:border-primary hover:text-primary-hi"
-      >
-        Sair
-      </button>
-    </section>
+    <div className="page-container grid gap-6 pt-4 pb-12 md:pt-8 lg:grid-cols-[310px_minmax(0,1fr)] lg:gap-7">
+      <ProfileSidebar />
+      <div className="min-w-0">
+        <Outlet />
+      </div>
+    </div>
   )
 }

@@ -1,12 +1,10 @@
 import { useId } from 'react'
+import { Link } from '@tanstack/react-router'
 import type { Wallet } from '@/contracts'
 import { NETWORK_LABELS } from '@/features/catalog/components/filters-panel'
 import { cn } from '@/shared/lib/utils'
 import { RadioGroup, RadioGroupItem } from '@/shared/ui/radio-group'
 import { shortAddress } from '../labels'
-
-/** Até a tela de carteiras existir (Task 20), o link é um `<a>` comum. */
-export const MANAGE_WALLETS_HREF = '/perfil/carteiras?redirect=/checkout'
 
 type WalletSelectorProps = {
   wallets: Wallet[]
@@ -26,23 +24,25 @@ export function WalletSelector({ wallets, value, onSelect, disabled }: WalletSel
           Suas carteiras
         </h2>
         {wallets.length > 0 ? (
-          <a
-            href={MANAGE_WALLETS_HREF}
+          <Link
+            to="/perfil/carteiras"
+            search={{ redirect: '/checkout' }}
             className="text-sm font-bold text-primary-hi hover:underline"
           >
             Trocar carteira
-          </a>
+          </Link>
         ) : null}
       </div>
       {wallets.length === 0 ? (
         <div className="mt-3 rounded-[16px] bg-surface px-5 py-4 text-sm">
           <p className="text-sand">Você ainda não tem carteiras cadastradas.</p>
-          <a
-            href={MANAGE_WALLETS_HREF}
+          <Link
+            to="/perfil/carteiras"
+            search={{ redirect: '/checkout' }}
             className="mt-3 inline-flex h-10 items-center rounded-full border border-primary-hi px-5 font-bold text-primary-hi hover:bg-primary-hi hover:text-ink"
           >
             Cadastrar carteira
-          </a>
+          </Link>
         </div>
       ) : (
         <RadioGroup
