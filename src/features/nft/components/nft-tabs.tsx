@@ -24,7 +24,7 @@ export function NftTabs({ nft }: { nft: Nft }) {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="details" className="max-w-[72ch] space-y-5 pt-5 text-sm leading-6">
-        <p className="text-primary-hi">{nft.description}</p>
+        <p className="text-sand">{nft.description}</p>
         <div>
           <h3 className="font-bold">Rede:</h3>
           <p className="text-sand">

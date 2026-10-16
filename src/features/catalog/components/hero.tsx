@@ -51,7 +51,7 @@ export function HeroSlide({ slide, priority }: { slide: HeroSlideData; priority:
           <span className="md:hidden">{slide.mobileTitle}</span>
           <span className="hidden md:inline">{slide.title}</span>
         </h2>
-        <p className="mt-2 max-w-[22ch] text-xs leading-5 text-sand md:mt-3 md:max-w-[52ch] md:text-sm md:leading-6 md:text-primary-hi">
+        <p className="mt-2 max-w-[22ch] text-xs leading-5 text-sand md:mt-3 md:max-w-[52ch] md:text-sm md:leading-6">
           <span className="md:hidden">{slide.mobileText}</span>
           <span className="hidden md:inline">{slide.text}</span>
         </p>
