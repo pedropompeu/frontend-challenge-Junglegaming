@@ -196,9 +196,13 @@ test('desktop purchase bar sits inline without the mobile shadow', async ({ page
   expect(await hasVisibleShadow(bar)).toBe(false)
 })
 
-test('selected edition chip has the primary border and medium primary-hi text', async ({ page }) => {
+test('selected edition chip has the primary border and medium primary-hi text', async ({
+  page,
+}) => {
   await page.goto('/nft/nft_neon-vessel')
-  const selected = page.getByRole('group', { name: 'Edição' }).getByRole('button', { pressed: true })
+  const selected = page
+    .getByRole('group', { name: 'Edição' })
+    .getByRole('button', { pressed: true })
   await expect(selected).toHaveCSS('border-top-color', PRIMARY)
   await expect(selected).toHaveCSS('color', 'rgb(232, 155, 85)')
   await expect(selected).toHaveCSS('font-weight', '500')
@@ -245,4 +249,46 @@ test('desktop cart quantity stepper uses the frame pills', async ({ page }) => {
   const stepper = page.getByRole('main').getByRole('group', { name: 'Quantidade de Neon Vessel' })
   await expectStepPill(stepper, ['20px', '30px'])
   await expect(stepper.locator('output')).toHaveCSS('font-size', '17px')
+})
+
+/**
+ * Topo do rótulo de cada linha do resumo. Subtotal, Desconto e Taxa têm a mesma fonte, então a
+ * diferença entre topos é a das linhas de base do frame; o Total (16 px) desloca ~1 px.
+ */
+async function labelTop(scope: Locator, testId: string) {
+  const box = await scope.getByTestId(testId).locator('xpath=../../dt').boundingBox()
+  return box!.y
+}
+
+async function expectSummaryRhythm(scope: Locator, totalGap: number) {
+  const subtotalTop = await labelTop(scope, 'summary-subtotal')
+  const discountTop = await labelTop(scope, 'summary-discount')
+  const feeTop = await labelTop(scope, 'summary-fee')
+  const totalTop = await labelTop(scope, 'summary-total')
+  const [discount, fee, total] = [
+    discountTop - subtotalTop,
+    feeTop - discountTop,
+    totalTop - feeTop,
+  ]
+  expect(discount).toBeCloseTo(32, 0)
+  expect(fee).toBeCloseTo(32, 0)
+  expect(Math.abs(total - totalGap)).toBeLessThanOrEqual(2)
+  await expect(scope.getByTestId('summary-discount')).toHaveCSS('font-size', '15px')
+  await expect(scope.getByTestId('summary-total').locator('xpath=../../dt')).toHaveCSS(
+    'font-size',
+    '16px',
+  )
+}
+
+test('cart summary rows follow the frame 32px rhythm', async ({ page }) => {
+  await addToCart(page, 'nft_neon-vessel')
+  await page.goto('/carrinho')
+  // Do rótulo da Taxa ao do Total: 46,4 px no frame mobile e 70,4 px no desktop.
+  await expectSummaryRhythm(page.getByRole('main'), isMobile(page) ? 46.4 : 70.4)
+})
+
+test('desktop checkout summary rows follow the frame 32px rhythm', async ({ page }) => {
+  test.skip(isMobile(page), 'o Pagamento mobile do frame não tem o resumo (A-036)')
+  await openCheckout(page)
+  await expectSummaryRhythm(page.getByRole('region', { name: 'Seus NFTs' }), 70.4)
 })

@@ -22,7 +22,7 @@ export function CartSummary({ quote, isLoading, dividedTotal = false }: CartSumm
       <SummaryRow label="Subtotal" testId="summary-subtotal">
         {formatEth(quote.subtotal)}
       </SummaryRow>
-      <SummaryRow label={discountLabel} testId="summary-discount">
+      <SummaryRow label={discountLabel} testId="summary-discount" labelSized>
         (-) {formatEth(quote.discount)}
       </SummaryRow>
       <SummaryRow label="Taxa de rede" testId="summary-fee" note="Taxa estimada">
@@ -36,7 +36,8 @@ export function CartSummary({ quote, isLoading, dividedTotal = false }: CartSumm
 }
 
 export function SummaryList({ children }: { children: ReactNode }) {
-  return <dl className="grid gap-3 text-[15px]">{children}</dl>
+  // Linhas de 28 px com 4 px entre elas: o passo de 32 px dos frames.
+  return <dl className="grid gap-1 text-[15px]">{children}</dl>
 }
 
 export function SummaryRow({
@@ -45,6 +46,7 @@ export function SummaryRow({
   note,
   total = false,
   divided = false,
+  labelSized = false,
   children,
 }: {
   label: string
@@ -52,22 +54,29 @@ export function SummaryRow({
   note?: string
   total?: boolean
   divided?: boolean
+  /** Valor no tamanho do rótulo (15 px), como o desconto nos frames. */
+  labelSized?: boolean
   children: ReactNode
 }) {
   return (
     <div
       className={cn(
         'flex items-start justify-between gap-4',
-        total && 'mt-3',
-        divided && 'md:border-t md:border-divider md:pt-3',
+        // Desktop: a nota e o Total descem para as linhas de base do frame; no Pagamento a
+        // divisória fica a ~44 px da Taxa e o Total, a ~26 px da divisória.
+        total && 'md:mt-3.5',
+        divided && 'md:mt-1 md:border-t md:border-divider md:pt-2',
       )}
     >
-      <dt className={cn(total && 'font-bold')}>{label}</dt>
+      <dt className={cn(total && 'text-base font-bold')}>{label}</dt>
       <dd className="flex min-h-7 flex-col items-end text-right">
-        <span data-testid={testId} className={cn('text-lg', total && 'font-bold text-primary-hi')}>
+        <span
+          data-testid={testId}
+          className={cn(labelSized ? 'leading-7' : 'text-lg', total && 'font-bold text-primary-hi')}
+        >
           {children}
         </span>
-        {note ? <span className="text-xs text-primary-hi">{note}</span> : null}
+        {note ? <span className="text-xs text-primary-hi md:mt-2">{note}</span> : null}
       </dd>
     </div>
   )
