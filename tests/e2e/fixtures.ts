@@ -17,7 +17,20 @@ export function mocks(page: Page) {
         opts,
       ] as const)
     },
+    async expireSession() {
+      await ready()
+      await page.evaluate(() => window.__kurioMocks!.expireSession())
+    },
   }
+}
+
+export const DEMO_PASSWORD = 'Kurio@123'
+
+/** Preenche o formulário de login já aberto (`/entrar`, modal no desktop ou tela cheia no mobile). */
+export async function login(page: Page, email: string, password = DEMO_PASSWORD) {
+  await page.getByLabel('E-mail', { exact: true }).fill(email)
+  await page.getByLabel('Senha', { exact: true }).fill(password)
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click()
 }
 
 export function isMobile(page: Page): boolean {

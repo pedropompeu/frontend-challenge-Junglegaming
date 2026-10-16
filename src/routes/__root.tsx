@@ -6,6 +6,7 @@ import {
   type ErrorComponentProps,
 } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
+import { SessionProvider } from '@/features/auth/session-provider'
 import { errorMessage } from '@/shared/lib/api-error'
 import { SiteLayout } from '@/shared/layout/site-layout'
 
@@ -19,9 +20,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootComponent() {
   return (
-    <SiteLayout>
-      <Outlet />
-    </SiteLayout>
+    <SessionProvider>
+      <SiteLayout>
+        <Outlet />
+      </SiteLayout>
+    </SessionProvider>
   )
 }
 

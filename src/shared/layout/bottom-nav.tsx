@@ -4,10 +4,16 @@ import type { ComponentType, SVGProps } from 'react'
 import { Unavailable } from '@/shared/ui/unavailable'
 
 /** Telas mobile que têm barra de ação fixa no Figma (detalhe, carrinho, pagamento). */
-export const ROUTES_WITHOUT_BOTTOM_NAV = ['/nft/', '/carrinho', '/checkout']
+export const ROUTES_WITH_ACTION_BAR = ['/nft/', '/carrinho', '/checkout']
+/** Telas mobile cheias, sem navegação nem rodapé (entrar, cadastro). */
+export const BARE_ROUTES = ['/entrar', '/cadastro']
 
-export function hasBottomNav(pathname: string): boolean {
-  return !ROUTES_WITHOUT_BOTTOM_NAV.some((p) => pathname.startsWith(p))
+export type MobileChrome = 'bottom-nav' | 'action-bar' | 'bare'
+
+export function mobileChromeOf(pathname: string): MobileChrome {
+  if (BARE_ROUTES.some((p) => pathname.startsWith(p))) return 'bare'
+  if (ROUTES_WITH_ACTION_BAR.some((p) => pathname.startsWith(p))) return 'action-bar'
+  return 'bottom-nav'
 }
 
 const item =

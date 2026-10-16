@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
-import { LogInIcon, SearchIcon, ShoppingCartIcon, XIcon } from 'lucide-react'
+import { SearchIcon, ShoppingCartIcon, XIcon } from 'lucide-react'
+import { AccountMenu } from '@/features/auth/components/account-menu'
 import { cn } from '@/shared/lib/utils'
 import { Unavailable } from '@/shared/ui/unavailable'
 
@@ -81,13 +82,7 @@ export function Header({ cartCount = 0 }: HeaderProps) {
                 </span>
               ) : null}
             </a>
-            <a
-              href="/entrar"
-              className="inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-[15px] font-medium text-ink transition-colors hover:bg-primary-hi lg:w-[100px]"
-            >
-              <LogInIcon aria-hidden="true" className="size-5" />
-              Entrar
-            </a>
+            <AccountMenu />
           </div>
         </div>
       </div>

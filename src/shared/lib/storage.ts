@@ -47,3 +47,16 @@ export function readJson<T>(kind: Kind, key: string, guard: (v: unknown) => v is
 export function writeJson(kind: Kind, key: string, value: unknown): void {
   writeItem(kind, key, JSON.stringify(value))
 }
+
+/** Chaves presentes no armazenamento (para limpezas por prefixo). */
+export function storageKeys(kind: Kind): string[] {
+  try {
+    const s = store(kind)
+    if (!s) return []
+    return Array.from({ length: s.length }, (_, i) => s.key(i)).filter(
+      (k): k is string => k !== null,
+    )
+  } catch {
+    return []
+  }
+}
