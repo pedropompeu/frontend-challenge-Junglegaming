@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import { SearchIcon, ShoppingCartIcon, XIcon } from 'lucide-react'
 import { AccountMenu } from '@/features/auth/components/account-menu'
+import { useCartCount } from '@/features/cart/queries'
 import { cn } from '@/shared/lib/utils'
 import { Unavailable } from '@/shared/ui/unavailable'
 
@@ -11,12 +12,7 @@ const MARKET_PREFIXES = ['/nft/', '/carrinho', '/checkout', '/pedido/']
 const navLink =
   'relative inline-flex h-full items-center px-1 text-cream transition-colors hover:text-primary-hi aria-[current=page]:text-primary-hi aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-0 aria-[current=page]:after:-bottom-px aria-[current=page]:after:h-0.5 aria-[current=page]:after:bg-primary'
 
-type HeaderProps = {
-  /** Quantidade de itens no carrinho (ligada ao `qk.cart` na Task 15). */
-  cartCount?: number
-}
-
-export function Header({ cartCount = 0 }: HeaderProps) {
+export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const inMarket = MARKET_PREFIXES.some((p) => pathname.startsWith(p))
   const current = (active: boolean) => (active ? ('page' as const) : undefined)
@@ -67,26 +63,43 @@ export function Header({ cartCount = 0 }: HeaderProps) {
 
           <div className="flex items-center gap-4 lg:gap-6">
             <HeaderSearch />
-            <a
-              href="/carrinho"
-              className="relative grid size-10 place-items-center rounded-md text-cream hover:text-primary-hi"
-            >
-              <ShoppingCartIcon aria-hidden="true" className="size-6" />
-              <span className="sr-only">Carrinho, {cartCount} itens</span>
-              {cartCount > 0 ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute top-0.5 right-0 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] leading-4 font-bold text-ink"
-                >
-                  {cartCount > 99 ? '99+' : cartCount}
-                </span>
-              ) : null}
-            </a>
+            <CartLink />
             <AccountMenu />
           </div>
         </div>
       </div>
     </header>
+  )
+}
+
+/** "1 item" / "N itens": usado no rótulo dos atalhos do carrinho. */
+export function cartLabel(count: number): string {
+  return `Carrinho, ${count} ${count === 1 ? 'item' : 'itens'}`
+}
+
+export function CartBadge({ count }: { count: number }) {
+  if (count <= 0) return null
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute top-0.5 right-0 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] leading-4 font-bold text-ink"
+    >
+      {count > 99 ? '99+' : count}
+    </span>
+  )
+}
+
+function CartLink() {
+  const count = useCartCount()
+  return (
+    <Link
+      to="/carrinho"
+      className="relative grid size-10 place-items-center rounded-md text-cream hover:text-primary-hi"
+    >
+      <ShoppingCartIcon aria-hidden="true" className="size-6" />
+      <span className="sr-only">{cartLabel(count)}</span>
+      <CartBadge count={count} />
+    </Link>
   )
 }
 

@@ -17,6 +17,13 @@ export function mocks(page: Page) {
         opts,
       ] as const)
     },
+    async mutateNft(nftId: string, patch: Parameters<KurioMocksControl['mutateNft']>[1]) {
+      await ready()
+      await page.evaluate(([id, p]) => void window.__kurioMocks!.mutateNft(id, p), [
+        nftId,
+        patch,
+      ] as const)
+    },
     async expireSession() {
       await ready()
       await page.evaluate(() => window.__kurioMocks!.expireSession())

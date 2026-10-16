@@ -6,7 +6,7 @@ import { FeatureStrip } from './feature-strip'
 import { Footer } from './footer'
 import { Header } from './header'
 
-export function SiteLayout({ children, cartCount }: { children: ReactNode; cartCount?: number }) {
+export function SiteLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const chrome = mobileChromeOf(pathname)
   return (
@@ -23,7 +23,7 @@ export function SiteLayout({ children, cartCount }: { children: ReactNode; cartC
       >
         Pular para o conteúdo
       </a>
-      <Header cartCount={cartCount} />
+      <Header />
       <main id="conteudo" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>

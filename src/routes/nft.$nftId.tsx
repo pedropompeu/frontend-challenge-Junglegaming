@@ -5,6 +5,12 @@ import { ChevronLeftIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import type { Edition } from '@/contracts'
+import {
+  availabilityMessage,
+  conflictAvailable,
+  useAddToCart,
+  useQuantityInCart,
+} from '@/features/cart/queries'
 import { FavoriteButton } from '@/features/favorites/components/favorite-button'
 import { EditionPicker } from '@/features/nft/components/edition-picker'
 import { MoreFromCollection } from '@/features/nft/components/more-from-collection'
@@ -15,7 +21,7 @@ import { NftTabs } from '@/features/nft/components/nft-tabs'
 import { PurchaseBar } from '@/features/nft/components/purchase-bar'
 import { selectEdition } from '@/features/nft/editions'
 import { nftDetailQuery } from '@/features/nft/queries'
-import { isApiError } from '@/shared/lib/api-error'
+import { errorMessage, isApiError } from '@/shared/lib/api-error'
 
 const detailSearchSchema = z.object({ edicao: z.string().optional().catch(undefined) })
 
@@ -41,8 +47,10 @@ function NftDetailPage() {
   const { data: nft } = useSuspenseQuery(nftDetailQuery(nftId))
 
   const edition = selectEdition(nft.editions, edicao)
-  // Até a Task 15 (carrinho), o teto é o estoque da edição.
-  const max = edition.available
+  const inCart = useQuantityInCart(nft.id, edition.id)
+  // O teto é o que ainda cabe: estoque da edição menos o que já está no carrinho.
+  const max = Math.max(0, edition.available - inCart)
+  const addMutation = useAddToCart()
 
   // Troca de edição recomeça a quantidade em 1 (ajuste de estado no render, sem efeito).
   const [quantity, setQuantity] = useState(1)
@@ -57,8 +65,21 @@ function NftDetailPage() {
     void navigate({ search: { edicao: next.id }, replace: true, resetScroll: false })
   }
 
-  function addToCart() {
-    toast.success(`${nft.name} adicionado ao carrinho`)
+  function addToCart(then?: () => void) {
+    addMutation.mutate(
+      { nftId: nft.id, editionId: edition.id, quantity: clampedQuantity },
+      {
+        onSuccess: () => {
+          setQuantity(1)
+          toast.success(`${nft.name} adicionado ao carrinho`)
+          then?.()
+        },
+        onError: (error) => {
+          const available = conflictAvailable(error)
+          toast.error(available !== null ? availabilityMessage(available) : errorMessage(error))
+        },
+      },
+    )
   }
 
   return (
@@ -91,8 +112,10 @@ function NftDetailPage() {
                 quantity={clampedQuantity}
                 max={max}
                 onQuantityChange={setQuantity}
-                onBuy={addToCart}
-                onAddToCart={addToCart}
+                inCart={inCart}
+                isPending={addMutation.isPending}
+                onBuy={() => addToCart(() => void navigate({ to: '/carrinho' }))}
+                onAddToCart={() => addToCart()}
                 favoriteSlot={
                   <FavoriteButton
                     nftId={nft.id}

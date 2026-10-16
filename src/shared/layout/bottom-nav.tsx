@@ -1,44 +1,28 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { HeartIcon, HouseIcon, ScanLineIcon, ShoppingCartIcon, UserRoundIcon } from 'lucide-react'
-import type { ComponentType, SVGProps } from 'react'
+import { useCartCount } from '@/features/cart/queries'
+import { cn } from '@/shared/lib/utils'
 import { Unavailable } from '@/shared/ui/unavailable'
+import { CartBadge, cartLabel } from './header'
 
-/** Telas mobile que têm barra de ação fixa no Figma (detalhe, carrinho, pagamento). */
-export const ROUTES_WITH_ACTION_BAR = ['/nft/', '/carrinho', '/checkout']
+/** Telas mobile com barra de ação fixa no Figma (detalhe): a página reserva o espaço dela. */
+export const ROUTES_WITH_ACTION_BAR = ['/nft/']
+/** Telas mobile do fluxo de compra sem navegação inferior; o resumo gruda no rodapé (sticky). */
+export const FOCUSED_ROUTES = ['/carrinho', '/checkout']
 /** Telas mobile cheias, sem navegação nem rodapé (entrar, cadastro). */
 export const BARE_ROUTES = ['/entrar', '/cadastro']
 
-export type MobileChrome = 'bottom-nav' | 'action-bar' | 'bare'
+export type MobileChrome = 'bottom-nav' | 'action-bar' | 'focused' | 'bare'
 
 export function mobileChromeOf(pathname: string): MobileChrome {
   if (BARE_ROUTES.some((p) => pathname.startsWith(p))) return 'bare'
   if (ROUTES_WITH_ACTION_BAR.some((p) => pathname.startsWith(p))) return 'action-bar'
+  if (FOCUSED_ROUTES.some((p) => pathname.startsWith(p))) return 'focused'
   return 'bottom-nav'
 }
 
 const item =
   'grid size-12 place-items-center rounded-full text-sand transition-colors hover:text-primary-hi aria-[current=page]:text-primary-hi'
-
-type NavIcon = ComponentType<SVGProps<SVGSVGElement>>
-
-function NavAnchor({
-  href,
-  label,
-  Icon,
-  active,
-}: {
-  href: string
-  label: string
-  Icon: NavIcon
-  active: boolean
-}) {
-  return (
-    <a href={href} className={item} aria-current={active ? 'page' : undefined}>
-      <Icon aria-hidden="true" className="size-6" />
-      <span className="sr-only">{label}</span>
-    </a>
-  )
-}
 
 /** Navegação inferior do mobile (< 768px), com o Scan central fora do escopo. */
 export function BottomNav() {
@@ -68,12 +52,7 @@ export function BottomNav() {
           </Unavailable>
         </li>
         <li>
-          <NavAnchor
-            href="/carrinho"
-            label="Carrinho"
-            Icon={ShoppingCartIcon}
-            active={pathname.startsWith('/carrinho')}
-          />
+          <CartNavLink />
         </li>
         <li>
           <Link to="/perfil" className={item}>
@@ -83,5 +62,16 @@ export function BottomNav() {
         </li>
       </ul>
     </nav>
+  )
+}
+
+function CartNavLink() {
+  const count = useCartCount()
+  return (
+    <Link to="/carrinho" className={cn(item, 'relative')}>
+      <ShoppingCartIcon aria-hidden="true" className="size-6" />
+      <span className="sr-only">{cartLabel(count)}</span>
+      <CartBadge count={count} />
+    </Link>
   )
 }

@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as CarrinhoRouteImport } from './routes/carrinho'
 import { Route as EntrarRouteImport } from './routes/entrar'
+import { Route as AuthCheckoutRouteImport } from './routes/_auth/checkout'
 import { Route as AuthFavoritosRouteImport } from './routes/_auth/favoritos'
 import { Route as AuthPerfilRouteImport } from './routes/_auth/perfil'
 import { Route as NftNftIdRouteImport } from './routes/nft.$nftId'
@@ -31,10 +33,20 @@ const CadastroRoute = CadastroRouteImport.update({
   path: '/cadastro',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CarrinhoRoute = CarrinhoRouteImport.update({
+  id: '/carrinho',
+  path: '/carrinho',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EntrarRoute = EntrarRouteImport.update({
   id: '/entrar',
   path: '/entrar',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCheckoutRoute = AuthCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AuthFavoritosRoute = AuthFavoritosRouteImport.update({
   id: '/favoritos',
@@ -55,7 +67,9 @@ const NftNftIdRoute = NftNftIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/carrinho': typeof CarrinhoRoute
   '/entrar': typeof EntrarRoute
+  '/checkout': typeof AuthCheckoutRoute
   '/favoritos': typeof AuthFavoritosRoute
   '/perfil': typeof AuthPerfilRoute
   '/nft/$nftId': typeof NftNftIdRoute
@@ -63,7 +77,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/carrinho': typeof CarrinhoRoute
   '/entrar': typeof EntrarRoute
+  '/checkout': typeof AuthCheckoutRoute
   '/favoritos': typeof AuthFavoritosRoute
   '/perfil': typeof AuthPerfilRoute
   '/nft/$nftId': typeof NftNftIdRoute
@@ -73,7 +89,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/carrinho': typeof CarrinhoRoute
   '/entrar': typeof EntrarRoute
+  '/_auth/checkout': typeof AuthCheckoutRoute
   '/_auth/favoritos': typeof AuthFavoritosRoute
   '/_auth/perfil': typeof AuthPerfilRoute
   '/nft/$nftId': typeof NftNftIdRoute
@@ -81,15 +99,32 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/cadastro' | '/entrar' | '/favoritos' | '/perfil' | '/nft/$nftId'
+    | '/'
+    | '/cadastro'
+    | '/carrinho'
+    | '/entrar'
+    | '/checkout'
+    | '/favoritos'
+    | '/perfil'
+    | '/nft/$nftId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cadastro' | '/entrar' | '/favoritos' | '/perfil' | '/nft/$nftId'
+  to:
+    | '/'
+    | '/cadastro'
+    | '/carrinho'
+    | '/entrar'
+    | '/checkout'
+    | '/favoritos'
+    | '/perfil'
+    | '/nft/$nftId'
   id:
     | '__root__'
     | '/'
     | '/_auth'
     | '/cadastro'
+    | '/carrinho'
     | '/entrar'
+    | '/_auth/checkout'
     | '/_auth/favoritos'
     | '/_auth/perfil'
     | '/nft/$nftId'
@@ -99,6 +134,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   CadastroRoute: typeof CadastroRoute
+  CarrinhoRoute: typeof CarrinhoRoute
   EntrarRoute: typeof EntrarRoute
   NftNftIdRoute: typeof NftNftIdRoute
 }
@@ -126,12 +162,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CadastroRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carrinho': {
+      id: '/carrinho'
+      path: '/carrinho'
+      fullPath: '/carrinho'
+      preLoaderRoute: typeof CarrinhoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/entrar': {
       id: '/entrar'
       path: '/entrar'
       fullPath: '/entrar'
       preLoaderRoute: typeof EntrarRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_auth/checkout': {
+      id: '/_auth/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof AuthCheckoutRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_auth/favoritos': {
       id: '/_auth/favoritos'
@@ -158,11 +208,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
+  AuthCheckoutRoute: typeof AuthCheckoutRoute
   AuthFavoritosRoute: typeof AuthFavoritosRoute
   AuthPerfilRoute: typeof AuthPerfilRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthCheckoutRoute: AuthCheckoutRoute,
   AuthFavoritosRoute: AuthFavoritosRoute,
   AuthPerfilRoute: AuthPerfilRoute,
 }
@@ -173,6 +225,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   CadastroRoute: CadastroRoute,
+  CarrinhoRoute: CarrinhoRoute,
   EntrarRoute: EntrarRoute,
   NftNftIdRoute: NftNftIdRoute,
 }

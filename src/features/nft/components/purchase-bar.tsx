@@ -9,6 +9,10 @@ type PurchaseBarProps = {
   edition: Edition
   quantity: number
   max: number
+  /** Unidades desta edição que já estão no carrinho. */
+  inCart?: number
+  /** Adição ao carrinho em andamento: os botões esperam. */
+  isPending?: boolean
   onQuantityChange: (quantity: number) => void
   onBuy: () => void
   onAddToCart: () => void
@@ -25,12 +29,16 @@ export function PurchaseBar({
   edition,
   quantity,
   max,
+  inCart = 0,
+  isPending = false,
   onQuantityChange,
   onBuy,
   onAddToCart,
   favoriteSlot,
 }: PurchaseBarProps) {
-  const soldOut = edition.available === 0 || max < 1
+  const soldOut = edition.available === 0
+  const allInCart = !soldOut && max < 1
+  const blocked = soldOut || allInCart
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 rounded-t-[32px] border-t border-line bg-surface px-6 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:static md:z-auto md:flex md:items-start md:justify-between md:gap-4 md:rounded-none md:border-0 md:bg-transparent md:p-0">
       <div className="flex items-center justify-between gap-4">
@@ -43,14 +51,16 @@ export function PurchaseBar({
               value={quantity}
               max={Math.max(1, max)}
               onChange={onQuantityChange}
-              disabled={soldOut}
+              disabled={blocked}
               label={`Quantidade de ${nftName}`}
             />
           </div>
           <p data-testid="edition-available" className="text-xs text-khaki">
             {soldOut
               ? 'Sem unidades disponíveis'
-              : `${edition.available} ${edition.available === 1 ? 'disponível' : 'disponíveis'}`}
+              : allInCart
+                ? 'Todas as unidades já estão no seu carrinho'
+                : `${edition.available} ${edition.available === 1 ? 'disponível' : 'disponíveis'}${inCart > 0 ? ` · ${inCart} no carrinho` : ''}`}
           </p>
         </div>
         <EthPrice
@@ -63,7 +73,7 @@ export function PurchaseBar({
       <div className="mt-4 flex items-center gap-3 md:mt-0">
         <button
           type="button"
-          disabled={soldOut}
+          disabled={blocked || isPending}
           onClick={onBuy}
           className="h-14 flex-1 rounded-full bg-gradient-to-r from-primary-hi to-primary px-6 font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:flex-none md:rounded-md md:px-8 md:text-sm md:uppercase"
         >
@@ -72,7 +82,7 @@ export function PurchaseBar({
         <button
           type="button"
           aria-label="Adicionar ao carrinho"
-          disabled={soldOut}
+          disabled={blocked || isPending}
           onClick={onAddToCart}
           className="grid size-14 shrink-0 place-items-center rounded-full border border-line-strong bg-surface-2 text-primary-hi transition-colors hover:bg-line disabled:cursor-not-allowed disabled:opacity-50 md:size-11 md:rounded-md"
         >
