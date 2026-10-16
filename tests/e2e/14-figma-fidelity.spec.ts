@@ -308,11 +308,16 @@ test('mobile pages keep the frame 24px side margins and full-bleed sheets', asyn
 
   await page.goto('/nft/nft_neon-vessel')
   const carousel = page.getByRole('region', { name: 'Mais desta coleção' }).getByRole('list')
-  await expect(carousel.getByRole('listitem').first()).toBeVisible()
+  // Os <li> do skeleton dão lugar aos cards (outra key): mede só depois que o card real entrou.
+  const firstCard = carousel
+    .getByRole('listitem')
+    .filter({ has: page.getByRole('article') })
+    .first()
+  await expect(firstCard).toBeVisible()
   const strip = await edges(page, carousel)
   expect(strip.left).toBeCloseTo(0, 0)
   expect(strip.right).toBeCloseTo(0, 0)
-  expect((await edges(page, carousel.getByRole('listitem').first())).left).toBeCloseTo(24, 0)
+  expect((await edges(page, firstCard)).left).toBeCloseTo(24, 0)
 
   await addToCart(page, 'nft_neon-vessel')
   await page.goto('/carrinho')
