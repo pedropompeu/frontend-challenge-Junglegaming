@@ -63,9 +63,10 @@ export function SummaryRow({
       className={cn(
         'flex items-start justify-between gap-4',
         // Desktop: a nota e o Total descem para as linhas de base do frame; no Pagamento a
-        // divisória fica a ~44 px da Taxa e o Total, a ~26 px da divisória.
+        // divisória fica a ~44 px da Taxa e o Total, a ~26 px da divisória, recuado 42 px de
+        // cada lado (no xl, como no frame).
         total && 'md:mt-[15px]',
-        divided && 'md:mt-1 md:border-t md:border-divider md:pt-2',
+        divided && 'md:mt-1 md:border-t md:border-divider md:pt-2 xl:px-[42px]',
       )}
     >
       <dt className={cn('md:leading-7', total && 'text-base font-bold')}>{label}</dt>

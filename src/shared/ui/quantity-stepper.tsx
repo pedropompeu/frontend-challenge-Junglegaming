@@ -21,7 +21,8 @@ const pill = 'border-ink bg-primary text-ink shadow-step hover:opacity-90'
 
 const looks = {
   detail: {
-    group: 'gap-3',
+    // 37 px entre as pílulas no desktop, como no frame.
+    group: 'gap-3 xl:gap-[6.5px]',
     button: `h-[30px] w-5 md:h-[49.5px] md:w-[33px] ${pill}`,
     icon: 'size-4 md:size-6.5',
     value: 'text-lg font-medium md:text-xl md:font-normal',

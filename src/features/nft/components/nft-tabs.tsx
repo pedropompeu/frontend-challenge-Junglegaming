@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs'
 import { Rating } from './rating'
 
 const trigger =
-  'h-10 flex-none rounded-none border-0 border-b-2 border-transparent bg-transparent px-0 text-base text-cream shadow-none data-[state=active]:border-primary-hi data-[state=active]:bg-transparent data-[state=active]:text-primary-hi data-[state=active]:shadow-none'
+  'h-10 flex-none rounded-none border-0 border-b-2 border-transparent bg-transparent px-0 text-base text-cream shadow-none data-[state=active]:border-primary-hi data-[state=active]:bg-transparent data-[state=active]:text-primary-hi data-[state=active]:shadow-none xl:h-9 xl:border-b-[3px] xl:pr-2 xl:text-[17px] xl:leading-6 xl:font-normal xl:data-[state=active]:border-primary xl:data-[state=active]:font-bold'
 
 /** "Detalhes do NFT | Avaliações": os dados técnicos vêm do próprio NFT. */
 export function NftTabs({ nft }: { nft: Nft }) {
@@ -15,7 +15,7 @@ export function NftTabs({ nft }: { nft: Nft }) {
       : 'Contrato inteligente ERC-721 verificado'
   return (
     <Tabs defaultValue="details" className="gap-0">
-      <TabsList className="h-auto w-full justify-start gap-10 rounded-none border-b border-divider bg-transparent p-0">
+      <TabsList className="h-auto w-full justify-start gap-10 rounded-none border-b border-divider bg-transparent p-0 xl:gap-8">
         <TabsTrigger value="details" className={trigger}>
           Detalhes do NFT
         </TabsTrigger>
@@ -23,7 +23,10 @@ export function NftTabs({ nft }: { nft: Nft }) {
           Avaliações de colecionadores ({nft.reviewsCount})
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="details" className="max-w-[72ch] space-y-5 pt-5 text-sm leading-6">
+      <TabsContent
+        value="details"
+        className="max-w-[72ch] space-y-5 pt-5 text-sm leading-6 xl:max-w-[808px] xl:space-y-3 xl:pt-3"
+      >
         <p className="text-sand">{nft.description}</p>
         <div>
           <h3 className="font-bold">Rede:</h3>

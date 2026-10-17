@@ -22,23 +22,36 @@ const SHARE = [
 export function NftInfo({ nft, edition, children }: NftInfoProps) {
   return (
     // No mobile o frame separa título, descrição, edição e metadados por 12 px.
-    <div className="flex flex-col gap-3 md:gap-4">
+    <div className="flex flex-col gap-3 md:gap-4 xl:gap-0">
       <div className="flex flex-wrap items-start justify-between gap-3 md:block">
-        <h1 className="text-xl leading-tight font-bold md:text-3xl">{nft.name}</h1>
+        <h1 className="text-xl leading-tight font-bold md:text-3xl xl:text-[28px] xl:leading-[38px]">
+          {nft.name}
+        </h1>
         <Rating rating={nft.rating} reviewsCount={nft.reviewsCount} className="md:hidden" />
       </div>
-      <div className="hidden items-center justify-between gap-4 border-b border-divider pb-3 md:flex">
-        <EthPrice value={edition.price} original={edition.originalPrice} size="xl" />
-        <Rating rating={nft.rating} reviewsCount={nft.reviewsCount} />
+      <div className="hidden items-center justify-between gap-4 border-b border-divider pb-3 md:flex xl:mt-[7.5px] xl:mr-[22px] xl:pb-[6.5px]">
+        <EthPrice
+          value={edition.price}
+          original={edition.originalPrice}
+          size="xl"
+          amountClassName="xl:text-[22px] xl:leading-7"
+        />
+        <Rating
+          rating={nft.rating}
+          reviewsCount={nft.reviewsCount}
+          className="xl:text-[15px] xl:leading-5"
+        />
       </div>
-      <section aria-labelledby="nft-about">
-        <h2 id="nft-about" className="sr-only font-bold md:not-sr-only">
+      <section aria-labelledby="nft-about" className="xl:mt-[11px]">
+        <h2 id="nft-about" className="sr-only font-bold md:not-sr-only xl:text-[15px] xl:leading-5">
           Sobre este NFT:
         </h2>
-        <p className="max-w-[46ch] text-sm leading-6 text-sand md:mt-1">{nft.description}</p>
+        <p className="max-w-[46ch] text-sm leading-6 text-sand md:mt-1 xl:mt-2.5 xl:max-w-[573px]">
+          {nft.description}
+        </p>
       </section>
       {children}
-      <dl className="grid gap-3 text-[15px] leading-5 text-khaki md:text-sm">
+      <dl className="grid gap-3 text-[15px] leading-5 text-khaki md:text-sm xl:mt-[13px] xl:text-[15px]">
         <div className="flex gap-1">
           <dt>ID do token:</dt>
           <dd>{nft.tokenId}</dd>
@@ -52,8 +65,8 @@ export function NftInfo({ nft, edition, children }: NftInfoProps) {
           <dd>{nft.attributes.map((a) => a.value).join(', ')}</dd>
         </div>
       </dl>
-      <div className="hidden items-center gap-4 md:flex">
-        <p className="text-sm font-bold">Compartilhar este NFT:</p>
+      <div className="hidden items-center gap-4 md:flex xl:mt-[11px]">
+        <p className="text-sm font-bold xl:text-[15px] xl:leading-5">Compartilhar este NFT:</p>
         <ul className="flex gap-3 text-cream">
           {SHARE.map(({ label, Icon }) => (
             <li key={label}>

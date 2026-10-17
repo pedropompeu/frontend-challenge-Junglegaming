@@ -20,7 +20,7 @@ export function WalletSelector({ wallets, value, onSelect, disabled }: WalletSel
   return (
     <section aria-labelledby={`${id}-title`}>
       <div className="flex items-center justify-between gap-4">
-        <h2 id={`${id}-title`} className="font-bold">
+        <h2 id={`${id}-title`} className="font-bold xl:text-[17px] xl:leading-6">
           Suas carteiras
         </h2>
         {wallets.length > 0 ? (

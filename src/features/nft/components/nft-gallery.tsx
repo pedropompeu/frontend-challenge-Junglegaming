@@ -30,12 +30,12 @@ export function NftGallery({ images, name, className }: NftGalleryProps) {
     setIndex(Math.round(el.scrollLeft / el.clientWidth))
   }
   return (
-    <div className={cn('md:flex md:items-start md:gap-5', className)}>
+    <div className={cn('md:flex md:items-start md:gap-5 xl:gap-7', className)}>
       {images.length > 1 ? (
         <div
           role="group"
           aria-label="Imagens do NFT"
-          className="hidden shrink-0 flex-col gap-3 md:flex"
+          className="hidden shrink-0 flex-col gap-3 md:flex xl:gap-4"
         >
           {images.map((img, i) => (
             <button
@@ -44,7 +44,7 @@ export function NftGallery({ images, name, className }: NftGalleryProps) {
               aria-pressed={i === index}
               aria-label={`Ver imagem ${i + 1} de ${images.length}`}
               onClick={() => show(i)}
-              className="overflow-hidden rounded-md border-2 border-transparent transition-colors hover:border-line-strong aria-pressed:border-primary-hi"
+              className="overflow-hidden rounded-md border-2 border-transparent transition-colors hover:border-line-strong aria-pressed:border-primary-hi xl:rounded-lg xl:border xl:aria-pressed:border-primary"
             >
               <img
                 src={smallSrc(img.src)}
@@ -53,20 +53,20 @@ export function NftGallery({ images, name, className }: NftGalleryProps) {
                 height={96}
                 loading="lazy"
                 decoding="async"
-                className="size-20 object-cover lg:size-24"
+                className="size-20 object-cover lg:size-24 xl:size-[98px]"
               />
             </button>
           ))}
         </div>
       ) : null}
-      <div className="relative flex-1 rounded-3xl bg-surface md:rounded-md md:p-3">
+      <div className="relative flex-1 rounded-3xl bg-surface md:rounded-md md:p-3 xl:mt-0.5 xl:p-5">
         {/* O foco deixa a seta rolar a faixa; sem barra, como o frame. */}
         <ul
           ref={strip}
           aria-label={`Imagens de ${name}`}
           tabIndex={0}
           onScroll={followScroll}
-          className="flex snap-x snap-mandatory overflow-x-auto rounded-3xl [scrollbar-width:none] md:rounded-md"
+          className="flex snap-x snap-mandatory overflow-x-auto rounded-3xl [scrollbar-width:none] md:rounded-md xl:rounded-[24px]"
         >
           {images.map((img, i) => (
             <li key={img.src} className="w-full shrink-0 snap-center">
@@ -80,7 +80,7 @@ export function NftGallery({ images, name, className }: NftGalleryProps) {
                 fetchPriority={i === 0 ? 'high' : undefined}
                 loading={i === 0 ? undefined : 'lazy'}
                 decoding="async"
-                className="aspect-[361/356] w-full rounded-3xl object-cover md:aspect-square md:rounded-md"
+                className="aspect-[361/356] w-full rounded-3xl object-cover md:aspect-square md:rounded-md xl:rounded-[24px]"
               />
             </li>
           ))}
@@ -108,9 +108,9 @@ export function NftGallery({ images, name, className }: NftGalleryProps) {
             <button
               type="button"
               aria-label="Ampliar imagem"
-              className="absolute right-8 bottom-16 grid size-10 place-items-center rounded-full bg-ink/80 text-cream transition-colors hover:text-primary-hi md:top-5 md:right-5 md:bottom-auto md:size-9"
+              className="absolute right-8 bottom-16 grid size-10 place-items-center rounded-full bg-ink/80 text-cream transition-colors hover:text-primary-hi md:top-5 md:right-5 md:bottom-auto md:size-9 xl:top-[13.5px] xl:right-[12.5px] xl:size-[29px] xl:border xl:border-line xl:bg-surface-2"
             >
-              <ZoomInIcon aria-hidden="true" className="size-5" />
+              <ZoomInIcon aria-hidden="true" className="size-5 xl:size-4" />
             </button>
           </DialogTrigger>
           <DialogContent className="border-line bg-surface p-3 sm:max-w-3xl">

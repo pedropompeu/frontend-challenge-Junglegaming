@@ -22,16 +22,16 @@ export function MoreFromCollection({ collectionId, currentId }: MoreFromCollecti
   if (isError || (!isPending && items.length === 0)) return null
   const cell = 'w-[44vw] max-w-[220px] shrink-0 snap-start md:w-auto md:max-w-none'
   return (
-    <section aria-labelledby="more-from-collection" className="mt-12 md:mt-16">
+    <section aria-labelledby="more-from-collection" className="mt-12 md:mt-16 xl:mt-[92px]">
       <h2
         id="more-from-collection"
-        className="border-b border-line pb-2 text-lg md:border-divider font-bold text-primary-hi"
+        className="border-b border-line pb-2 text-lg md:border-divider font-bold text-primary-hi xl:text-[17px] xl:leading-6"
       >
         Mais desta coleção
       </h2>
       <ul
         aria-busy={isPending}
-        className="-mx-6 mt-6 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0"
+        className="-mx-6 mt-6 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0 xl:mt-[31px] xl:gap-[26px]"
       >
         {isPending
           ? Array.from({ length: VISIBLE }, (_, i) => (

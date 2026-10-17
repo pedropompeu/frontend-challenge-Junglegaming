@@ -19,12 +19,15 @@ export function CheckoutSummary({ items, quote, coupon, fallback }: CheckoutSumm
   const imageOf = (cartItemId: string) => items.find((i) => i.id === cartItemId)?.image
   return (
     <section aria-labelledby="checkout-summary-title">
-      <h2 id="checkout-summary-title" className="font-bold max-md:sr-only">
+      <h2
+        id="checkout-summary-title"
+        className="font-bold max-md:sr-only xl:text-[17px] xl:leading-6"
+      >
         Seus NFTs
       </h2>
       <div
         aria-hidden="true"
-        className="mt-3 hidden justify-between border-b border-divider pb-2 text-[15px] font-bold md:flex"
+        className="mt-3 hidden justify-between border-b border-divider pb-2 text-[15px] font-bold md:flex xl:mt-1 xl:pb-[7px] xl:text-base xl:leading-6"
       >
         <span>NFTs</span>
         <span>Subtotal</span>
@@ -68,7 +71,11 @@ export function CheckoutSummary({ items, quote, coupon, fallback }: CheckoutSumm
       <div className="mt-4">{coupon}</div>
       <div className="mt-4">
         {fallback ??
-          (quote ? <CartSummary quote={quote} isLoading={false} dividedTotal /> : <CartSummarySkeleton />)}
+          (quote ? (
+            <CartSummary quote={quote} isLoading={false} dividedTotal />
+          ) : (
+            <CartSummarySkeleton />
+          ))}
       </div>
     </section>
   )

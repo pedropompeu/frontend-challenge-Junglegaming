@@ -513,7 +513,7 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
 
   return (
     <Form {...form}>
-      <div className="mt-6 grid gap-8 md:mt-[17px] lg:grid-cols-[minmax(0,1fr)_405px] lg:gap-16">
+      <div className="mt-6 grid gap-8 md:mt-[17px] lg:grid-cols-[minmax(0,1fr)_405px] lg:gap-16 xl:mt-[26.5px]">
         <div className="min-w-0">
           {mode.kind === 'editing' ? (
             <CheckoutForm

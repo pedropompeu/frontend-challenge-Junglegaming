@@ -99,7 +99,7 @@ function NftDetailPage() {
             Mercado
           </Link>
         </nav>
-        <div className="grid gap-0 md:mt-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:gap-10">
+        <div className="grid gap-0 md:mt-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:gap-10 xl:grid-cols-[572px_minmax(0,1fr)] xl:gap-[33px]">
           {/* Topo do frame mobile: gradiente surface → surface-2 sob a arte, que a folha cobre em 30 px. */}
           <div
             data-testid="detail-hero"
@@ -123,6 +123,7 @@ function NftDetailPage() {
                 editions={nft.editions}
                 selectedId={edition.id}
                 onSelect={selectEditionInUrl}
+                className="xl:mt-[5px]"
               />
               <PurchaseBar
                 nftName={nft.name}
@@ -138,7 +139,7 @@ function NftDetailPage() {
                   <FavoriteButton
                     nftId={nft.id}
                     name={nft.name}
-                    className="grid size-11 place-items-center rounded-md border border-line bg-surface-2 text-primary-hi transition-colors hover:bg-line"
+                    className="grid size-11 place-items-center rounded-md border border-line bg-surface-2 text-primary-hi transition-colors hover:bg-line xl:size-10"
                     iconClassName="size-5"
                   />
                 }
@@ -146,7 +147,7 @@ function NftDetailPage() {
             </NftInfo>
           </div>
         </div>
-        <div className="mt-12 hidden md:block">
+        <div className="mt-12 hidden md:block xl:mt-[84px]">
           <NftTabs nft={nft} />
         </div>
         <MoreFromCollection collectionId={nft.collectionId} currentId={nft.id} />

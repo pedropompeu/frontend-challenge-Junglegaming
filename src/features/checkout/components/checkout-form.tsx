@@ -42,10 +42,10 @@ export function CheckoutForm({
 
   return (
     <form id={id} noValidate onSubmit={form.handleSubmit(onValid)} aria-labelledby={`${ids}-title`}>
-      <h2 id={`${ids}-title`} className="text-lg font-bold">
+      <h2 id={`${ids}-title`} className="text-lg font-bold xl:text-[17px] xl:leading-6">
         Perfil do colecionador
       </h2>
-      <div className="mt-4 grid gap-x-6 gap-y-5 md:grid-cols-2">
+      <div className="mt-4 grid gap-x-6 gap-y-5 md:grid-cols-2 xl:mt-[11px] xl:gap-y-[14.5px] xl:[&_[data-slot=form-item]]:gap-1">
         <TextField
           control={form.control}
           name="displayName"

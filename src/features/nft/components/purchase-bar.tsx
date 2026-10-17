@@ -40,9 +40,9 @@ export function PurchaseBar({
   const allInCart = !soldOut && max < 1
   const blocked = soldOut || allInCart
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 rounded-t-[40px] bg-surface px-6 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:static md:z-auto md:flex md:items-start md:justify-between md:gap-4 shadow-float md:rounded-none md:bg-transparent md:p-0 md:shadow-none">
+    <div className="fixed inset-x-0 bottom-0 z-30 rounded-t-[40px] bg-surface px-6 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] md:static md:z-auto md:flex md:flex-wrap md:items-start md:justify-between md:gap-4 xl:mt-3.5 shadow-float md:rounded-none md:bg-transparent md:p-0 md:shadow-none">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 xl:flex-row xl:items-center xl:gap-4">
           <div className="flex items-center gap-4">
             <span aria-hidden="true" className="text-[15px] font-medium text-sand md:hidden">
               Qtd.
@@ -76,7 +76,7 @@ export function PurchaseBar({
           type="button"
           disabled={blocked || isPending}
           onClick={onBuy}
-          className="h-[60px] flex-1 rounded-full cta-fill px-6 font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:flex-none md:rounded-md md:px-8 md:text-sm md:uppercase"
+          className="h-[60px] flex-1 rounded-full cta-fill px-6 font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:flex-none md:rounded-md md:px-8 md:text-sm md:uppercase xl:h-10 xl:w-[130px] xl:px-0"
         >
           {soldOut ? 'Edição indisponível' : 'Comprar NFT'}
         </button>
@@ -85,7 +85,7 @@ export function PurchaseBar({
           aria-label="Adicionar ao carrinho"
           disabled={blocked || isPending}
           onClick={onAddToCart}
-          className="grid size-[60px] shrink-0 place-items-center rounded-full border border-line bg-surface-2 text-khaki transition-colors hover:bg-line disabled:cursor-not-allowed disabled:opacity-50 md:size-11 md:rounded-md md:text-primary-hi"
+          className="grid size-[60px] shrink-0 place-items-center rounded-full border border-line bg-surface-2 text-khaki transition-colors hover:bg-line disabled:cursor-not-allowed disabled:opacity-50 md:size-11 md:rounded-md md:text-primary-hi xl:size-10"
         >
           <ShoppingCartIcon aria-hidden="true" className="size-5" />
         </button>
