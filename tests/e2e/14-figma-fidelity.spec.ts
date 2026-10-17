@@ -1178,3 +1178,64 @@ test('mobile search is the frame 45px r10 field with the khaki placeholder and t
   expect(fill).toBe('linear-gradient(137deg, rgba(210, 138, 76, 0.56), rgb(210, 138, 76))')
   await expect(filter.locator('svg')).toHaveCSS('stroke-width', '1.5px')
 })
+
+test('mobile catalog card is the frame portrait frame with the 27px heart and the square RARO tag', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'a moldura retrato e o selo encostado na borda são do frame mobile')
+  await page.goto('/')
+  const items = page.getByRole('list', { name: 'NFTs' }).getByRole('listitem')
+  const frameOf = (item: Locator) => item.locator('article > div').first()
+  const first = frameOf(items.first())
+  const box = (await first.boundingBox())!
+  // Moldura 175×200 (r20, surface → surface-2) com arte quadrada r16 a 3,5 px das laterais.
+  expect(box.height / box.width).toBeCloseTo(200 / 175, 2)
+  await expect(first).toHaveCSS('border-top-left-radius', '20px')
+  const fill = await first.evaluate((el) => getComputedStyle(el).backgroundImage)
+  expect(fill).toContain('rgb(36, 22, 18)')
+  expect(fill).toContain('rgb(47, 29, 21)')
+  const art = first.locator('img')
+  const artBox = (await art.boundingBox())!
+  expectNear(artBox.width, box.width - 7, 'largura da arte')
+  expectNear(artBox.height, artBox.width, 'arte quadrada')
+  await expect(art).toHaveCSS('border-top-left-radius', '16px')
+  expectNear(artBox.x - box.x, 3.5, 'arte → borda esquerda')
+  expectNear(artBox.y - box.y, box.y + box.height - (artBox.y + artBox.height), 'arte centrada')
+  // Coração de 27 px em surface-2 com contorno line, 12,5 px do topo e 11 da direita da moldura.
+  const heart = items.first().getByRole('button', { name: /favoritos|Favoritar/ })
+  const heartBox = (await heart.boundingBox())!
+  expect(heartBox.width).toBeCloseTo(27, 0)
+  expect(heartBox.height).toBeCloseTo(27, 0)
+  await expect(heart).toHaveCSS('background-color', SURFACE_2)
+  await expect(heart).toHaveCSS('border-top-color', LINE)
+  await expect(heart).toHaveCSS('border-top-width', '1px')
+  await expect(heart).toHaveCSS('color', PRIMARY)
+  expect((await heart.locator('svg').boundingBox())!.width).toBeCloseTo(18, 0)
+  expectNear(heartBox.y - box.y, 12.5, 'coração → topo da moldura')
+  expectNear(box.x + box.width - (heartBox.x + heartBox.width), 11, 'coração → direita da moldura')
+  // Nome 15 px a 8 px da borda, com a base 23,8 px abaixo da moldura.
+  const name = items.first().locator('h3')
+  await expect(name).toHaveCSS('font-size', '15px')
+  expectNear((await textLeftOf(name)) - box.x, 8, 'margem do nome')
+  expectNear((await baselineOf(name)) - (box.y + box.height), 23.8, 'base do nome')
+  // Coluna da direita 32 px abaixo e 16 px ao lado.
+  const second = (await frameOf(items.nth(1)).boundingBox())!
+  expectNear(second.x - (box.x + box.width), 16, 'espaço entre colunas')
+  expectNear(second.y - box.y, 32, 'coluna da direita deslocada')
+
+  // Selo RARO 68×32 de cantos retos, encostado na borda da moldura e no topo da arte, 13/500.
+  const rare = items.filter({ hasText: 'RARO' }).first()
+  const rareFrame = (await frameOf(rare).boundingBox())!
+  const rareArt = (await frameOf(rare).locator('img').boundingBox())!
+  const tag = rare.getByText('RARO', { exact: true })
+  const tagBox = (await tag.boundingBox())!
+  expect(tagBox.width).toBeCloseTo(68, 0)
+  expect(tagBox.height).toBeCloseTo(32, 0)
+  await expect(tag).toHaveCSS('border-top-right-radius', '0px')
+  await expect(tag).toHaveCSS('font-size', '13px')
+  await expect(tag).toHaveCSS('font-weight', '500')
+  expectNear(tagBox.x - rareFrame.x, 0, 'selo na borda da moldura')
+  expectNear(tagBox.y - rareArt.y, 0, 'selo no topo da arte')
+  expectNear((await textLeftOf(tag)) - tagBox.x, 8, 'texto do selo')
+  expectNear((await textBaselineOf(tag)) - tagBox.y, 20, 'base do texto do selo')
+})

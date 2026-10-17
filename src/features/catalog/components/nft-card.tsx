@@ -24,36 +24,42 @@ export function NftCard({ nft, priority = false, className }: NftCardProps) {
   const image = nft.images[0]!
   return (
     <article className={cn('group relative flex flex-col', className)}>
-      <div className="relative rounded-[24px] bg-surface p-1 transition-colors group-focus-within:bg-line group-hover:bg-line md:rounded-[4px] md:p-0.5">
-        <img
-          src={image.src}
-          srcSet={`${smallSrc(image.src)} 400w, ${image.src} 800w`}
-          sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 45vw"
-          width={image.width}
-          height={image.height}
-          alt={image.alt}
-          loading={priority ? 'eager' : 'lazy'}
-          fetchPriority={priority ? 'high' : 'auto'}
-          decoding="async"
-          className="aspect-square w-full rounded-[20px] object-cover md:rounded-[16px]"
-        />
-        {nft.rarity !== 'common' ? (
-          <span className="absolute top-4 left-1 rounded-r-sm bg-primary px-2 py-1 text-xs font-bold text-ink md:top-3">
-            RARO
-          </span>
-        ) : null}
+      {/* Moldura retrato 175×200 do frame mobile (r20, surface → surface-2) com a arte centrada. */}
+      <div className="relative flex aspect-[175/200] items-center rounded-[20px] bg-surface bg-[linear-gradient(140deg,var(--color-surface),var(--color-surface-2))] px-[3.5px] transition-colors group-focus-within:bg-line group-hover:bg-line md:block md:aspect-auto md:rounded-[4px] md:bg-none md:p-0.5">
+        {/* No mobile o selo se ancora no topo da arte; no desktop, na moldura. */}
+        <div className="relative w-full md:static">
+          <img
+            src={image.src}
+            srcSet={`${smallSrc(image.src)} 400w, ${image.src} 800w`}
+            sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 45vw"
+            width={image.width}
+            height={image.height}
+            alt={image.alt}
+            loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : 'auto'}
+            decoding="async"
+            className="aspect-square w-full rounded-2xl object-cover"
+          />
+          {nft.rarity !== 'common' ? (
+            <span className="absolute top-0 -left-[3.5px] flex h-8 w-[68px] items-center bg-primary pb-0.5 pl-2 text-[13px] font-medium text-ink md:top-3 md:left-1 md:block md:h-auto md:w-auto md:rounded-r-sm md:px-2 md:py-1 md:text-xs md:font-bold">
+              RARO
+            </span>
+          ) : null}
+        </div>
+        {/* Coração de 27 px do frame: contorno line sobre surface-2, só preenchido quando favorito. */}
         <FavoriteButton
           nftId={nft.id}
           name={nft.name}
-          className="absolute top-3 right-3 z-10 grid size-8 place-items-center rounded-full bg-ink/80 text-primary-hi transition-opacity md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100 md:aria-pressed:opacity-100"
+          className="absolute top-[12.5px] right-[11px] z-10 grid size-[27px] place-items-center rounded-full border border-line bg-surface-2 text-primary transition-opacity md:top-3 md:right-3 md:size-8 md:border-0 md:bg-ink/80 md:text-primary-hi md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100 md:aria-pressed:opacity-100"
+          iconClassName="size-[18px] md:size-4"
         />
       </div>
-      <div className="mt-3 px-2 md:px-0">
+      <div className="mt-2 px-2 md:mt-3 md:px-0">
         <h3 className="text-[15px] leading-tight">
           <Link
             to="/nft/$nftId"
             params={{ nftId: nft.id }}
-            className="outline-none after:absolute after:inset-0 after:rounded-[24px] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring md:after:rounded-[4px]"
+            className="outline-none after:absolute after:inset-0 after:rounded-[20px] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring md:after:rounded-[4px]"
           >
             {nft.name}
           </Link>
