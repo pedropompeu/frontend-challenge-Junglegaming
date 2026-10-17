@@ -1,7 +1,7 @@
 import { keepPreviousData, queryOptions } from '@tanstack/react-query'
 import type { NftListParams } from '@/contracts'
 import { qk } from '@/shared/lib/query-keys'
-import { fetchCollections, fetchNfts } from './api'
+import { fetchCategories, fetchNfts } from './api'
 
 export function nftListQuery(params: NftListParams) {
   return queryOptions({
@@ -11,10 +11,10 @@ export function nftListQuery(params: NftListParams) {
   })
 }
 
-export function collectionsQuery() {
+export function categoriesQuery() {
   return queryOptions({
-    queryKey: qk.collections(),
-    queryFn: ({ signal }) => fetchCollections(signal),
+    queryKey: qk.categories(),
+    queryFn: ({ signal }) => fetchCategories(signal),
     staleTime: 5 * 60_000,
   })
 }

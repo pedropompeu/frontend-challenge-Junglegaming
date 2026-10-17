@@ -25,7 +25,7 @@ test('search, combined filters, sort and pagination compose the URL and survive 
   await page.goto('/')
   await expect(cards(page).first()).toBeVisible()
   await inFilters(page, async () => {
-    await page.getByRole('checkbox', { name: 'Polygon' }).check()
+    await page.getByRole('button', { name: 'Polygon', exact: true }).click()
     await page.getByRole('combobox', { name: /ordenar/i }).click()
     await page.getByRole('option', { name: /menor preço/i }).click()
   })
@@ -33,16 +33,41 @@ test('search, combined filters, sort and pagination compose the URL and survive 
   await page.getByRole('link', { name: 'Página 2' }).click()
   await expect(page).toHaveURL(/networks=polygon.*page=2|page=2.*networks=polygon/)
 
-  await inFilters(page, () => page.getByRole('checkbox', { name: 'Ethereum' }).check())
+  await inFilters(page, () => page.getByRole('button', { name: 'Ethereum', exact: true }).click())
   await expect(page).toHaveURL(/networks=polygon%2Cethereum|networks=polygon,ethereum/)
   await expect(page).not.toHaveURL(/page=2/)
 
   await page.reload()
   await inFilters(page, () =>
-    expect(page.getByRole('checkbox', { name: 'Ethereum' })).toBeChecked(),
+    expect(page.getByRole('button', { name: 'Ethereum', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    ),
   )
   await page.goBack()
   await expect(page).toHaveURL(/page=2/)
+})
+
+test('categories toggle on and off and combine in the URL', async ({ page }) => {
+  await page.goto('/')
+  await expect(cards(page).first()).toBeVisible()
+  const music = () => page.getByRole('button', { name: /^Música \(\d+\)$/ })
+  const games = () => page.getByRole('button', { name: /^Jogos \(\d+\)$/ })
+  await inFilters(page, async () => {
+    await music().click()
+    await games().click()
+  })
+  await expect(page).toHaveURL(/categories=musica%2Cjogos|categories=musica,jogos/)
+  const count = async (b: () => ReturnType<typeof music>) =>
+    Number(/\((\d+)\)/.exec((await b().textContent()) ?? '')![1])
+  await inFilters(page, async () => {
+    await expect(music()).toHaveAttribute('aria-pressed', 'true')
+    const expected = (await count(music)) + (await count(games))
+    await expect(page.getByText(`${expected} NFTs`, { exact: true })).toBeAttached()
+    await music().click()
+  })
+  await expect(page).toHaveURL(/categories=jogos/)
+  await expect(page).not.toHaveURL(/musica/)
 })
 
 test('empty result shows empty state', async ({ page }) => {
@@ -113,7 +138,7 @@ test('filters keep the scroll position; pagination brings the catalog to the top
   expect(Math.abs((await scrollY(page)) - before)).toBeLessThanOrEqual(2)
 
   if (!isMobile(page)) {
-    await page.getByRole('checkbox', { name: 'Polygon' }).check()
+    await page.getByRole('button', { name: 'Polygon', exact: true }).click()
     await expect(page).toHaveURL(/networks=polygon/)
     await expect(page.getByRole('list', { name: 'NFTs' })).toHaveAttribute('aria-busy', 'false')
     expect(Math.abs((await scrollY(page)) - before)).toBeLessThanOrEqual(2)

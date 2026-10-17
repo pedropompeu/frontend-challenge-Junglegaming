@@ -28,6 +28,7 @@ const nft: Nft = {
   description: '',
   collectionId: 'col_1',
   collectionName: 'Coleção',
+  category: 'arte-digital',
   network: 'ethereum',
   rarity: 'rare',
   images: [{ src: '/a.webp', alt: 'a', width: 800, height: 800 }],

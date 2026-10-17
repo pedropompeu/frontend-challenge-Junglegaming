@@ -71,7 +71,7 @@ Contas criadas pelo cadastro ficam só no navegador em que foram criadas, porque
 | `LAUNCH20`                    | Expirado (422 `COUPON_EXPIRED`)    |
 | Qualquer outro, ex. `KURIO99` | Inexistente (422 `COUPON_INVALID`) |
 
-O catálogo tem 50 NFTs em 6 coleções e 3 redes (Ethereum, Polygon, Solana), gerados de forma determinística (seed 42). Cada NFT tem até três edições (`1/10`, `1/50`, `ABERTA`) com preço e estoque próprios, e algumas já vêm esgotadas. Todo valor é cobrado em ETH; a rede escolhida no checkout muda só a taxa (0,012 / 0,002 / 0,001 ETH).
+O catálogo tem 50 NFTs em 6 coleções, 9 categorias (as da barra lateral do Figma) e 3 redes (Ethereum, Polygon, Solana), gerados de forma determinística (seed 42). Cada NFT tem até três edições (`1/10`, `1/50`, `ABERTA`) com preço e estoque próprios, e algumas já vêm esgotadas. Todo valor é cobrado em ETH; a rede escolhida no checkout muda só a taxa (0,012 / 0,002 / 0,001 ETH).
 
 ## Cenários do backend simulado
 

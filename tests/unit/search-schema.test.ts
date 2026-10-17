@@ -17,12 +17,18 @@ describe('catalogSearchSchema', () => {
 
   it('applies defaults to an empty search', () => {
     expect(catalogSearchSchema.parse({})).toEqual({
-      collections: [],
+      categories: [],
       networks: [],
       sort: 'relevance',
       tab: 'all',
       page: 1,
     })
+  })
+
+  it('keeps only known categories', () => {
+    expect(
+      catalogSearchSchema.parse({ categories: ['jogos', 'col_neon-primatas'] }).categories,
+    ).toEqual(['jogos'])
   })
 
   it('keeps only valid networks and trims an overlong query', () => {
@@ -36,8 +42,8 @@ describe('catalogSearchSchema', () => {
 
   it('accepts a single string as a one-item list and coerces numeric strings', () => {
     expect(
-      catalogSearchSchema.parse({ collections: 'col_neon-primatas', page: '3', priceMin: '0.5' }),
-    ).toMatchObject({ collections: ['col_neon-primatas'], page: 3, priceMin: 0.5 })
+      catalogSearchSchema.parse({ categories: 'musica', page: '3', priceMin: '0.5' }),
+    ).toMatchObject({ categories: ['musica'], page: 3, priceMin: 0.5 })
   })
 
   it('drops an empty query and a negative price', () => {

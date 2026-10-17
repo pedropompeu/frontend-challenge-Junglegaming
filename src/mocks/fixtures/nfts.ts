@@ -1,6 +1,7 @@
 import Big from 'big.js'
 import type { Edition, EditionKind, Network, Nft, Rarity } from '@/contracts'
 import { mulberry32 } from '../db/prng'
+import { CATEGORIES } from './categories'
 import { COLLECTIONS } from './collections'
 import { nftImage } from './images'
 
@@ -94,6 +95,8 @@ export function buildNfts(): Nft[] {
   return NAMES.map((name, i): Nft => {
     const id = `nft_${slug(name)}`
     const collection = COLLECTIONS[i % COLLECTIONS.length]!
+    // Fora do `rand()` para não mudar o resto dos dados gerados; 7 é coprimo de 9.
+    const category = CATEGORIES[(i * 7) % CATEGORIES.length]!.id
     const network = NETWORKS[i % NETWORKS.length]!
     // Preço da edição aberta entre 0.05 e 2 ETH; 1/50 = 2.5×; 1/10 = 6×.
     const openPrice = new Big(0.05 + rand() * 1.95)
@@ -135,6 +138,7 @@ export function buildNfts(): Nft[] {
       }, com atributos únicos e edições limitadas para colecionadores.`,
       collectionId: collection.id,
       collectionName: collection.name,
+      category,
       network,
       rarity,
       images: [

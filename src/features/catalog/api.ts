@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import {
-  CollectionSchema,
+  CategoryCountSchema,
   NftSummarySchema,
   PageSchema,
-  type Collection,
+  type CategoryCount,
   type NftListParams,
   type NftSummary,
   type Page,
@@ -21,6 +21,7 @@ function toQuery(p: NftListParams): Record<string, string | number> {
     pageSize: p.pageSize,
   }
   if (p.q) out.q = p.q
+  if (p.categories?.length) out.categories = p.categories.join(',')
   if (p.collections?.length) out.collections = p.collections.join(',')
   if (p.networks?.length) out.networks = p.networks.join(',')
   if (p.priceMin !== undefined) out.priceMin = p.priceMin
@@ -32,6 +33,6 @@ export function fetchNfts(params: NftListParams, signal?: AbortSignal): Promise<
   return request(NftPageSchema, { url: '/nfts', params: toQuery(params), signal })
 }
 
-export function fetchCollections(signal?: AbortSignal): Promise<Collection[]> {
-  return request(z.array(CollectionSchema), { url: '/collections', signal })
+export function fetchCategories(signal?: AbortSignal): Promise<CategoryCount[]> {
+  return request(z.array(CategoryCountSchema), { url: '/categories', signal })
 }

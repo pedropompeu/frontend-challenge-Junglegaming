@@ -1,5 +1,11 @@
 import { z } from 'zod'
-import { NetworkSchema, NftSortSchema, NftTabSchema, type NftListParams } from '@/contracts'
+import {
+  CategorySchema,
+  NetworkSchema,
+  NftSortSchema,
+  NftTabSchema,
+  type NftListParams,
+} from '@/contracts'
 
 /** Itens por página da grade da Início (3 × 3 no desktop). */
 export const CATALOG_PAGE_SIZE = 9
@@ -40,7 +46,7 @@ export const catalogSearchSchema = z
       .transform((s) => s || undefined)
       .optional()
       .catch(undefined),
-    collections: listOf(z.string().min(1).max(64)),
+    categories: listOf(CategorySchema),
     networks: listOf(NetworkSchema),
     priceMin: price,
     priceMax: price,
@@ -59,7 +65,7 @@ export type CatalogSearch = z.infer<typeof catalogSearchSchema>
 
 /** Valores omitidos da URL (`stripSearchParams`) para ela ficar limpa. */
 export const CATALOG_SEARCH_DEFAULTS = {
-  collections: [] as string[],
+  categories: [] as CatalogSearch['categories'],
   networks: [] as CatalogSearch['networks'],
   sort: 'relevance',
   tab: 'all',
@@ -69,7 +75,7 @@ export const CATALOG_SEARCH_DEFAULTS = {
 export function toListParams(s: CatalogSearch): NftListParams {
   return {
     ...(s.q ? { q: s.q } : {}),
-    ...(s.collections.length ? { collections: s.collections } : {}),
+    ...(s.categories.length ? { categories: s.categories } : {}),
     ...(s.networks.length ? { networks: s.networks } : {}),
     ...(s.priceMin !== undefined ? { priceMin: s.priceMin } : {}),
     ...(s.priceMax !== undefined ? { priceMax: s.priceMax } : {}),
@@ -83,7 +89,7 @@ export function toListParams(s: CatalogSearch): NftListParams {
 export function hasActiveFilters(s: CatalogSearch): boolean {
   return Boolean(
     s.q ||
-    s.collections.length ||
+    s.categories.length ||
     s.networks.length ||
     s.priceMin !== undefined ||
     s.priceMax !== undefined ||

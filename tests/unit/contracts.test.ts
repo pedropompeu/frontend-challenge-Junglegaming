@@ -24,6 +24,7 @@ const nft = {
   description: 'desc',
   collectionId: 'col_1',
   collectionName: 'Neon',
+  category: 'arte-digital',
   network: 'ethereum',
   rarity: 'rare',
   images: [{ src: '/a.webp', alt: 'alt', width: 800, height: 800 }],

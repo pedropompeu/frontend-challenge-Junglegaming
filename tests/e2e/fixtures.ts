@@ -91,7 +91,7 @@ export function mocks(page: Page) {
       }>
     > {
       return page.evaluate(() => {
-        const raw = localStorage.getItem('kurio:mockdb:v1')
+        const raw = localStorage.getItem('kurio:mockdb:v2')
         return raw ? (JSON.parse(raw) as { orders: [] }).orders : []
       })
     },

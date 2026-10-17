@@ -45,7 +45,7 @@ test('smoke: mock socket.io server handshakes and pushes nft.updated', async ({ 
   const frames = await page.evaluate(async () => {
     type Control = { mutateNft(id: string, p: unknown): unknown }
     const control = (window as unknown as { __kurioMocks: Control }).__kurioMocks
-    const db = JSON.parse(localStorage.getItem('kurio:mockdb:v1') ?? '{}') as {
+    const db = JSON.parse(localStorage.getItem('kurio:mockdb:v2') ?? '{}') as {
       nfts: Array<{ id: string; editions: Array<{ id: string }> }>
     }
     const nft = db.nfts[0]!

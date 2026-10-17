@@ -2,7 +2,9 @@ import type { ScenarioName } from '../scenarios/names'
 import type { MockDbState } from './schema'
 import { buildSeed } from './seed'
 
-export const DB_STORAGE_KEY = 'kurio:mockdb:v1'
+// v2: o NFT ganhou `category`; bancos v1 salvos não passariam no contrato.
+export const DB_STORAGE_KEY = 'kurio:mockdb:v2'
+const LEGACY_KEYS = ['kurio:mockdb:v1']
 const META_KEY = 'kurio:mockdb:scenario'
 
 let state: MockDbState | null = null
@@ -44,6 +46,7 @@ export async function resetDb(scenario: ScenarioName): Promise<void> {
 /** Restaura o banco persistido; recria do seed se não houver ou se o cenário mudou. */
 export async function loadOrSeed(scenario: ScenarioName): Promise<void> {
   const s = storage()
+  for (const key of LEGACY_KEYS) s?.removeItem(key)
   const raw = s?.getItem(DB_STORAGE_KEY)
   if (raw && s?.getItem(META_KEY) === scenario) {
     try {

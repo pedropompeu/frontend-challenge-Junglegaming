@@ -13,7 +13,7 @@ describe('search serializer', () => {
     const search = catalogSearchSchema.parse({
       q: '123',
       networks: ['polygon', 'solana'],
-      collections: ['col_neon-primatas'],
+      categories: ['musica', 'arte-3d'],
       priceMin: 0.5,
       page: 3,
     })

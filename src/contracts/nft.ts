@@ -25,12 +25,27 @@ export type NftImage = z.infer<typeof NftImageSchema>
 export const RaritySchema = z.enum(['common', 'rare', 'legendary'])
 export type Rarity = z.infer<typeof RaritySchema>
 
+/** Taxonomia da barra lateral da Início (as 9 categorias do Figma). */
+export const CategorySchema = z.enum([
+  'arte-digital',
+  'fotografia',
+  'musica',
+  'arte-3d',
+  'colecionaveis',
+  'generativa',
+  'jogos',
+  'assinaturas',
+  'utilidade',
+])
+export type Category = z.infer<typeof CategorySchema>
+
 export const NftSchema = z.object({
   id: IdSchema,
   name: z.string().min(1),
   description: z.string(),
   collectionId: IdSchema,
   collectionName: z.string(),
+  category: CategorySchema,
   network: NetworkSchema,
   rarity: RaritySchema,
   images: z.array(NftImageSchema).min(1),
@@ -64,6 +79,13 @@ export const CollectionSchema = z.object({
 })
 export type Collection = z.infer<typeof CollectionSchema>
 
+export const CategoryCountSchema = z.object({
+  id: CategorySchema,
+  name: z.string(),
+  count: z.number().int().min(0),
+})
+export type CategoryCount = z.infer<typeof CategoryCountSchema>
+
 export const NftSortSchema = z.enum(['relevance', 'price-asc', 'price-desc', 'newest', 'rating'])
 export type NftSort = z.infer<typeof NftSortSchema>
 
@@ -72,6 +94,9 @@ export type NftTab = z.infer<typeof NftTabSchema>
 
 export const NftListParamsSchema = z.object({
   q: z.string().optional(),
+  /** Filtro da barra lateral. */
+  categories: z.array(CategorySchema).optional(),
+  /** Só para "Mais desta coleção"; a barra lateral filtra por categoria. */
   collections: z.array(z.string()).optional(),
   networks: z.array(NetworkSchema).optional(),
   priceMin: z.number().min(0).optional(),

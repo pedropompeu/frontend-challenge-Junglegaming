@@ -3,10 +3,9 @@ import { useId, useState, type ReactNode } from 'react'
 import type { Network } from '@/contracts'
 import { formatEth } from '@/shared/lib/money'
 import { cn } from '@/shared/lib/utils'
-import { Checkbox } from '@/shared/ui/checkbox'
 import { SkeletonShimmer } from '@/shared/ui/skeleton-shimmer'
 import { Slider } from '@/shared/ui/slider'
-import { collectionsQuery } from '../queries'
+import { categoriesQuery } from '../queries'
 import type { CatalogSearch } from '../search-schema'
 
 export const NETWORK_LABELS: Record<Network, string> = {
@@ -26,39 +25,41 @@ function toggle<T>(list: T[], item: T, on: boolean): T[] {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   const id = useId()
   return (
-    <section aria-labelledby={id} className="border-b border-line pb-6 last:border-none">
+    <section aria-labelledby={id}>
       <h2 id={id} className="text-lg font-bold text-cream">
         {title}
       </h2>
-      <div className="mt-3">{children}</div>
+      <div className="mt-2">{children}</div>
     </section>
   )
 }
 
-function CheckRow({
+/** Item da lista do Figma: sem checkbox, laranja quando ativo, liga e desliga a cada clique. */
+function FilterItem({
   label,
   count,
-  checked,
-  onChange,
+  active,
+  onToggle,
 }: {
   label: string
   count?: number
-  checked: boolean
-  onChange: (on: boolean) => void
+  active: boolean
+  onToggle: (on: boolean) => void
 }) {
-  const id = useId()
   return (
-    <li className="flex items-center gap-3 py-1.5 pl-2">
-      <Checkbox id={id} checked={checked} onCheckedChange={(v) => onChange(v === true)} />
-      <label
-        htmlFor={id}
-        className="flex flex-1 cursor-pointer justify-between gap-2 text-sm text-sand"
+    <li>
+      <button
+        type="button"
+        aria-pressed={active}
+        onClick={() => onToggle(!active)}
+        className={cn(
+          'flex w-full justify-between gap-2 rounded-sm px-3 py-2.5 text-left text-[15px] leading-5 transition-colors',
+          active ? 'text-primary-hi' : 'text-sand hover:text-cream',
+        )}
       >
         <span>{label}</span>
-        {count !== undefined ? (
-          <span className="text-primary-hi tabular-nums">({count})</span>
-        ) : null}
-      </label>
+        {count !== undefined ? <span className="font-bold tabular-nums">({count})</span> : null}
+      </button>
     </li>
   )
 }
@@ -75,7 +76,7 @@ function PriceFilter({
   const [range, setRange] = useState<number[]>([priceMin ?? 0, priceMax ?? PRICE_CEILING])
   const [lo, hi] = range as [number, number]
   return (
-    <>
+    <div className="px-3 pt-2">
       <Slider
         min={0}
         max={PRICE_CEILING}
@@ -102,7 +103,7 @@ function PriceFilter({
       >
         Aplicar
       </button>
-    </>
+    </div>
   )
 }
 
@@ -112,38 +113,38 @@ type FiltersPanelProps = {
   className?: string
 }
 
-/** Coleções, faixa de preço e rede. Cada mudança vai direto para a URL. */
+/** Categorias (seção "Coleções" do Figma), faixa de preço e rede. Cada mudança vai direto para a URL. */
 export function FiltersPanel({ search, onChange, className }: FiltersPanelProps) {
-  const collections = useQuery(collectionsQuery())
+  const categories = useQuery(categoriesQuery())
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-8', className)}>
       <Section title="Coleções">
-        {collections.isPending ? (
+        {categories.isPending ? (
           <div className="space-y-3" aria-hidden="true">
-            {Array.from({ length: 6 }, (_, i) => (
+            {Array.from({ length: 9 }, (_, i) => (
               <SkeletonShimmer key={i} className="h-5 w-full" />
             ))}
           </div>
-        ) : collections.isError ? (
+        ) : categories.isError ? (
           <p className="text-sm text-sand">
-            Não foi possível carregar as coleções.{' '}
+            Não foi possível carregar as categorias.{' '}
             <button
               type="button"
               className="text-primary-hi underline"
-              onClick={() => collections.refetch()}
+              onClick={() => categories.refetch()}
             >
               Tentar de novo
             </button>
           </p>
         ) : (
           <ul>
-            {collections.data.map((c) => (
-              <CheckRow
+            {categories.data.map((c) => (
+              <FilterItem
                 key={c.id}
                 label={c.name}
                 count={c.count}
-                checked={search.collections.includes(c.id)}
-                onChange={(on) => onChange({ collections: toggle(search.collections, c.id, on) })}
+                active={search.categories.includes(c.id)}
+                onToggle={(on) => onChange({ categories: toggle(search.categories, c.id, on) })}
               />
             ))}
           </ul>
@@ -160,11 +161,11 @@ export function FiltersPanel({ search, onChange, className }: FiltersPanelProps)
       <Section title="Rede">
         <ul>
           {(Object.keys(NETWORK_LABELS) as Network[]).map((n) => (
-            <CheckRow
+            <FilterItem
               key={n}
               label={NETWORK_LABELS[n]}
-              checked={search.networks.includes(n)}
-              onChange={(on) => onChange({ networks: toggle(search.networks, n, on) })}
+              active={search.networks.includes(n)}
+              onToggle={(on) => onChange({ networks: toggle(search.networks, n, on) })}
             />
           ))}
         </ul>

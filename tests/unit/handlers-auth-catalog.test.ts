@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import {
-  CollectionSchema,
+  CategoryCountSchema,
   NftSchema,
   NftSummarySchema,
   PageSchema,
@@ -136,6 +136,17 @@ describe('catalog handlers', () => {
     expect(fresh.body.total).toBeLessThan(r.body.total + 48)
   })
 
+  it('filters by categories CSV', async () => {
+    const r = await get('/api/nfts?categories=musica,jogos&page=1&pageSize=48')
+    expect(r.body.total).toBeGreaterThan(0)
+    const details = await Promise.all(
+      r.body.items.map((n: { id: string }) => get(`/api/nfts/${n.id}`)),
+    )
+    const cats = new Set(details.map((d) => NftSchema.parse(d.body).category))
+    expect([...cats].sort()).toEqual(['jogos', 'musica'])
+    expect((await get('/api/nfts?categories=nope')).status).toBe(422)
+  })
+
   it('page beyond totalPages returns empty items with the real totalPages', async () => {
     const r = await get('/api/nfts?page=99&pageSize=12')
     expect(r.body.items).toEqual([])
@@ -157,11 +168,23 @@ describe('catalog handlers', () => {
     expect(r.body.error.code).toBe('NOT_FOUND')
   })
 
-  it('collections carry global counts', async () => {
-    const r = await get('/api/collections')
-    const cols = CollectionSchema.array().parse(r.body)
-    expect(cols.length).toBeGreaterThanOrEqual(6)
-    expect(cols.reduce((s, c) => s + c.count, 0)).toBeGreaterThanOrEqual(48)
+  it('categories follow the Figma order and count every NFT', async () => {
+    const r = await get('/api/categories')
+    const cats = CategoryCountSchema.array().parse(r.body)
+    expect(cats.map((c) => c.name)).toEqual([
+      'Arte digital',
+      'Fotografia',
+      'Música',
+      'Arte 3D',
+      'Colecionáveis',
+      'Generativa',
+      'Jogos',
+      'Assinaturas',
+      'Utilidade',
+    ])
+    expect(cats.every((c) => c.count > 0)).toBe(true)
+    const all = await get('/api/nfts?page=1&pageSize=48')
+    expect(cats.reduce((s, c) => s + c.count, 0)).toBe(all.body.total)
   })
 })
 

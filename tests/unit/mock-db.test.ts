@@ -56,7 +56,7 @@ describe('mock db', () => {
     mutate((db) => {
       db.nfts[0]!.name = 'X'
     })
-    expect(JSON.parse(localStorage.getItem('kurio:mockdb:v1')!).nfts[0].name).toBe('X')
+    expect(JSON.parse(localStorage.getItem('kurio:mockdb:v2')!).nfts[0].name).toBe('X')
     await resetDb('default')
     expect(getDb().nfts[0]!.name).not.toBe('X')
   })
@@ -66,7 +66,7 @@ describe('mock db', () => {
     const a = nextId('ord')
     const b = nextId('ord')
     expect(a).not.toBe(b)
-    expect(JSON.parse(localStorage.getItem('kurio:mockdb:v1')!).seq).toBe(getDb().seq)
+    expect(JSON.parse(localStorage.getItem('kurio:mockdb:v2')!).seq).toBe(getDb().seq)
   })
 
   it('empty-catalog has no nfts', async () => {

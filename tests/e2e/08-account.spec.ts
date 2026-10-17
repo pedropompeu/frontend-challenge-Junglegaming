@@ -23,7 +23,7 @@ const toast = (page: Page, text: string | RegExp) =>
 /** O que o servidor simulado gravou (a verdade, não o que a tela mostra). */
 function storedProfile(page: Page) {
   return page.evaluate(() => {
-    const raw = localStorage.getItem('kurio:mockdb:v1')
+    const raw = localStorage.getItem('kurio:mockdb:v2')
     const db = raw
       ? (JSON.parse(raw) as { profiles: Record<string, { avatarUrl: string | null }> })
       : null

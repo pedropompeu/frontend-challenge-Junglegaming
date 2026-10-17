@@ -1,13 +1,14 @@
 import Big from 'big.js'
 import {
   NftListParamsSchema,
-  type Collection,
+  type CategoryCount,
   type Nft,
   type NftListParams,
   type NftSummary,
   type Page,
 } from '@/contracts'
 import { getDb } from '../db/store'
+import { CATEGORIES } from '../fixtures/categories'
 import { apiError, json, route } from '../route'
 import { validate } from './validate'
 
@@ -55,6 +56,7 @@ function num(v: string | null): number | undefined {
 export function parseListParams(search: URLSearchParams) {
   return validate(NftListParamsSchema, {
     q: search.get('q') ?? undefined,
+    categories: csv(search.get('categories')),
     collections: csv(search.get('collections')),
     networks: csv(search.get('networks')),
     priceMin: num(search.get('priceMin')),
@@ -84,6 +86,7 @@ export function listNfts(params: NftListParams): Page<NftSummary> {
     .nfts.filter((n) => {
       if (q && !normalize(n.name).includes(q) && !normalize(n.collectionName).includes(q))
         return false
+      if (params.categories && !params.categories.includes(n.category)) return false
       if (params.collections && !params.collections.includes(n.collectionId)) return false
       if (params.networks && !params.networks.includes(n.network)) return false
       if (params.tab === 'new' && Date.parse(n.createdAt) < NEW_SINCE) return false
@@ -140,13 +143,13 @@ export const catalogHandlers = [
     return json(nft)
   }),
 
-  route('GET /collections', () => {
-    const db = getDb()
-    const cols: Collection[] = db.collections.map((c) => ({
+  route('GET /categories', () => {
+    const { nfts } = getDb()
+    const cats: CategoryCount[] = CATEGORIES.map((c) => ({
       id: c.id,
       name: c.name,
-      count: db.nfts.filter((n) => n.collectionId === c.id).length,
+      count: nfts.filter((n) => n.category === c.id).length,
     }))
-    return json(cols)
+    return json(cats)
   }),
 ]
