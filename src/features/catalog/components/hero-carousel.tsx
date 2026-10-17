@@ -71,7 +71,11 @@ export function HeroCarousel() {
         </CarouselContent>
       </Carousel>
       {/* Mobile: pontos de 7 px com o centro 9 px acima da base do card; os alvos de 24 px encostados. */}
-      <div className="absolute -bottom-[3px] left-1/2 flex -translate-x-1/2 md:bottom-8 md:left-[calc((100%-450px)/2)] md:gap-1.5">
+      {/*
+        Desktop: centro dos pontos em x 740 e y 504 do frame. O frame usa 16 px entre eles; aqui ficam
+        24 px para manter os alvos de toque de 24 px sem sobreposição (WCAG 2.5.8).
+      */}
+      <div className="absolute -bottom-[3px] left-1/2 flex -translate-x-1/2 md:bottom-8 md:left-[calc((100%-450px)/2)] md:gap-1.5 xl:top-[400px] xl:bottom-auto xl:left-[620px] xl:gap-0">
         {SLIDES.map((s, i) => (
           <button
             key={s.title}

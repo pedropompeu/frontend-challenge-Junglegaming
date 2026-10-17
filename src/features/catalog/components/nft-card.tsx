@@ -24,8 +24,11 @@ export function NftCard({ nft, priority = false, className }: NftCardProps) {
   const image = nft.images[0]!
   return (
     <article className={cn('group relative flex flex-col', className)}>
-      {/* Moldura retrato 175×200 do frame mobile (r20, surface → surface-2) com a arte centrada. */}
-      <div className="relative flex aspect-[175/200] items-center rounded-[20px] bg-surface bg-[linear-gradient(140deg,var(--color-surface),var(--color-surface-2))] px-[3.5px] transition-colors group-focus-within:bg-line group-hover:bg-line md:block md:aspect-auto md:rounded-[4px] md:bg-none md:p-0.5">
+      {/*
+        Moldura retrato 175×200 do frame mobile (r20, surface → surface-2) com a arte centrada.
+        No desktop, 258×300 em surface, sem raio, com a arte de 250 a 4 px das laterais.
+      */}
+      <div className="relative flex aspect-[175/200] items-center rounded-[20px] bg-surface bg-[linear-gradient(140deg,var(--color-surface),var(--color-surface-2))] px-[3.5px] transition-colors group-focus-within:bg-line group-hover:bg-line md:aspect-[258/300] md:rounded-none md:bg-none md:px-1">
         {/* No mobile o selo se ancora no topo da arte; no desktop, na moldura. */}
         <div className="relative w-full md:static">
           <img
@@ -38,7 +41,7 @@ export function NftCard({ nft, priority = false, className }: NftCardProps) {
             loading={priority ? 'eager' : 'lazy'}
             fetchPriority={priority ? 'high' : 'auto'}
             decoding="async"
-            className="aspect-square w-full rounded-2xl object-cover"
+            className="aspect-square w-full rounded-2xl object-cover md:rounded-[15px]"
           />
           {nft.rarity !== 'common' ? (
             <span className="absolute top-0 -left-[3.5px] flex h-8 w-[68px] items-center bg-primary pb-0.5 pl-2 text-[13px] font-medium text-ink md:top-3 md:left-1 md:block md:h-auto md:w-auto md:rounded-r-sm md:px-2 md:py-1 md:text-xs md:font-bold">
@@ -54,18 +57,24 @@ export function NftCard({ nft, priority = false, className }: NftCardProps) {
           iconClassName="size-[18px] md:size-4"
         />
       </div>
-      <div className="mt-2 px-2 md:mt-3 md:px-0">
-        <h3 className="text-[15px] leading-tight">
+      <div className="mt-2 px-2 md:mt-2.5 md:px-0">
+        <h3 className="text-[15px] leading-tight md:text-base">
           <Link
             to="/nft/$nftId"
             params={{ nftId: nft.id }}
-            className="outline-none after:absolute after:inset-0 after:rounded-[20px] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring md:after:rounded-[4px]"
+            className="outline-none after:absolute after:inset-0 after:rounded-[20px] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring md:after:rounded-none"
           >
             {nft.name}
           </Link>
         </h3>
         <p className="mt-0.5 truncate text-xs text-khaki">{nft.collectionName}</p>
-        <EthPrice value={nft.fromPrice} original={originalOfCheapest(nft)} className="mt-1" />
+        <EthPrice
+          value={nft.fromPrice}
+          original={originalOfCheapest(nft)}
+          className="mt-1"
+          amountClassName="md:text-lg"
+          originalClassName="md:text-lg"
+        />
       </div>
     </article>
   )

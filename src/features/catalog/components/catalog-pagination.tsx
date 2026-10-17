@@ -20,13 +20,14 @@ function toCatalogTop() {
   document.getElementById('catalogo')?.scrollIntoView({ block: 'start' })
 }
 
+// Desktop: casas de 35 px com raio 4 e número 18, como no frame da Início.
 const cell =
-  'grid size-9 place-items-center rounded-md border border-line text-sm text-cream transition-colors hover:border-primary aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:font-bold aria-[current=page]:text-ink'
+  'grid size-9 place-items-center rounded-md border border-line text-sm text-cream transition-colors hover:border-primary aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:font-bold aria-[current=page]:text-ink md:size-[35px] md:rounded-[4px] md:text-lg'
 
 export function CatalogPagination({ page, totalPages }: { page: number; totalPages: number }) {
   if (totalPages <= 1) return null
   return (
-    <nav aria-label="Paginação" className="mt-10 flex justify-end">
+    <nav aria-label="Paginação" className="mt-10 flex justify-end lg:mt-[52px]">
       <ul className="flex items-center gap-2">
         {page > 1 ? (
           <li>

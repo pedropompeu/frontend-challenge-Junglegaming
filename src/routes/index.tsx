@@ -95,7 +95,7 @@ function HomePage() {
 
       <div
         id="catalogo"
-        className="mt-3.5 scroll-mt-6 md:mt-16 md:grid md:grid-cols-[minmax(0,310px)_1fr] md:gap-8 lg:gap-12"
+        className="mt-3.5 scroll-mt-6 md:mt-16 md:grid md:grid-cols-[minmax(0,310px)_1fr] md:gap-8 lg:mt-[55px] lg:gap-12"
       >
         <aside aria-label="Filtros" className="hidden md:block">
           <div className="bg-surface px-5 py-5">
@@ -105,11 +105,13 @@ function HomePage() {
           <FeaturedOffer />
         </aside>
 
-        <section aria-labelledby="catalogo-titulo">
+        {/* min-w-0: sem ele, a linha de abas (overflow-x-auto) empurra o min-content da
+            coluna 1fr além dos 768 px e a página rola na horizontal (smoke test). */}
+        <section aria-labelledby="catalogo-titulo" className="min-w-0">
           <h2 id="catalogo-titulo" className="sr-only">
             Catálogo
           </h2>
-          <div className="flex items-center justify-between gap-4 overflow-x-auto">
+          <div className="flex items-center justify-between gap-4 overflow-x-auto lg:pt-[33px]">
             <CatalogTabs value={search.tab} onChange={(tab) => void setFilters({ tab })} />
             <SortSelect
               value={search.sort}
@@ -117,10 +119,10 @@ function HomePage() {
               className="hidden md:flex"
             />
           </div>
-          <p aria-live="polite" className="mt-4 h-5 text-xs text-sand">
+          <p aria-live="polite" className="mt-4 h-5 text-xs text-sand lg:mt-0">
             {updating ? 'Atualizando…' : data && !outOfRange ? `${data.total} NFTs` : ''}
           </p>
-          <div className="mt-2">{results}</div>
+          <div className="mt-2 lg:mt-0.5">{results}</div>
         </section>
       </div>
 

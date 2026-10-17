@@ -10,8 +10,9 @@ import { Unavailable } from '@/shared/ui/unavailable'
 /** Rotas do fluxo de compra, onde o Figma destaca "Mercado" em vez de "Início". */
 const MARKET_PREFIXES = ['/nft/', '/carrinho', '/checkout', '/pedido/']
 
+// Frame desktop: nav 16 px, a ativa em negrito com sublinhado de 3 px colado à divisória.
 const navLink =
-  'relative inline-flex h-full items-center px-1 text-cream transition-colors hover:text-primary-hi aria-[current=page]:text-primary-hi aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-0 aria-[current=page]:after:-bottom-px aria-[current=page]:after:h-0.5 aria-[current=page]:after:bg-primary'
+  'relative inline-flex h-full items-center px-1 text-cream transition-colors hover:text-primary-hi aria-[current=page]:text-primary-hi aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-0 aria-[current=page]:after:-bottom-px aria-[current=page]:after:h-0.5 aria-[current=page]:after:bg-primary lg:px-0 lg:aria-[current=page]:font-bold lg:aria-[current=page]:after:h-[3px]'
 
 export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
@@ -21,13 +22,14 @@ export function Header() {
   return (
     <header className="hidden md:block">
       <div className="page-container">
-        <div className="flex h-[68px] items-center justify-between gap-6 border-b border-divider">
+        <div className="relative flex h-[68px] items-center justify-between gap-6 border-b border-divider">
           <Link to="/" className="text-sm font-bold tracking-[0.2em] text-cream">
             KURIO
           </Link>
 
-          <nav aria-label="Principal" className="h-full">
-            <ul className="flex h-full items-center gap-6 text-[15px] lg:gap-14">
+          {/* A partir de 1280 px a nav fica em x 496 do frame, sem depender da largura dos ícones. */}
+          <nav aria-label="Principal" className="h-full xl:absolute xl:left-[376px]">
+            <ul className="flex h-full items-center gap-6 text-[15px] lg:gap-10 lg:text-base">
               <li className="h-full">
                 <Link to="/" className={navLink} aria-current={current(pathname === '/')}>
                   Início

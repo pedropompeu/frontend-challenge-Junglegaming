@@ -6,7 +6,7 @@ import { NftCardSkeleton } from './nft-card-skeleton'
 export const GRID_ID = 'catalogo-grade'
 
 const gridClass =
-  'grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-10 [&>*:nth-child(even)]:mt-8 md:[&>*:nth-child(even)]:mt-0'
+  'grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3 md:gap-x-6 md:gap-y-10 lg:gap-x-[34px] lg:gap-y-12 [&>*:nth-child(even)]:mt-8 md:[&>*:nth-child(even)]:mt-0'
 
 export function CatalogGridSkeleton({ count }: { count: number }) {
   return (

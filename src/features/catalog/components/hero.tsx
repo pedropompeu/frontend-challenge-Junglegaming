@@ -17,7 +17,7 @@ export type HeroSlideData = {
 }
 
 const cta =
-  'inline-flex items-center gap-2 text-xs font-bold text-primary-hi md:rounded-md md:bg-primary md:px-7 md:py-2.5 md:text-lg md:tracking-wide md:text-ink md:hover:bg-primary-hi'
+  'inline-flex items-center gap-2 text-xs font-bold text-primary-hi md:rounded-md md:bg-primary md:px-7 md:py-2.5 md:text-lg md:tracking-wide md:text-ink md:hover:bg-primary-hi lg:h-10 lg:w-[140px] lg:justify-center lg:p-0 lg:text-base lg:tracking-normal'
 
 function Explore({ tab, label }: { tab?: NftTab; label: string }) {
   const content = (
@@ -49,7 +49,7 @@ function Explore({ tab, label }: { tab?: NftTab; label: string }) {
 export function HeroSlide({ slide, priority }: { slide: HeroSlideData; priority: boolean }) {
   return (
     // "Mask Group" do frame mobile: #D28A4C de 20% a 10% e dois círculos de r 124 recortados pelo card.
-    <div className="relative grid min-h-[190px] grid-cols-[1fr_auto] items-start gap-1.5 overflow-hidden rounded-[30px] bg-[linear-gradient(117deg,rgba(210,138,76,0.2),rgba(210,138,76,0.1))] px-4 pt-[5px] md:min-h-[450px] md:grid-cols-[1fr_450px] md:items-center md:gap-4 md:rounded-none md:bg-none md:p-0">
+    <div className="relative grid min-h-[190px] grid-cols-[1fr_auto] items-start gap-1.5 overflow-hidden rounded-[30px] bg-[linear-gradient(117deg,rgba(210,138,76,0.2),rgba(210,138,76,0.1))] px-4 pt-[5px] md:min-h-[450px] md:grid-cols-[1fr_450px] md:items-center md:gap-4 md:rounded-none md:bg-none md:p-0 lg:items-start">
       <span
         aria-hidden="true"
         className="absolute top-[-31px] left-[-80px] size-[248px] rounded-full bg-[linear-gradient(160deg,rgba(221,154,95,0.43)_22%,rgba(210,138,76,0.04)_87%)] md:hidden"
@@ -58,15 +58,16 @@ export function HeroSlide({ slide, priority }: { slide: HeroSlideData; priority:
         aria-hidden="true"
         className="absolute top-[-10px] left-[73px] size-[248px] rounded-full bg-[linear-gradient(160deg,rgba(221,154,95,0.37)_22%,rgba(210,138,76,0)_87%)] md:hidden"
       />
-      <div className="relative z-10 max-w-[60ch] md:pl-10">
-        <p className="text-xs font-medium text-cream md:text-sm md:font-normal md:tracking-[0.12em]">
+      {/* Desktop: linhas de base do frame (sobrelinha em 157, título 43/70, texto 14/24, botão em 416). */}
+      <div className="relative z-10 max-w-[60ch] md:pl-10 lg:max-w-none lg:pt-[49px]">
+        <p className="text-xs font-medium text-cream md:text-sm md:font-normal md:tracking-[0.12em] lg:leading-5 lg:font-medium lg:tracking-[0.1em]">
           {slide.eyebrow}
         </p>
-        <h2 className="mt-1.5 text-lg leading-[29px] font-bold md:mt-4 md:text-5xl md:leading-[1.45]">
+        <h2 className="mt-1.5 text-lg leading-[29px] font-bold md:mt-4 md:text-5xl md:leading-[1.45] lg:mt-[5px] lg:max-w-[20ch] lg:text-[43px] lg:leading-[70px]">
           <span className="md:hidden">{slide.mobileTitle}</span>
           <span className="hidden md:inline">{slide.title}</span>
         </h2>
-        <p className="mt-1.5 max-w-[26ch] text-xs leading-[18px] text-sand md:mt-3 md:max-w-[52ch] md:text-sm md:leading-6">
+        <p className="mt-1.5 max-w-[26ch] text-xs leading-[18px] text-sand md:mt-3 md:max-w-[52ch] md:text-sm md:leading-6 lg:mt-[5px] lg:max-w-[66ch]">
           <span className="md:hidden">{slide.mobileText}</span>
           <span className="hidden md:inline">{slide.text}</span>
         </p>
@@ -74,7 +75,7 @@ export function HeroSlide({ slide, priority }: { slide: HeroSlideData; priority:
           <Explore tab={slide.tab} label={slide.mobileTitle.toLowerCase()} />
         </div>
       </div>
-      <div className="relative mt-[5.5px] md:mt-0">
+      <div className="relative mt-[5.5px] md:mt-0 lg:mt-[9px]">
         <img
           src={slide.image.src}
           srcSet={slide.image.srcSet}
@@ -85,7 +86,7 @@ export function HeroSlide({ slide, priority }: { slide: HeroSlideData; priority:
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : 'auto'}
           decoding="async"
-          className="size-[138px] rounded-2xl object-cover md:size-[450px] md:rounded-[32px]"
+          className="size-[138px] rounded-2xl object-cover md:size-[450px] md:rounded-[32px] lg:rounded-[24px]"
         />
         <img
           src={slide.thumb}

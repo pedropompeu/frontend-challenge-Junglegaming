@@ -23,13 +23,13 @@ export function SortSelect({
   const id = useId()
   return (
     <div className={cn('flex items-center gap-3', className)}>
-      <label htmlFor={id} className="text-sm whitespace-nowrap text-cream">
+      <label htmlFor={id} className="text-sm whitespace-nowrap text-cream xl:text-[15px]">
         Ordenar por:
       </label>
       <Select value={value} onValueChange={(v) => onChange(v as NftSort)}>
         <SelectTrigger
           id={id}
-          className="h-9 min-w-48 border-none bg-transparent text-sm text-cream shadow-none"
+          className="h-9 min-w-48 border-none bg-transparent text-sm text-cream shadow-none xl:text-[15px]"
         >
           <SelectValue />
         </SelectTrigger>

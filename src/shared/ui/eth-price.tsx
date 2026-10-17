@@ -16,6 +16,8 @@ type EthPriceProps = {
   className?: string
   /** Classes do valor atual, para um tamanho que muda com o breakpoint. */
   amountClassName?: string
+  /** Classes do preço riscado. */
+  originalClassName?: string
 }
 
 /**
@@ -28,6 +30,7 @@ export function EthPrice({
   size = 'md',
   className,
   amountClassName,
+  originalClassName,
 }: EthPriceProps) {
   const current = formatEth(value)
   const before = original ? formatEth(original) : null
@@ -41,7 +44,10 @@ export function EthPrice({
         {current}
       </span>
       {before ? (
-        <s aria-hidden="true" className="text-sm whitespace-nowrap text-khaki">
+        <s
+          aria-hidden="true"
+          className={cn('text-sm whitespace-nowrap text-khaki', originalClassName)}
+        >
           {before}
         </s>
       ) : null}
