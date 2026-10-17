@@ -180,9 +180,12 @@ async function expectFrameShadow(el: Locator, geometry: string) {
 test('mobile bottom bars float on the frame shadow instead of a top border', async ({ page }) => {
   test.skip(!isMobile(page), 'a navegação inferior e a barra de compra fixa só existem no mobile')
   await page.goto('/')
-  await expectFrameShadow(
-    page.getByRole('navigation', { name: 'Navegação inferior' }),
-    '0px -10px 30px 0px',
+  // A barra de navegação tem o recorte em U: a sombra é um filtro na forma, que acompanha o recorte.
+  const nav = page.getByRole('navigation', { name: 'Navegação inferior' })
+  await expect(nav).toHaveCSS('border-top-width', '0px')
+  await expect(nav.locator(':scope > [aria-hidden="true"]')).toHaveCSS(
+    'filter',
+    'drop-shadow(rgba(10, 6, 4, 0.45) 0px -10px 30px)',
   )
 
   await page.goto('/nft/nft_neon-vessel')
@@ -1277,4 +1280,74 @@ test('mobile catalog tabs sit on the frame baseline with the 2px primary underli
   expectNear(boxes[2]!.x - (boxes[1]!.x + boxes[1]!.width), 16, 'vão entre as abas')
   const row = tablist.locator('xpath=..')
   expect(await row.evaluate((el) => el.scrollWidth - el.clientWidth)).toBe(0)
+})
+
+/** Cor do pixel na tela: o screenshot de 1 px é decodificado num canvas da própria página. */
+async function pixelAt(page: Page, x: number, y: number) {
+  const shot = await page.screenshot({ clip: { x, y, width: 1, height: 1 } })
+  return page.evaluate(async (b64) => {
+    const img = new Image()
+    img.src = `data:image/png;base64,${b64}`
+    await img.decode()
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = 1
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(img, 0, 0)
+    return [...ctx.getImageData(0, 0, 1, 1).data.slice(0, 3)]
+  }, shot.toString('base64'))
+}
+
+test('mobile bottom nav is the frame 95px dock with the concave cut and the 65px scan button', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'a navegação inferior só existe no mobile')
+  await page.goto('/')
+  const nav = page.getByRole('navigation', { name: 'Navegação inferior' })
+  const bar = (await nav.boundingBox())!
+  const mid = bar.x + bar.width / 2
+  expect(bar.height).toBeCloseTo(95, 0)
+  // Um fundo verde sob a barra mostra onde ela não pinta: cantos de 29 e o recorte em U de 48,6 px.
+  await page.evaluate(() => {
+    const probe = document.createElement('div')
+    probe.style.cssText = 'position:fixed;inset:0;z-index:29;background:rgb(0,255,0)'
+    document.body.append(probe)
+  })
+  const SURFACE = [36, 22, 18]
+  expect(await pixelAt(page, 20, bar.y + 60)).toEqual(SURFACE)
+  expect(await pixelAt(page, mid, bar.y + 60)).toEqual(SURFACE)
+  for (const [x, y, what] of [
+    [bar.x + 2, bar.y + 2, 'canto arredondado'],
+    [mid + 40, bar.y + 12, 'ombro do recorte'],
+    [mid, bar.y + 42, 'fundo do recorte, abaixo do botão'],
+  ] as const) {
+    const [, g] = await pixelAt(page, x, y)
+    expect(g, what).toBeGreaterThan(120)
+  }
+
+  // Scan de 65 px centrado na borda de cima (1,5 px abaixo), degradê #D28A4C 40% → 100%, ícone cream.
+  const scan = nav.getByRole('button', { name: 'Escanear' })
+  const scanBox = (await scan.boundingBox())!
+  expect(scanBox.width).toBeCloseTo(65, 0)
+  expect(scanBox.height).toBeCloseTo(65, 0)
+  expectNear(scanBox.x + scanBox.width / 2, mid, 'scan centrado')
+  expectNear(scanBox.y + scanBox.height / 2 - bar.y, 1.5, 'scan na borda')
+  await expect(scan).toHaveCSS('border-top-width', '0px')
+  await expect(scan).toHaveCSS('color', 'rgb(245, 241, 235)')
+  const fill = await scan.evaluate((el) => getComputedStyle(el).backgroundImage)
+  expect(fill).toContain('rgba(210, 138, 76, 0.4) -16.9%')
+  expect(fill).toContain('rgb(210, 138, 76) 109.2%')
+
+  // Ícones a 50 px do topo: Início e Favoritos a 46 e 118 da esquerda, Carrinho e Perfil a 112,5 e 50
+  // da direita (x 301,5 e 364 no frame de 414).
+  const centers = [
+    ['Início', 46],
+    ['Favoritos', 118],
+    [/^Carrinho/, bar.width - 112.5],
+    ['Perfil', bar.width - 50],
+  ] as const
+  for (const [name, x] of centers) {
+    const box = (await nav.getByRole('link', { name }).locator('svg').boundingBox())!
+    expectNear(box.x + box.width / 2, x, `centro de ${String(name)}`)
+    expectNear(box.y + box.height / 2 - bar.y, 50, `altura de ${String(name)}`)
+  }
 })

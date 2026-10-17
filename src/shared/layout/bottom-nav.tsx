@@ -23,6 +23,8 @@ export function mobileChromeOf(pathname: string): MobileChrome {
 
 const item =
   'grid size-12 place-items-center rounded-full text-sand transition-colors hover:text-primary-hi aria-[current=page]:text-primary-hi'
+/** Ícones a 50 px do topo da barra (centros do frame de 414: 46, 118, 301,5 e 364). */
+const slot = 'absolute top-[26px]'
 
 /** Navegação inferior do mobile (< 768px), com o Scan central fora do escopo. */
 export function BottomNav() {
@@ -30,31 +32,46 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegação inferior"
-      className="fixed inset-x-0 bottom-0 z-30 rounded-t-[32px] bg-surface shadow-dock pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <ul className="mx-auto grid h-[72px] max-w-md grid-cols-5 items-center justify-items-center px-4">
-        <li>
+      {/* Barra do frame: 95 px, cantos de 29 e o recorte em U do "Tab Bar" no meio (path do SVG,
+          em largura fixa); as laterais cobrem o resto, e a sombra do filtro acompanha o recorte. */}
+      <div aria-hidden="true" className="absolute inset-0 drop-shadow-dock">
+        <div className="absolute inset-y-0 right-[calc(50%+80px)] left-0 rounded-tl-[29px] bg-surface" />
+        <div className="absolute inset-y-0 right-0 left-[calc(50%+80px)] rounded-tr-[29px] bg-surface" />
+        <svg
+          viewBox="123 801 168 95"
+          className="absolute top-0 left-1/2 h-[95px] w-[168px] -translate-x-1/2 fill-surface"
+        >
+          <path d="M123 801H131.15C144.9 801 157.13 809.2 162.98 821.65C170.74 838.18 187.54 849.62 207 849.62C226.46 849.62 243.26 838.17 251.02 821.65C256.87 809.2 269.09 801 282.85 801H291V896H123Z" />
+        </svg>
+        <div className="absolute inset-x-0 top-[95px] bottom-0 bg-surface" />
+      </div>
+      <ul className="relative h-[95px]">
+        <li className={cn(slot, 'left-[22px]')}>
           <Link to="/" className={item} aria-current={pathname === '/' ? 'page' : undefined}>
             <HouseIcon aria-hidden="true" className="size-6" />
             <span className="sr-only">Início</span>
           </Link>
         </li>
-        <li>
+        <li className={cn(slot, 'left-[94px]')}>
           <Link to="/favoritos" className={item}>
             <HeartIcon aria-hidden="true" className="size-6" />
             <span className="sr-only">Favoritos</span>
           </Link>
         </li>
-        <li className="-mt-10">
-          <Unavailable className="grid size-16 place-items-center rounded-full border-4 border-ink bg-[linear-gradient(to_bottom,rgb(210_138_76/0.4),var(--primary))] text-ink shadow-lg">
-            <ScanLineIcon aria-hidden="true" className="size-7" />
+        {/* Scan de 65 px centrado 1,5 px abaixo da borda; o vetor do degradê vai de 11 px acima a
+            6 px abaixo do círculo (#D28A4C de 40% a 100%). */}
+        <li className="absolute -top-[31px] left-1/2 -translate-x-1/2">
+          <Unavailable className="grid size-[65px] place-items-center rounded-full bg-[linear-gradient(180deg,rgb(210_138_76/0.4)_-16.9%,var(--primary)_109.2%)] text-cream">
+            <ScanLineIcon aria-hidden="true" strokeWidth={1.5} className="size-8" />
             <span className="sr-only">Escanear</span>
           </Unavailable>
         </li>
-        <li>
+        <li className={cn(slot, 'right-[88.5px]')}>
           <CartNavLink />
         </li>
-        <li>
+        <li className={cn(slot, 'right-[26px]')}>
           <Link to="/perfil" className={item}>
             <UserRoundIcon aria-hidden="true" className="size-6" />
             <span className="sr-only">Perfil</span>

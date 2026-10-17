@@ -34,7 +34,8 @@
   --color-divider: rgb(210 138 76 / 0.3);
 
   /* Filtros dos frames mobile: #0A0604 a 45%; o blur do CSS é o dobro do stdDeviation do SVG. */
-  --shadow-dock: 0 -10px 30px rgb(10 6 4 / 0.45);
+  /* A barra inferior tem o recorte em U: a sombra vem do filtro, que segue a forma. */
+  --drop-shadow-dock: 0 -10px 30px rgb(10 6 4 / 0.45);
   --shadow-float: 0 0 20px rgb(10 6 4 / 0.45);
   /* Cards do carrinho e o campo de cupom: dy 6 e stdDeviation 10. */
   --shadow-card: 0 6px 20px rgb(10 6 4 / 0.45);
