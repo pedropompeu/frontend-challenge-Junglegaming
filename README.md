@@ -63,7 +63,7 @@ Relatório HTML do Playwright: `pnpm exec playwright show-report` (fica em `play
 | Ana Souza (`ana_kurio`) | `ana@kurio.test`   | `Kurio@123` | 2 favoritos; carteira principal `0x8f3a…b6d9` cadastrada |
 | Bruno Lima              | `bruno@kurio.test` | `Kurio@123` | Sem favoritos e sem carteiras                            |
 
-As senhas ficam no banco simulado só como hash SHA-256 com salt, nunca em claro. Os carrinhos começam vazios. A sessão dura 2 h (60 s no cenário `session-expired`).
+Contas criadas pelo cadastro ficam só no navegador em que foram criadas, porque o banco simulado vive no `localStorage`: em outro navegador, numa aba anônima, depois de limpar os dados do site ou de resetar o cenário, o login responde 401 "E-mail ou senha inválidos". As telas de login e cadastro avisam isso e indicam a conta da Ana. As senhas ficam no banco simulado só como hash SHA-256 com salt, nunca em claro. Os carrinhos começam vazios. A sessão dura 2 h (60 s no cenário `session-expired`).
 
 | Cupom                         | Resultado                          |
 | ----------------------------- | ---------------------------------- |

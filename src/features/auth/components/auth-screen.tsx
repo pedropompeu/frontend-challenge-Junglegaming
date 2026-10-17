@@ -83,6 +83,7 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
       ) : null}
       {mode === 'login' ? <LoginForm onSuccess={leave} /> : <RegisterForm onSuccess={leave} />}
       <SocialLogin />
+      {DEMO_STORAGE_NOTICE ? <DemoAccountNotice mode={mode} /> : null}
     </>
   )
 
@@ -163,6 +164,21 @@ export function AuthScreen({ mode, search }: { mode: AuthMode; search: AuthSearc
         )}
       </p>
     </section>
+  )
+}
+
+// O backend simulado guarda o banco no `localStorage`: conta nova não existe em outro navegador.
+const DEMO_STORAGE_NOTICE = import.meta.env.VITE_ENABLE_MOCKS === 'true'
+
+function DemoAccountNotice({ mode }: { mode: AuthMode }) {
+  return (
+    <p className="text-center text-sm text-sand">
+      {mode === 'login'
+        ? 'Nesta demonstração, contas novas ficam salvas só no navegador em que foram criadas. Em outro navegador, use '
+        : 'Nesta demonstração, a conta fica salva só neste navegador. Para entrar de outro, use '}
+      <span className="font-bold text-cream">ana@kurio.test</span> /{' '}
+      <span className="font-bold text-cream">Kurio@123</span>.
+    </p>
   )
 }
 

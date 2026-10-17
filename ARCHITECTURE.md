@@ -237,6 +237,7 @@ A REST é a fonte da verdade. O socket é o atalho para chegar antes.
 - **Performance mobile** do Lighthouse ficou em 76 (Início) e 79 (detalhe), abaixo de 90. O backend simulado sobe no navegador antes da primeira resposta, sob CPU 4× mais lenta. A análise completa está em [`lighthouse/summary.md`](lighthouse/summary.md#abaixo-da-meta). Desktop: 99/99.
 - **`FORBIDDEN` (403) não é emitido.** Recurso de outro usuário responde 404, para não revelar que existe. O código está no contrato, e o cliente trata qualquer 403 como erro genérico. "Falta de permissão" pode ser simulada com `failNext(endpoint, { status: 403, code: 'FORBIDDEN' })`.
 - **Uma aba por vez.** Cada aba roda o próprio backend simulado. Abas simultâneas não recebem os eventos umas das outras, e a última a gravar sobrescreve o banco no `localStorage`.
+- **Conta nova só existe no navegador onde foi criada.** O banco simulado fica no `localStorage`, então em outro navegador, numa aba anônima ou depois de limpar os dados do site o login responde 401. Login e cadastro avisam isso e indicam a conta da Ana, que vem do seed e entra em qualquer navegador.
 - **Sem long-polling** no Socket.IO simulado (§5).
 - **bfcache:** o service worker do MSW impede o back/forward cache do navegador. A navegação pelo histórico dentro da SPA não é afetada.
 - **Quem compra a última unidade** vê o toast "esgotou" sobre a própria compra, porque o `nft.updated` da reserva de estoque também chega ao comprador.

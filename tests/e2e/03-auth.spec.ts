@@ -41,6 +41,15 @@ test('wrong password shows an error without leaving the form', async ({ page }) 
   await expect(page).toHaveURL(/\/entrar/)
 })
 
+test('login and register warn that new demo accounts stay in this browser', async ({ page }) => {
+  await page.goto('/entrar')
+  await expect(page.getByText(/contas novas ficam salvas só no navegador/)).toBeVisible()
+  await expect(page.getByText('ana@kurio.test', { exact: true })).toBeVisible()
+
+  await page.goto('/cadastro')
+  await expect(page.getByText(/a conta fica salva só neste navegador/)).toBeVisible()
+})
+
 test('login returns to previous flow', async ({ page }) => {
   await page.goto('/perfil')
   await expect(page).toHaveURL(/\/entrar\?redirect=/)
