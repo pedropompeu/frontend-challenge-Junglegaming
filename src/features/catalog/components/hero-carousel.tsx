@@ -70,7 +70,8 @@ export function HeroCarousel() {
           ))}
         </CarouselContent>
       </Carousel>
-      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 md:bottom-8 md:left-[calc((100%-450px)/2)]">
+      {/* Mobile: pontos de 7 px com o centro 9 px acima da base do card; os alvos de 24 px encostados. */}
+      <div className="absolute -bottom-[3px] left-1/2 flex -translate-x-1/2 md:bottom-8 md:left-[calc((100%-450px)/2)] md:gap-1.5">
         {SLIDES.map((s, i) => (
           <button
             key={s.title}
@@ -83,7 +84,7 @@ export function HeroCarousel() {
             <span
               aria-hidden="true"
               className={cn(
-                'size-2 rounded-full bg-primary/50 transition-colors',
+                'size-[7px] rounded-full bg-primary/50 transition-colors md:size-2',
                 i === current && 'bg-primary-hi',
               )}
             />

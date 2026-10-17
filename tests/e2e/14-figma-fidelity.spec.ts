@@ -1048,3 +1048,98 @@ test('desktop wallets follow the frame titles, 89px rows and secondary actions',
   await expect(empty).toHaveCSS('font-size', '14px')
   expectNear(await baselineOf(empty), 737.9, 'base do texto da secundária vazia')
 })
+
+test('mobile hero is the frame 190px card with the glow, type and art of the mask group', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'o card compacto do hero é do frame mobile')
+  await page.goto('/')
+  const region = page.getByRole('region', { name: 'Destaques' })
+  const slide = region.getByRole('group', { name: '1 de 3' }).locator(':scope > div')
+  const hero = (await slide.boundingBox())!
+  // Medidas relativas ao card (x 24, y 101 no frame de 414; o E2E roda em 390).
+  expect(hero.height).toBeCloseTo(190, 0)
+  await expect(slide).toHaveCSS('border-top-left-radius', '30px')
+  const background = await slide.evaluate((el) => getComputedStyle(el).backgroundImage)
+  expect(background).toContain('rgba(210, 138, 76, 0.2)')
+  expect(background).toContain('rgba(210, 138, 76, 0.1)')
+  // Dois círculos de r 124 em degradê #DD9A5F, recortados pelo card.
+  const glows = slide.locator(':scope > [aria-hidden="true"]')
+  await expect(glows).toHaveCount(2)
+  for (const glow of await glows.all()) {
+    const box = (await glow.boundingBox())!
+    expect(box.width).toBeCloseTo(248, 0)
+    expect(box.height).toBeCloseTo(248, 0)
+    expect(await glow.evaluate((el) => getComputedStyle(el).backgroundImage)).toContain(
+      'rgba(221, 154, 95',
+    )
+  }
+  expectNear((await glows.nth(0).boundingBox())!.x - hero.x, -80, 'círculo da esquerda')
+  expectNear((await glows.nth(1).boundingBox())!.y - hero.y, -10, 'círculo da direita')
+
+  const eyebrow = slide.getByText('Bem-vindo à Kurio')
+  await expect(eyebrow).toHaveCSS('font-size', '12px')
+  await expect(eyebrow).toHaveCSS('font-weight', '500')
+  expectNear((await textLeftOf(eyebrow)) - hero.x, 16, 'margem do texto')
+  expectNear((await baselineOf(eyebrow)) - hero.y, 18.2, 'base de "Bem-vindo à Kurio"')
+  const title = slide.getByRole('heading', { level: 2 })
+  await expect(title).toHaveCSS('font-size', '18px')
+  await expect(title).toHaveCSS('line-height', '29px')
+  expectNear((await baselineOf(title)) - hero.y, 49, 'base do título')
+  const text = slide.locator('h2 + p')
+  await expect(text).toHaveCSS('font-size', '12px')
+  await expect(text).toHaveCSS('line-height', '18px')
+  expectNear((await baselineOf(text)) - hero.y, 105.2, 'base da descrição')
+  // "EXPLORAR" logo abaixo da descrição: base 13 px depois do fim do bloco (158,2 − 145,2).
+  const explore = slide.getByRole('link', { name: /EXPLORAR/ })
+  await expect(explore).toHaveCSS('font-size', '12px')
+  await expect(explore).toHaveCSS('letter-spacing', 'normal')
+  const textBox = (await text.boundingBox())!
+  expectNear(
+    (await textBaselineOf(explore)) - (textBox.y + textBox.height),
+    13,
+    'base de "EXPLORAR"',
+  )
+  const arrow = explore.locator('svg')
+  await expect(arrow).toHaveCSS('color', PRIMARY)
+  await expect(arrow).toHaveCSS('stroke-width', '1.5px')
+
+  // Arte de 138 com r16 a 10,5 px do topo e 16 px da borda; miniatura de 58 sem contorno.
+  const art = slide.getByRole('img', { name: /Macaco de pelo castanho/ })
+  const artBox = (await art.boundingBox())!
+  expect(artBox.width).toBeCloseTo(138, 0)
+  await expect(art).toHaveCSS('border-top-left-radius', '16px')
+  expectNear(artBox.y - hero.y, 10.5, 'topo da arte')
+  expectNear(hero.x + hero.width - (artBox.x + artBox.width), 16, 'margem direita da arte')
+  // Título em duas linhas mesmo em 390: a coluna vai até 6 px da arte.
+  expect((await title.boundingBox())!.height).toBeCloseTo(58, 0)
+  const thumb = slide.locator('img[alt=""]')
+  const thumbBox = (await thumb.boundingBox())!
+  expect(thumbBox.width).toBeCloseTo(58, 0)
+  await expect(thumb).toHaveCSS('border-top-left-radius', '16px')
+  await expect(thumb).toHaveCSS('border-top-width', '0px')
+  expectNear(thumbBox.x - artBox.x, 14, 'miniatura → borda da arte')
+  expectNear(
+    thumbBox.y + thumbBox.height - (artBox.y + artBox.height),
+    8,
+    'miniatura abaixo da arte',
+  )
+
+  // Pontos de 7 px a 9 px da base, centrados no card; os alvos de 24 px ficam encostados.
+  const dots = region.getByRole('button', { name: /Ir para o destaque/ }).locator('span')
+  const centers = await Promise.all(
+    (await dots.all()).map(async (dot) => {
+      const box = (await dot.boundingBox())!
+      expect(box.width).toBeCloseTo(7, 0)
+      return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+    }),
+  )
+  expectNear(centers[1]!.x, hero.x + hero.width / 2, 'ponto do meio no centro do card')
+  expectNear(centers[1]!.x - centers[0]!.x, 24, 'espaço entre os pontos')
+  expectNear(hero.y + hero.height - centers[0]!.y, 9, 'pontos acima da base do card')
+
+  // Na largura do frame (414) a descrição quebra como lá: 26 caracteres, três linhas.
+  await page.setViewportSize({ width: 414, height: 896 })
+  expect((await text.boundingBox())!.height).toBeCloseTo(54, 0)
+  expect((await title.boundingBox())!.height).toBeCloseTo(58, 0)
+})
