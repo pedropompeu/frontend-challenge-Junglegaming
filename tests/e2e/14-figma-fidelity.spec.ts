@@ -735,3 +735,108 @@ test('desktop cart summary and CTA sit on the frame baselines', async ({ page })
   const cards = main.getByRole('region', { name: 'Colecionadores também viram' }).getByRole('list')
   expectNear((await cards.boundingBox())!.y, 673, 'cards')
 })
+
+/** Início do primeiro texto (x), pelo mesmo inline-block vazio do `baselineOf`. */
+const textLeftOf = (el: Locator) =>
+  el.evaluate((node) => {
+    const probe = document.createElement('span')
+    probe.style.cssText = 'display:inline-block;width:0;height:0'
+    node.prepend(probe)
+    const x = probe.getBoundingClientRect().left
+    probe.remove()
+    return x
+  })
+
+test('desktop order confirmation is the frame modal on the opaque ink page', async ({ page }) => {
+  test.skip(isMobile(page), 'o recibo só é modal no desktop')
+  await page.clock.install()
+  await openCheckout(page)
+  await addToCart(page, 'nft_eco-dourado')
+  await page.goto('/checkout')
+  await placeOrder(page)
+  await page.clock.fastForward(3000)
+  const dialog = page.getByRole('dialog', { name: 'Pedido confirmado' })
+  await expect(dialog).toBeVisible()
+  // O BG #140D0A do frame cobre a página inteira; o modal de 578 px fica em (431, 166).
+  const overlay = page.locator('[data-slot="dialog-overlay"]')
+  await expect(overlay).toHaveCSS('background-color', INK)
+  const box = (await dialog.boundingBox())!
+  expect(box.width).toBe(578)
+  expectNear(box.x, 431, 'x do modal')
+  expectNear(box.y, 166, 'y do modal')
+  // Envelope em y 188 e subtítulo 16 bold com base em 298,2.
+  const icon = dialog.getByRole('img', { name: 'Thank you' })
+  expectNear((await icon.boundingBox())!.y, 188, 'envelope')
+  expectNear(
+    await baselineOf(dialog.getByText('Seus NFTs agora estão na sua carteira')),
+    298.2,
+    'subtítulo',
+  )
+  // Metadados entre as linhas de y 322 e 388: rótulos 14 com base 350,9 e valores 15 com base 369,3.
+  const meta = dialog.locator('dl')
+  const metaBox = (await meta.boundingBox())!
+  expectNear(metaBox.y, 322, 'linha de cima')
+  expectNear(metaBox.y + metaBox.height, 389, 'linha de baixo')
+  const label = meta.locator('dt').first()
+  const value = meta.locator('dd').first()
+  await expect(label).toHaveCSS('font-size', '14px')
+  await expect(value).toHaveCSS('font-size', '15px')
+  expectNear(await baselineOf(label), 350.9, 'rótulos')
+  expectNear(await baselineOf(value), 369.3, 'valores')
+  expectNear((await label.boundingBox())!.x, 467, 'primeira coluna')
+  // "Detalhes da transação" 15 bold em x 475 com base 422,8.
+  const details = dialog.getByRole('heading', { name: 'Detalhes da transação' })
+  await expect(details).toHaveCSS('font-size', '15px')
+  expectNear(await baselineOf(details), 422.8, 'Detalhes da transação')
+  // Cabeçalho 16 ("Subtotal" em 500) com base 451,2 e a linha logo abaixo, em 465.
+  const table = dialog.getByRole('table', { name: 'Itens do pedido' })
+  const nfts = table.getByRole('columnheader', { name: 'NFTs' })
+  const subtotal = table.getByRole('columnheader', { name: 'Subtotal' })
+  await expect(nfts).toHaveCSS('font-size', '16px')
+  await expect(subtotal).toHaveCSS('font-size', '16px')
+  await expect(subtotal).toHaveCSS('font-weight', '500')
+  expectNear(await baselineOf(nfts), 451.2, 'cabeçalho')
+  const headBox = (await table.locator('thead tr').boundingBox())!
+  expectNear(headBox.y + headBox.height, 465, 'linha do cabeçalho')
+  // Itens de 70 px a cada 82 a partir de y 477, arte com rx 8, nome 16 bold.
+  const arts = table.locator('tbody img')
+  await expect(arts).toHaveCount(2)
+  const first = (await arts.first().boundingBox())!
+  const last = (await arts.last().boundingBox())!
+  expectNear(first.y, 477, 'item 1')
+  expectNear(last.y - first.y, 82, 'passo dos itens')
+  await expect(arts.first()).toHaveCSS('border-top-left-radius', '8px')
+  await expect(table.locator('tbody tr').first().locator('p').first()).toHaveCSS(
+    'font-size',
+    '16px',
+  )
+  // Totais em x 644: "Taxa de rede" 15 com base 27,8 abaixo do último item e "Total" 16 bold
+  // 30,4 abaixo dela; a linha fica 13,65 abaixo do Total.
+  const itemsEnd = last.y + last.height
+  const fee = table.getByRole('rowheader', { name: 'Taxa de rede' })
+  const total = table.getByRole('rowheader', { name: 'Total' })
+  expectNear(await textLeftOf(fee), 644, 'x da Taxa de rede')
+  expectNear(await textLeftOf(total), 644, 'x do Total')
+  await expect(total).toHaveCSS('font-size', '16px')
+  const feeBase = await baselineOf(fee)
+  const totalBase = await baselineOf(total)
+  expectNear(feeBase - itemsEnd, 27.8, 'Taxa de rede')
+  expectNear(totalBase - feeBase, 30.4, 'Total')
+  const tableBox = (await table.boundingBox())!
+  expectNear(tableBox.y + tableBox.height - totalBase, 14.2, 'linha do Total')
+  // Nota 14 em 3 linhas de 22 px, como no frame, com a primeira base 28,4 abaixo da linha.
+  const note = dialog.getByText(/^Transação confirmada na/)
+  await expect(note).toHaveCSS('line-height', '22px')
+  const noteBox = (await note.boundingBox())!
+  expect(noteBox.height).toBe(66)
+  expectNear((await baselineOf(note)) - (tableBox.y + tableBox.height), 28.4, 'nota')
+  // "Ver no Etherscan": 48 de altura, rx 5, 16 bold, 20 px abaixo da nota; a faixa primary de
+  // 10 px vem 48 px depois e fecha o modal.
+  const etherscan = dialog.getByRole('link', { name: /Ver no Etherscan/ })
+  const ethBox = (await etherscan.boundingBox())!
+  expect(ethBox.height).toBe(48)
+  expectNear(ethBox.y - (noteBox.y + noteBox.height), 20, 'Etherscan')
+  await expect(etherscan).toHaveCSS('border-top-left-radius', '5px')
+  await expect(etherscan).toHaveCSS('font-size', '16px')
+  expectNear(box.y + box.height - (ethBox.y + ethBox.height), 58, 'faixa do rodapé')
+})

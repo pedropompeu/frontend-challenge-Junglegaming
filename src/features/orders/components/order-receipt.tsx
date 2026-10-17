@@ -22,12 +22,12 @@ export function OrderReceipt({ order }: { order: Order }) {
   const date = order.settledAt ?? order.createdAt
   return (
     <div className="overflow-hidden rounded-[16px] bg-surface md:rounded-none">
-      <header className="flex flex-col items-center gap-4 px-6 pt-6 pb-5 text-center">
+      <header className="flex flex-col items-center gap-4 px-6 pt-6 pb-5 text-center md:gap-3 md:pt-[22px] md:pb-[18px]">
         <ThankYouIcon role="img" aria-label="Thank you" className="h-20 w-[66px] text-primary" />
         <p className="font-bold text-sand">Seus NFTs agora estão na sua carteira</p>
       </header>
 
-      <dl className="grid grid-cols-2 gap-4 border-y border-primary px-6 py-4 text-sm md:flex md:justify-between md:gap-0 md:px-9">
+      <dl className="grid grid-cols-2 gap-4 border-y border-primary px-6 py-4 text-sm md:flex md:justify-between md:gap-0 md:px-9 md:pt-3.5 md:pb-4">
         <Meta label="ID da transação">
           {order.txHash ? <span title={order.txHash}>{shortHash(order.txHash)}</span> : '—'}
         </Meta>
@@ -42,12 +42,15 @@ export function OrderReceipt({ order }: { order: Order }) {
         </Meta>
       </dl>
 
-      <section aria-labelledby="receipt-details-title" className="px-5 pt-6 pb-10 md:px-11">
-        <h2 id="receipt-details-title" className="mb-2 text-[15px] font-bold">
+      <section
+        aria-labelledby="receipt-details-title"
+        className="px-5 pt-6 pb-10 md:px-11 md:pt-4 md:pb-12"
+      >
+        <h2 id="receipt-details-title" className="mb-2 text-[15px] font-bold md:mb-1.5">
           Detalhes da transação
         </h2>
         <OrderLines order={order} />
-        <p className="mx-auto mt-4 max-w-[340px] text-center text-sm text-sand">
+        <p className="mx-auto mt-4 max-w-[340px] text-center text-sm text-sand md:mt-3 md:max-w-[470px] md:leading-[22px]">
           Transação confirmada na {NETWORK_LABELS[order.network]}. A propriedade foi transferida
           para sua carteira conectada e registrada na rede.
         </p>
@@ -55,7 +58,7 @@ export function OrderReceipt({ order }: { order: Order }) {
           <Link
             to="/explorador/tx/$hash"
             params={{ hash: order.txHash }}
-            className="mx-auto mt-5 flex h-12 w-fit items-center gap-2 rounded-[4px] bg-primary px-4 font-bold text-ink transition-opacity hover:opacity-90"
+            className="mx-auto mt-5 flex h-12 w-fit items-center gap-2 rounded-[5px] bg-primary px-4 font-bold text-ink transition-opacity hover:opacity-90"
           >
             Ver no Etherscan <span className="text-xs font-normal">(simulado)</span>
           </Link>
@@ -77,8 +80,8 @@ function Meta({
 }) {
   return (
     <div className={divided ? 'md:border-l md:border-primary md:pl-4' : undefined}>
-      <dt className="font-bold text-sand">{label}</dt>
-      <dd className="text-sand">{children}</dd>
+      <dt className="font-bold text-sand md:leading-[17px]">{label}</dt>
+      <dd className="text-sand md:text-[15px] md:leading-[18px]">{children}</dd>
     </div>
   )
 }

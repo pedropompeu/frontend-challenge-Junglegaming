@@ -1,9 +1,10 @@
 import { useRef } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { XIcon } from 'lucide-react'
+import { Dialog as DialogPrimitive } from 'radix-ui'
 import type { Order } from '@/contracts'
 import { useMediaQuery } from '@/shared/lib/use-media-query'
-import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/shared/ui/dialog'
+import { Dialog, DialogClose, DialogOverlay, DialogPortal, DialogTitle } from '@/shared/ui/dialog'
 import { OrderDeclined } from './order-declined'
 import { OrderPending } from './order-pending'
 import { OrderReceipt } from './order-receipt'
@@ -43,26 +44,31 @@ function OrderConfirmed({ order }: { order: Order }) {
   if (isDesktop) {
     return (
       <Dialog open onOpenChange={(open) => !open && void navigate({ to: '/' })}>
-        <DialogContent
-          ref={contentRef}
-          showCloseButton={false}
-          aria-describedby={undefined}
-          // Foco no próprio recibo: o leitor de tela anuncia o título antes do botão do rodapé.
-          onOpenAutoFocus={(event) => {
-            event.preventDefault()
-            contentRef.current?.focus()
-          }}
-          className="max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-none border-0 bg-surface p-0 text-cream sm:max-w-[578px]"
-        >
-          <DialogTitle asChild>
-            <h1 className="sr-only">Pedido confirmado</h1>
-          </DialogTitle>
-          <OrderReceipt order={order} />
-          <DialogClose className="absolute top-4 right-4 rounded-xs p-1 text-primary transition-colors hover:text-primary-hi">
-            <XIcon aria-hidden="true" className="size-5" />
-            <span className="sr-only">Fechar</span>
-          </DialogClose>
-        </DialogContent>
+        <DialogPortal>
+          {/* O BG #140D0A do frame cobre a página e rola com o recibo, que começa em y 166. */}
+          <DialogOverlay className="overflow-y-auto bg-ink">
+            <DialogPrimitive.Content
+              ref={contentRef}
+              aria-describedby={undefined}
+              // Foco no próprio recibo: o leitor de tela anuncia o título antes do botão do rodapé,
+              // e o fundo não rola (o recibo abre pelo topo, como no frame).
+              onOpenAutoFocus={(event) => {
+                event.preventDefault()
+                contentRef.current?.focus({ preventScroll: true })
+              }}
+              className="relative mx-auto mt-[166px] mb-10 w-[578px] bg-surface text-cream outline-none"
+            >
+              <DialogTitle asChild>
+                <h1 className="sr-only">Pedido confirmado</h1>
+              </DialogTitle>
+              <OrderReceipt order={order} />
+              <DialogClose className="absolute top-4 right-4 rounded-xs p-1 text-primary transition-colors hover:text-primary-hi">
+                <XIcon aria-hidden="true" className="size-5" />
+                <span className="sr-only">Fechar</span>
+              </DialogClose>
+            </DialogPrimitive.Content>
+          </DialogOverlay>
+        </DialogPortal>
       </Dialog>
     )
   }
