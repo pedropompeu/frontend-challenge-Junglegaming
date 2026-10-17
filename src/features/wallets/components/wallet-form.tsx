@@ -23,6 +23,9 @@ type WalletFormProps = {
   onSaved: (wallet: Wallet) => void
 }
 
+// Linhas do frame desktop a cada 89 px, com a base do rótulo 4,7 px acima do campo.
+const walletField = 'md:gap-0'
+
 /** Campos do frame Desktop/Carteiras; "Salvar carteira" grava o slot com `PUT /wallets/{slot}`. */
 export function WalletForm({ slot, userId, defaultValues, onSaved }: WalletFormProps) {
   const form = useForm({ resolver: zodResolver(WalletFormSchema), defaultValues })
@@ -47,7 +50,7 @@ export function WalletForm({ slot, userId, defaultValues, onSaved }: WalletFormP
       <form
         noValidate
         onSubmit={form.handleSubmit(submit)}
-        className="grid gap-x-7 gap-y-5 md:grid-cols-2 md:gap-y-8"
+        className="grid gap-x-7 gap-y-5 md:grid-cols-2 md:gap-y-[26.5px]"
       >
         <TextField
           control={control}
@@ -55,8 +58,15 @@ export function WalletForm({ slot, userId, defaultValues, onSaved }: WalletFormP
           label="Nome de exibição"
           required
           autoComplete="name"
+          className={walletField}
         />
-        <TextField control={control} name="nickname" label="Apelido da carteira" required />
+        <TextField
+          control={control}
+          name="nickname"
+          label="Apelido da carteira"
+          required
+          className={walletField}
+        />
         <SelectField
           control={control}
           name="network"
@@ -64,14 +74,22 @@ export function WalletForm({ slot, userId, defaultValues, onSaved }: WalletFormP
           required
           options={NETWORK_LABELS}
           placeholder="Selecione uma rede"
+          className={walletField}
         />
-        <TextField control={control} name="profileName" label="Nome do perfil" required />
+        <TextField
+          control={control}
+          name="profileName"
+          label="Nome do perfil"
+          required
+          className={walletField}
+        />
         <TextField
           control={control}
           name="address"
           label="Endereço da carteira"
           required
           placeholder="Endereço 0x da carteira"
+          className={walletField}
         />
         <TextField
           control={control}
@@ -79,6 +97,7 @@ export function WalletForm({ slot, userId, defaultValues, onSaved }: WalletFormP
           label="ENS ou carteira secundária (opcional)"
           srOnlyLabel
           placeholder="ENS ou carteira secundária (opcional)"
+          className={walletField}
         />
         <SelectField
           control={control}
@@ -87,8 +106,14 @@ export function WalletForm({ slot, userId, defaultValues, onSaved }: WalletFormP
           required
           options={PROVIDER_LABELS}
           placeholder="Selecione uma carteira"
+          className={walletField}
         />
-        <TextField control={control} name="referralCode" label="Código de indicação" />
+        <TextField
+          control={control}
+          name="referralCode"
+          label="Código de indicação"
+          className={walletField}
+        />
         <TextField
           control={control}
           name="email"
@@ -96,13 +121,21 @@ export function WalletForm({ slot, userId, defaultValues, onSaved }: WalletFormP
           type="email"
           required
           autoComplete="email"
+          className={walletField}
         />
-        <TextField control={control} name="ensName" label="Nome ENS" prefix=".eth" />
-        <div className="md:col-span-2">
+        <TextField
+          control={control}
+          name="ensName"
+          label="Nome ENS"
+          prefix=".eth"
+          className={walletField}
+        />
+        {/* "Salvar carteira" 131×40 em y 625 no frame: 14 bold quase sem folga lateral. */}
+        <div className="md:col-span-2 md:mt-[5px]">
           <button
             type="submit"
             disabled={saveWallet.isPending}
-            className="h-10 min-w-[131px] bg-primary px-6 text-[15px] font-bold text-ink transition-colors hover:bg-primary-hi disabled:cursor-wait disabled:opacity-70"
+            className="h-10 min-w-[131px] bg-primary px-6 text-[15px] font-bold text-ink transition-colors hover:bg-primary-hi disabled:cursor-wait disabled:opacity-70 md:rounded-[3px] md:px-0.5 md:text-sm"
           >
             {saveWallet.isPending ? 'Salvando…' : 'Salvar carteira'}
           </button>

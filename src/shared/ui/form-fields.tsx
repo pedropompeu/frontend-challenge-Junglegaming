@@ -127,6 +127,8 @@ type SelectFieldProps<T extends FieldValues, TOut, V extends string> = {
   placeholder: string
   required?: boolean
   disabled?: boolean
+  /** Classes do `FormItem`, como no `TextField`. */
+  className?: string
 }
 
 export function SelectField<T extends FieldValues, V extends string, TOut = T>({
@@ -137,13 +139,14 @@ export function SelectField<T extends FieldValues, V extends string, TOut = T>({
   placeholder,
   required,
   disabled,
+  className,
 }: SelectFieldProps<T, TOut, V>) {
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="content-start">
+        <FormItem className={cn('content-start', className)}>
           <FieldLabel required={required}>{label}</FieldLabel>
           <Select
             name={field.name}

@@ -970,3 +970,81 @@ test('desktop profile follows the frame sidebar, rows, avatar and buttons', asyn
   await expect(remove).toHaveCSS('font-weight', '400')
   expectNear((await remove.boundingBox())!.x, 1095, '"Remover" x')
 })
+
+test('desktop wallets follow the frame titles, 89px rows and secondary actions', async ({
+  page,
+}) => {
+  test.skip(isMobile(page), 'o Figma não tem os formulários de perfil e pagamento no mobile')
+  await page.goto('/perfil/carteiras')
+  await login(page, 'ana@kurio.test')
+  const primary = page.getByRole('region', { name: 'Carteira principal' })
+  const secondary = page.getByRole('region', { name: 'Carteira secundária' })
+  const label = (text: string) => primary.locator('label').getByText(text, { exact: true })
+  const top = async (el: Locator) => (await el.boundingBox())!.y
+  await expect(primary.getByLabel('Nome de exibição', { exact: true })).toHaveValue('Ana Souza')
+
+  // "Carteira principal" 17 bold em 115,6; o texto de apoio 14 em 137,9.
+  const title = primary.getByRole('heading', { name: 'Carteira principal' })
+  await expect(title).toHaveCSS('font-size', '17px')
+  await expect(title).toHaveCSS('font-weight', '700')
+  expectNear(await baselineOf(title), 115.6, 'base de "Carteira principal"')
+  const intro = primary.getByText('Estas carteiras ficam disponíveis', { exact: false })
+  await expect(intro).toHaveCSS('font-size', '14px')
+  expectNear(await baselineOf(intro), 137.9, 'base do texto de apoio')
+
+  // Linhas a cada 89 px, com a base do rótulo 4,7 px acima do campo; a coluna da direita acompanha.
+  const rows = [
+    ['Nome de exibição', 'Apelido da carteira'],
+    ['Rede', 'Nome do perfil'],
+    ['Endereço da carteira', 'ENS ou carteira secundária (opcional)'],
+    ['Tipo de carteira', 'Código de indicação'],
+    ['E-mail', 'Nome ENS'],
+  ] as const
+  const control = (name: string) =>
+    name === 'Rede' || name === 'Tipo de carteira'
+      ? primary.getByRole('combobox', { name })
+      : primary.getByLabel(name, { exact: true })
+  for (const [i, [left, right]] of rows.entries()) {
+    expectNear(await textBaselineOf(label(left)), 192.3 + 89 * i, `base de "${left}"`)
+    expectNear(await top(control(left)), 197 + 89 * i, `campo "${left}"`)
+    expect(await top(control(right)), `campo "${right}"`).toBe(await top(control(left)))
+  }
+
+  // "Salvar carteira" 131×40 r3 14 bold em (458, 625).
+  const save = primary.getByRole('button', { name: 'Salvar carteira' })
+  const saveBox = (await save.boundingBox())!
+  expect([saveBox.width, saveBox.height]).toEqual([131, 40])
+  expectNear(saveBox.x, 458, '"Salvar carteira" x')
+  expectNear(saveBox.y, 625, '"Salvar carteira" y')
+  await expect(save).toHaveCSS('border-top-left-radius', '3px')
+  await expect(save).toHaveCSS('font-size', '14px')
+  await expect(save).toHaveCSS('font-weight', '700')
+
+  // Secundária: título 17 em 711,6; círculo de 16 px com contorno primary de 1,5 centrado em
+  // y 705, 8 px antes do texto 14; "Adicionar" 16/500, 8,6 px depois do texto.
+  const secondaryTitle = secondary.getByRole('heading', { name: 'Carteira secundária' })
+  await expect(secondaryTitle).toHaveCSS('font-size', '17px')
+  expectNear(await baselineOf(secondaryTitle), 711.6, 'base de "Carteira secundária"')
+  const same = secondary.getByRole('checkbox', { name: 'Igual à carteira principal' })
+  const sameBox = (await same.boundingBox())!
+  expect([sameBox.width, sameBox.height]).toEqual([16, 16])
+  expectNear(sameBox.y + sameBox.height / 2, 705, 'centro do círculo')
+  // Anel e não borda: o Chromium arredonda a largura da borda para 1 px em tela 1x.
+  expect(await same.evaluate((el) => getComputedStyle(el).boxShadow)).toContain(
+    'rgb(210, 138, 76) 0px 0px 0px 1.5px inset',
+  )
+  const sameLabel = secondary.locator('label', { hasText: 'Igual à carteira principal' })
+  await expect(sameLabel).toHaveCSS('font-size', '14px')
+  expectNear(await textBaselineOf(sameLabel), 710.4, 'base de "Igual à carteira principal"')
+  const sameLabelBox = (await sameLabel.boundingBox())!
+  expectNear(sameLabelBox.x - (sameBox.x + sameBox.width), 8, 'círculo → texto')
+  const add = secondary.getByRole('button', { name: 'Adicionar carteira secundária' })
+  await expect(add).toHaveCSS('font-size', '16px')
+  await expect(add).toHaveCSS('font-weight', '500')
+  expectNear(await textBaselineOf(add), 711.2, 'base de "Adicionar"')
+  const addBox = (await add.boundingBox())!
+  expectNear(addBox.x - (sameLabelBox.x + sameLabelBox.width), 8.6, 'texto → "Adicionar"')
+  const empty = secondary.getByText('Você ainda não adicionou uma carteira secundária.')
+  await expect(empty).toHaveCSS('font-size', '14px')
+  expectNear(await baselineOf(empty), 737.9, 'base do texto da secundária vazia')
+})
