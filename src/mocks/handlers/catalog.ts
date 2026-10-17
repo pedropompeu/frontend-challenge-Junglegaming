@@ -1,7 +1,9 @@
 import Big from 'big.js'
 import {
+  NetworkSchema,
   NftListParamsSchema,
   type CategoryCount,
+  type NetworkCount,
   type Nft,
   type NftListParams,
   type NftSummary,
@@ -151,5 +153,14 @@ export const catalogHandlers = [
       count: nfts.filter((n) => n.category === c.id).length,
     }))
     return json(cats)
+  }),
+
+  route('GET /networks', () => {
+    const { nfts } = getDb()
+    const nets: NetworkCount[] = NetworkSchema.options.map((id) => ({
+      id,
+      count: nfts.filter((n) => n.network === id).length,
+    }))
+    return json(nets)
   }),
 ]

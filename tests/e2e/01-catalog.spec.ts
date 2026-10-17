@@ -1,6 +1,10 @@
 import type { Page } from '@playwright/test'
 import { expect, isMobile, mocks, test } from './fixtures'
 
+/** Item da Rede na barra lateral; o nome inclui a contagem quando ela chega ("Polygon (17)"). */
+const network = (page: Page, name: string) =>
+  page.getByRole('button', { name: new RegExp(`^${name}( \\(\\d+\\))?$`) })
+
 const cards = (page: Page) => page.getByRole('list', { name: 'NFTs' }).getByRole('listitem')
 
 /** No mobile os filtros ficam numa gaveta; no desktop, na barra lateral. */
@@ -25,7 +29,7 @@ test('search, combined filters, sort and pagination compose the URL and survive 
   await page.goto('/')
   await expect(cards(page).first()).toBeVisible()
   await inFilters(page, async () => {
-    await page.getByRole('button', { name: 'Polygon', exact: true }).click()
+    await network(page, 'Polygon').click()
     await page.getByRole('combobox', { name: /ordenar/i }).click()
     await page.getByRole('option', { name: /menor preço/i }).click()
   })
@@ -33,13 +37,13 @@ test('search, combined filters, sort and pagination compose the URL and survive 
   await page.getByRole('link', { name: 'Página 2' }).click()
   await expect(page).toHaveURL(/networks=polygon.*page=2|page=2.*networks=polygon/)
 
-  await inFilters(page, () => page.getByRole('button', { name: 'Ethereum', exact: true }).click())
+  await inFilters(page, () => network(page, 'Ethereum').click())
   await expect(page).toHaveURL(/networks=polygon%2Cethereum|networks=polygon,ethereum/)
   await expect(page).not.toHaveURL(/page=2/)
 
   await page.reload()
   await inFilters(page, () =>
-    expect(page.getByRole('button', { name: 'Ethereum', exact: true })).toHaveAttribute(
+    expect(network(page, 'Ethereum')).toHaveAttribute(
       'aria-pressed',
       'true',
     ),
@@ -138,7 +142,7 @@ test('filters keep the scroll position; pagination brings the catalog to the top
   expect(Math.abs((await scrollY(page)) - before)).toBeLessThanOrEqual(2)
 
   if (!isMobile(page)) {
-    await page.getByRole('button', { name: 'Polygon', exact: true }).click()
+    await network(page, 'Polygon').click()
     await expect(page).toHaveURL(/networks=polygon/)
     await expect(page.getByRole('list', { name: 'NFTs' })).toHaveAttribute('aria-busy', 'false')
     expect(Math.abs((await scrollY(page)) - before)).toBeLessThanOrEqual(2)

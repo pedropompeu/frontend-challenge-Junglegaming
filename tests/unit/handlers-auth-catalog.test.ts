@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   CategoryCountSchema,
+  NetworkCountSchema,
   NftSchema,
   NftSummarySchema,
   PageSchema,
@@ -185,6 +186,14 @@ describe('catalog handlers', () => {
     expect(cats.every((c) => c.count > 0)).toBe(true)
     const all = await get('/api/nfts?page=1&pageSize=48')
     expect(cats.reduce((s, c) => s + c.count, 0)).toBe(all.body.total)
+  })
+
+  it('networks count every NFT', async () => {
+    const r = await get('/api/networks')
+    const nets = NetworkCountSchema.array().parse(r.body)
+    expect(nets.map((n) => n.id)).toEqual(['ethereum', 'polygon', 'solana'])
+    const all = await get('/api/nfts?page=1&pageSize=48')
+    expect(nets.reduce((s, n) => s + n.count, 0)).toBe(all.body.total)
   })
 })
 

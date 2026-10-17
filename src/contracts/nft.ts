@@ -86,6 +86,12 @@ export const CategoryCountSchema = z.object({
 })
 export type CategoryCount = z.infer<typeof CategoryCountSchema>
 
+export const NetworkCountSchema = z.object({
+  id: NetworkSchema,
+  count: z.number().int().min(0),
+})
+export type NetworkCount = z.infer<typeof NetworkCountSchema>
+
 export const NftSortSchema = z.enum(['relevance', 'price-asc', 'price-desc', 'newest', 'rating'])
 export type NftSort = z.infer<typeof NftSortSchema>
 

@@ -18,6 +18,7 @@ export const qk = {
     detail: (id: string) => ['nfts', 'detail', id] as const,
   },
   categories: () => ['categories'] as const,
+  networks: () => ['networks'] as const,
   session: () => ['session'] as const,
   favorites: (userId: string) => ['private', userId, 'favorites'] as const,
   cart: (ownerKey: string) => ['private', ownerKey, 'cart'] as const,

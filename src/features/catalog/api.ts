@@ -1,9 +1,11 @@
 import { z } from 'zod'
 import {
   CategoryCountSchema,
+  NetworkCountSchema,
   NftSummarySchema,
   PageSchema,
   type CategoryCount,
+  type NetworkCount,
   type NftListParams,
   type NftSummary,
   type Page,
@@ -35,4 +37,8 @@ export function fetchNfts(params: NftListParams, signal?: AbortSignal): Promise<
 
 export function fetchCategories(signal?: AbortSignal): Promise<CategoryCount[]> {
   return request(z.array(CategoryCountSchema), { url: '/categories', signal })
+}
+
+export function fetchNetworks(signal?: AbortSignal): Promise<NetworkCount[]> {
+  return request(z.array(NetworkCountSchema), { url: '/networks', signal })
 }
