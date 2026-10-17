@@ -17,13 +17,13 @@ export function AlsoViewed({ excludeIds }: { excludeIds: string[] }) {
     <section aria-labelledby="also-viewed" className="mt-12 md:mt-24">
       <h2
         id="also-viewed"
-        className="border-b border-line pb-2 text-lg font-bold text-primary-hi md:border-divider"
+        className="border-b border-line pb-2 text-lg font-bold text-primary-hi md:border-divider md:pb-[11px] md:text-[17px] md:leading-4"
       >
         Colecionadores também viram
       </h2>
       <ul
         aria-busy={isPending}
-        className="-mx-6 mt-6 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0"
+        className="-mx-6 mt-6 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 md:mx-0 md:mt-8 md:grid md:grid-cols-5 md:overflow-visible md:px-0"
       >
         {isPending
           ? Array.from({ length: VISIBLE }, (_, i) => (

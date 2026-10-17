@@ -74,7 +74,7 @@ function CartPage() {
         / <span aria-current="page">Carrinho</span>
       </nav>
       <TitleBar title="Carrinho de NFTs" />
-      <div className="mt-6 grid gap-8 md:mt-[17px] lg:grid-cols-[minmax(0,1fr)_332px] lg:gap-[86px]">
+      <div className="mt-6 grid gap-8 md:mt-1 lg:grid-cols-[minmax(0,1fr)_332px] lg:gap-[86px]">
         <div>{list}</div>
         {showSummary ? (
           <section
@@ -83,14 +83,14 @@ function CartPage() {
           >
             <h2
               id="cart-summary-title"
-              className="text-lg font-bold max-md:sr-only md:border-b md:border-divider md:pb-3"
+              className="text-lg font-bold max-md:sr-only md:border-b md:border-divider md:pb-[5px]"
             >
               Resumo da carteira
             </h2>
             <CouponForm
               appliedCode={prefs.couponCode}
               onRemove={() => setCheckoutPrefs(ownerKey, { couponCode: null })}
-              className="mb-[11px] md:mt-6 md:mb-5"
+              className="mb-[11px] md:mt-[22px] md:mb-[19px]"
             />
             {overStock ? (
               <p
@@ -112,14 +112,14 @@ function CartPage() {
               type="button"
               disabled={!canCheckout}
               onClick={() => void navigate({ to: '/checkout' })}
-              className="mt-6 h-[60px] w-full rounded-full cta-fill font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:h-11 md:rounded-md"
+              className="mt-6 h-[60px] w-full rounded-full cta-fill font-bold text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:mt-[18px] md:h-10 md:rounded-[3px] md:text-[15px]"
             >
               Conectar e finalizar
             </button>
             <Link
               to="/"
               hash="catalogo"
-              className="mt-4 hidden text-center text-sm text-primary-hi hover:underline md:block"
+              className="mt-3 hidden text-center text-[15px] leading-5 text-primary-hi hover:underline md:block"
             >
               Continuar explorando
             </Link>

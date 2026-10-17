@@ -64,11 +64,11 @@ export function SummaryRow({
         'flex items-start justify-between gap-4',
         // Desktop: a nota e o Total descem para as linhas de base do frame; no Pagamento a
         // divisória fica a ~44 px da Taxa e o Total, a ~26 px da divisória.
-        total && 'md:mt-3.5',
+        total && 'md:mt-[15px]',
         divided && 'md:mt-1 md:border-t md:border-divider md:pt-2',
       )}
     >
-      <dt className={cn(total && 'text-base font-bold')}>{label}</dt>
+      <dt className={cn('md:leading-7', total && 'text-base font-bold')}>{label}</dt>
       <dd className="flex min-h-7 flex-col items-end text-right">
         <span
           data-testid={testId}

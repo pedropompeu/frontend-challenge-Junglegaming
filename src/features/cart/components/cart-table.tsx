@@ -4,7 +4,7 @@ import { CartItemRow } from './cart-item-row'
 
 type CartTableProps = { items: CartItem[]; quote: Quote | undefined }
 
-const HEAD = 'text-[15px] font-bold'
+const HEAD = 'text-base font-bold'
 
 /** Lista do carrinho com o cabeçalho de colunas do Figma no desktop. */
 export function CartTable({ items, quote }: CartTableProps) {
@@ -14,7 +14,7 @@ export function CartTable({ items, quote }: CartTableProps) {
       <h2 className="sr-only">Itens do carrinho</h2>
       <div
         aria-hidden="true"
-        className="hidden grid-cols-[70px_minmax(0,1fr)_110px_150px_110px_44px] gap-x-4 border-b border-divider pr-4 pb-3 md:grid"
+        className="hidden grid-cols-[70px_minmax(0,1fr)_122px_120px_120px_44px] gap-x-4 border-b border-divider pt-0.5 pr-4 pb-[7px] md:grid"
       >
         <span className={`${HEAD} col-span-2`}>NFTs</span>
         <span className={HEAD}>Preço</span>
@@ -36,7 +36,7 @@ export function CartTable({ items, quote }: CartTableProps) {
 
 export function CartTableSkeleton() {
   return (
-    <div aria-hidden="true" className="grid gap-5 md:mt-[42px] md:gap-3">
+    <div aria-hidden="true" className="grid gap-5 md:mt-[46px] md:gap-3">
       {Array.from({ length: 3 }, (_, i) => (
         <div
           key={i}

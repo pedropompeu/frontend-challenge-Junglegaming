@@ -53,7 +53,7 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
   return (
     // Mobile: o card de 100 px do frame, com o stepper na linha do preço (a lixeira fica no canto
     // de cima, onde o frame a sobrepõe ao "+"). Desktop: a linha da tabela.
-    <li className="relative mx-1 grid min-h-[100px] grid-cols-[100px_minmax(0,1fr)_auto] items-center gap-x-[9px] overflow-hidden rounded-[14px] bg-surface pr-4 shadow-card [grid-template-areas:'img_info_info'_'img_price_qty'_'img_warn_warn'] md:mx-0 md:min-h-0 md:grid-cols-[70px_minmax(0,1fr)_110px_150px_110px_44px] md:gap-x-4 md:rounded-none md:shadow-none md:[grid-template-areas:'img_info_price_qty_total_remove']">
+    <li className="relative mx-1 grid min-h-[100px] grid-cols-[100px_minmax(0,1fr)_auto] items-center gap-x-[9px] overflow-hidden rounded-[14px] bg-surface pr-4 shadow-card [grid-template-areas:'img_info_info'_'img_price_qty'_'img_warn_warn'] md:mx-0 md:min-h-0 md:grid-cols-[70px_minmax(0,1fr)_122px_120px_120px_44px] md:gap-x-4 md:rounded-none md:shadow-none md:[grid-template-areas:'img_info_price_qty_total_remove']">
       <Link
         to="/nft/$nftId"
         params={{ nftId: item.nftId }}
@@ -67,18 +67,20 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
           width={item.image.width}
           height={item.image.height}
           loading="lazy"
-          className="size-full object-cover md:size-[70px]"
+          className="size-full object-cover md:size-[70px] md:rounded-md"
         />
       </Link>
-      <div className="flex min-w-0 flex-col pt-2.5 pr-8 [grid-area:info] md:gap-1 md:pt-0 md:pr-0">
-        <h3 className="truncate text-[15px] font-bold">
+      <div className="flex min-w-0 flex-col pt-2.5 pr-8 [grid-area:info] md:pt-0 md:pr-0">
+        <h3 className="truncate text-[15px] font-bold md:text-base">
           <Link to="/nft/$nftId" params={{ nftId: item.nftId }} className="hover:text-primary-hi">
             {item.name}
           </Link>
         </h3>
-        <p className="text-sm text-sand">Edição: {EDITION_LABELS[item.editionKind]}</p>
+        <p className="text-sm text-sand md:text-khaki">
+          Edição: {EDITION_LABELS[item.editionKind]}
+        </p>
         {notices.length > 0 ? (
-          <ul aria-label="Mudanças recentes" className="flex flex-wrap gap-1.5 max-md:mt-1">
+          <ul aria-label="Mudanças recentes" className="mt-1 flex flex-wrap gap-1.5">
             {notices.map((kind) => (
               <li
                 key={kind}
@@ -93,7 +95,7 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
       <EthPrice
         value={item.unitPrice}
         className="my-[9.5px] [grid-area:price] md:my-0"
-        amountClassName="text-lg md:text-base"
+        amountClassName="text-lg md:text-base md:text-sand"
       />
       {/* No mobile o stepper e o aviso viram itens do grid (linha do preço e linha de baixo). */}
       <div className="contents md:block md:[grid-area:qty]">
@@ -122,7 +124,7 @@ export function CartItemRow({ item, line }: CartItemRowProps) {
           clearCartLineNotice(item.id)
           remove.mutate()
         }}
-        className="absolute top-2 right-2 grid size-10 place-items-center rounded-md text-primary-hi hover:bg-surface-2 disabled:opacity-50 md:static md:[grid-area:remove]"
+        className="absolute top-2 right-2 grid size-10 place-items-center rounded-md text-primary-hi hover:bg-surface-2 disabled:opacity-50 md:static md:justify-self-end md:text-khaki md:[grid-area:remove]"
       >
         <Trash2Icon aria-hidden="true" className="size-5" />
       </button>

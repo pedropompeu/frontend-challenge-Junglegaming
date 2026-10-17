@@ -61,10 +61,10 @@ export function CouponForm({ appliedCode, onRemove, className }: CouponFormProps
 
   return (
     <form onSubmit={submit} noValidate className={className}>
-      <label htmlFor={`${id}-code`} className="mb-2 block text-sm font-bold max-md:sr-only">
+      <label htmlFor={`${id}-code`} className="mb-1.5 block text-sm font-bold max-md:sr-only">
         Código promocional
       </label>
-      {/* Mobile: a pílula de 50 px do frame com o "Aplicar" sobre a ponta direita. Desktop: campo + botão. */}
+      {/* A pílula de 50 px do frame mobile e o campo de 40 px do desktop, com o "Aplicar" sobre a ponta direita. */}
       <div className="relative flex">
         <input
           id={`${id}-code`}
@@ -76,12 +76,12 @@ export function CouponForm({ appliedCode, onRemove, className }: CouponFormProps
           placeholder="Digite o código promocional..."
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="h-[50px] min-w-0 flex-1 rounded-[25px] border border-line bg-transparent pr-[105px] pl-4 text-base text-ellipsis shadow-card placeholder:text-khaki aria-invalid:border-coral max-md:placeholder:text-[13px] md:h-11 md:rounded-l-md md:rounded-r-none md:border-primary md:pr-4 md:text-sm md:shadow-none"
+          className="h-[50px] min-w-0 flex-1 rounded-[25px] border border-line bg-transparent pr-[105px] pl-4 text-base text-ellipsis shadow-card placeholder:text-khaki aria-invalid:border-coral max-md:placeholder:text-[13px] md:h-10 md:rounded-[3px] md:border-primary md:pr-[104px] md:pl-[7px] md:text-sm md:shadow-none md:placeholder:text-xs"
         />
         <button
           type="submit"
           disabled={apply.isPending}
-          className="absolute inset-y-0 right-0 min-w-[97px] rounded-[25px] px-4 text-[15px] font-bold whitespace-nowrap text-ink cta-fill disabled:opacity-60 md:static md:h-11 md:min-w-0 md:rounded-l-none md:rounded-r-md md:px-6 md:text-sm"
+          className="absolute inset-y-0 right-0 min-w-[97px] rounded-[25px] px-4 text-[15px] font-bold whitespace-nowrap text-ink cta-fill disabled:opacity-60 md:w-[102px] md:min-w-0 md:rounded-l-none md:rounded-r-[3px] md:px-0"
         >
           {apply.isPending ? 'Aplicando…' : 'Aplicar'}
         </button>

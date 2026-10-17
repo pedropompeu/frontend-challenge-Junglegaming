@@ -622,3 +622,116 @@ test('desktop breadcrumbs are 15px bold on the frame baseline', async ({ page })
   await expect(crumbs).toHaveCSS('font-size', '15px')
   expectNear(await baselineOf(crumbs), 114.8, '/checkout')
 })
+
+const PRIMARY_HI = 'rgb(232, 155, 85)'
+
+test('desktop cart table follows the frame columns, type and colors', async ({ page }) => {
+  test.skip(isMobile(page), 'a tabela é do carrinho desktop; o mobile são cards')
+  await addToCart(page, 'nft_neon-vessel')
+  await addToCart(page, 'nft_eco-dourado')
+  await page.goto('/carrinho')
+  const main = page.getByRole('main')
+  const head = main.getByText('NFTs', { exact: true }).locator('..')
+  // Cabeçalhos 16 bold; a divisória deles e a do "Resumo da carteira" ficam na mesma linha, y 157.
+  for (const cell of await head.locator('span').all()) {
+    await expect(cell).toHaveCSS('font-size', '16px')
+  }
+  const headBox = (await head.boundingBox())!
+  const titleBox = (await main.getByRole('heading', { name: 'Resumo da carteira' }).boundingBox())!
+  expectNear(headBox.y + headBox.height, 157, 'divisória da tabela')
+  expectNear(titleBox.y + titleBox.height, 157, 'divisória do resumo')
+  // Colunas do frame: Preço em x 431,25, Quantidade em 569,5 e Total em 705,75.
+  for (const [label, x] of [
+    ['Preço', 431.25],
+    ['Quantidade', 569.5],
+    ['Total', 705.75],
+  ] as const) {
+    expectNear((await head.getByText(label, { exact: true }).boundingBox())!.x, x, label)
+  }
+  // Linhas de 70 px em y 169 e 251, arte com rx 6.
+  const rows = main.getByRole('list', { name: 'Itens do carrinho' }).locator(':scope > li')
+  await expect(rows).toHaveCount(2)
+  expectNear((await rows.first().boundingBox())!.y, 169, 'item 1')
+  expectNear((await rows.nth(1).boundingBox())!.y, 251, 'item 2')
+  const row = rows.first()
+  await expect(row.locator('img')).toHaveCSS('border-top-left-radius', '6px')
+  // Nome 16 bold e, 21,2 px abaixo, a edição 14 em khaki.
+  const name = row.getByRole('heading', { level: 3 })
+  const edition = row.getByText(/^Edição:/)
+  await expect(name).toHaveCSS('font-size', '16px')
+  await expect(edition).toHaveCSS('color', KHAKI)
+  expectNear((await baselineOf(edition)) - (await baselineOf(name)), 21.2, 'nome → edição')
+  // Preço unitário 16 bold sand; o total da linha segue em primary-hi.
+  const prices = row.locator('span[aria-hidden="true"]').filter({ hasText: 'ETH' })
+  await expect(prices.first()).toHaveCSS('font-size', '16px')
+  await expect(prices.first()).toHaveCSS('color', SAND)
+  await expect(prices.nth(1)).toHaveCSS('color', PRIMARY_HI)
+  // Lixeira em traço khaki, centrada em x 866,3.
+  const trash = row.getByRole('button', { name: 'Remover Neon Vessel do carrinho' })
+  await expect(trash).toHaveCSS('color', KHAKI)
+  const trashBox = (await trash.boundingBox())!
+  expectNear(trashBox.x + trashBox.width / 2, 866.3, 'lixeira')
+})
+
+test('desktop cart coupon is the frame 40px field with the apply button inside', async ({
+  page,
+}) => {
+  test.skip(isMobile(page), 'o cupom mobile é a pílula de 50 px')
+  await addToCart(page, 'nft_neon-vessel')
+  await page.goto('/carrinho')
+  const label = page.locator('label', { hasText: 'Código promocional' })
+  expectNear(await baselineOf(label), 194.4, 'rótulo')
+  // "Promo Input" do frame: 332×40 em y 205, rx 3, contorno primary, placeholder 12 e sem sombra.
+  const field = page.getByRole('textbox', { name: 'Código promocional' })
+  const box = (await field.boundingBox())!
+  expect([box.width, box.height]).toEqual([332, 40])
+  expectNear(box.y, 205, 'campo')
+  await expect(field).toHaveCSS('border-top-left-radius', '3px')
+  await expect(field).toHaveCSS('border-top-color', PRIMARY)
+  expect(await hasVisibleShadow(field)).toBe(false)
+  expect(await placeholderSize(field)).toBe('12px')
+  // "Aplicar" de 102×40 dentro do campo, na ponta direita: só os cantos direitos arredondados.
+  const apply = page.getByRole('button', { name: 'Aplicar', exact: true })
+  const applyBox = (await apply.boundingBox())!
+  expect([applyBox.width, applyBox.height]).toEqual([102, 40])
+  expect(applyBox.y).toBeCloseTo(box.y, 0)
+  expect(applyBox.x + applyBox.width).toBeCloseTo(box.x + box.width, 0)
+  await expect(apply).toHaveCSS('border-top-left-radius', '0px')
+  await expect(apply).toHaveCSS('border-top-right-radius', '3px')
+  await expect(apply).toHaveCSS('font-size', '15px')
+  await expect(apply).toHaveCSS('font-weight', '700')
+  await expect(apply).toHaveCSS('background-color', PRIMARY)
+  await expect(apply).toHaveCSS('color', INK)
+})
+
+test('desktop cart summary and CTA sit on the frame baselines', async ({ page }) => {
+  test.skip(isMobile(page), 'as posições são do frame desktop')
+  await addToCart(page, 'nft_neon-vessel')
+  await page.goto('/carrinho')
+  const main = page.getByRole('main')
+  // Subtotal: rótulo com base em 284,8 e valor 18 em 284 (o 18 px arredonda a ascendente para 19).
+  const subtotal = main.getByTestId('summary-subtotal')
+  expectNear(await baselineOf(subtotal.locator('xpath=../../dt')), 284.8, 'rótulo do Subtotal')
+  expectNear(await baselineOf(subtotal), 284, 'valor do Subtotal', 1.5)
+  const total = main.getByTestId('summary-total').locator('xpath=../../dt')
+  expectNear(await baselineOf(total), 419.2, 'rótulo do Total')
+  // "Conectar e finalizar": 332×40 em y 445, rx 3, 15 bold.
+  const cta = main.getByRole('button', { name: 'Conectar e finalizar' })
+  const ctaBox = (await cta.boundingBox())!
+  expect([ctaBox.width, ctaBox.height]).toEqual([332, 40])
+  expectNear(ctaBox.y, 445, 'CTA')
+  await expect(cta).toHaveCSS('border-top-left-radius', '3px')
+  await expect(cta).toHaveCSS('font-size', '15px')
+  // "Continuar explorando" 15 com base em 512,8.
+  const more = main.getByRole('link', { name: 'Continuar explorando' })
+  await expect(more).toHaveCSS('font-size', '15px')
+  expectNear(await baselineOf(more), 512.8, 'Continuar explorando')
+  // "Colecionadores também viram": 17 bold com base em 627,6, linha em 640,9 e cards em 673.
+  const also = main.getByRole('heading', { name: 'Colecionadores também viram' })
+  await expect(also).toHaveCSS('font-size', '17px')
+  expectNear(await baselineOf(also), 627.6, 'Colecionadores')
+  const alsoBox = (await also.boundingBox())!
+  expectNear(alsoBox.y + alsoBox.height, 640.9, 'linha de Colecionadores')
+  const cards = main.getByRole('region', { name: 'Colecionadores também viram' }).getByRole('list')
+  expectNear((await cards.boundingBox())!.y, 673, 'cards')
+})
