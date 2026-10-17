@@ -54,7 +54,12 @@ export function AvatarField({ userId, avatarUrl }: { userId: string; avatarUrl: 
   }
 
   return (
-    <div role="group" aria-labelledby={`${id}-label`} className="grid content-start gap-2">
+    // No frame o grupo sobe 7 px em relação à linha do "Apelido da carteira", com o círculo em y 380.
+    <div
+      role="group"
+      aria-labelledby={`${id}-label`}
+      className="grid content-start gap-2 md:-mt-1.5 md:gap-1.5"
+    >
       <p id={`${id}-label`} className="text-[15px] text-cream">
         Avatar
       </p>
@@ -77,7 +82,7 @@ export function AvatarField({ userId, avatarUrl }: { userId: string; avatarUrl: 
           onClick={() => fileInput.current?.click()}
           disabled={busy}
           aria-describedby={error ? `${id}-error` : undefined}
-          className="h-10 min-w-[98px] bg-primary px-5 text-[15px] font-bold text-ink transition-colors hover:bg-primary-hi disabled:cursor-wait disabled:opacity-70"
+          className="h-10 min-w-[98px] bg-primary px-5 text-[15px] font-bold text-ink transition-colors hover:bg-primary-hi disabled:cursor-wait disabled:opacity-70 md:rounded-[3px] md:text-sm"
         >
           {busy ? (
             'Enviando…'
@@ -93,7 +98,8 @@ export function AvatarField({ userId, avatarUrl }: { userId: string; avatarUrl: 
             type="button"
             onClick={() => void remove()}
             disabled={busy}
-            className="text-[15px] text-cream hover:text-primary-hi disabled:opacity-70"
+            // 20 px depois do "Alterar" no frame (o grupo usa 24).
+            className="text-[15px] text-cream hover:text-primary-hi disabled:opacity-70 md:-ml-1 md:text-sm"
           >
             Remover<span className="sr-only"> avatar</span>
           </button>

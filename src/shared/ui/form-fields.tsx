@@ -17,7 +17,9 @@ export function FieldLabel({
   srOnly?: boolean
 }) {
   return (
-    <div className={cn('flex items-baseline gap-3', srOnly && 'sr-only')}>
+    // No desktop o asterisco de 22 px centra no rótulo (fica 2,7 px abaixo da base, como nos frames)
+    // e a linha tem a mesma altura com ou sem ele: campos vizinhos não desalinham.
+    <div className={cn('flex items-baseline gap-3 md:items-center', srOnly && 'sr-only')}>
       <FormLabel className="text-[15px] font-normal text-cream">{children}</FormLabel>
       {required ? (
         <span aria-hidden="true" className="text-coral md:text-[22px] md:leading-none">
@@ -44,6 +46,8 @@ type TextFieldProps<T extends FieldValues, TOut> = {
   prefix?: string
   /** Texto depois do campo. */
   suffix?: string
+  /** Classes do `FormItem`, como o espaço entre rótulo e campo de cada frame. */
+  className?: string
 }
 
 export function TextField<T extends FieldValues, TOut = T>({
@@ -59,13 +63,14 @@ export function TextField<T extends FieldValues, TOut = T>({
   description,
   prefix,
   suffix,
+  className,
 }: TextFieldProps<T, TOut>) {
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="content-start">
+        <FormItem className={cn('content-start', className)}>
           <FieldLabel required={required} srOnly={srOnlyLabel}>
             {label}
           </FieldLabel>

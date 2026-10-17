@@ -18,6 +18,9 @@ import {
 import { AvatarField } from './avatar-field'
 import { PASSWORD_FIELD_NAMES, PasswordFields } from './password-form'
 
+/** Linhas do frame desktop a cada 103 px, com o rótulo 18,7 px acima do campo. */
+const profileField = 'md:gap-[13px]'
+
 type ProfileFormProps = {
   userId: string
   profile: Profile
@@ -103,7 +106,7 @@ export function ProfileForm({ userId, profile }: ProfileFormProps) {
         event.preventDefault()
         void save()
       }}
-      className="mt-6 grid gap-x-7 gap-y-5 md:mt-8 md:grid-cols-2 md:gap-y-8"
+      className="mt-6 grid gap-x-7 gap-y-5 md:mt-9 md:grid-cols-2 md:gap-y-[27.5px]"
     >
       <Form {...profileForm}>
         <TextField
@@ -112,6 +115,7 @@ export function ProfileForm({ userId, profile }: ProfileFormProps) {
           label="Nome de exibição"
           required
           autoComplete="name"
+          className={profileField}
         />
         <TextField
           control={control}
@@ -119,6 +123,7 @@ export function ProfileForm({ userId, profile }: ProfileFormProps) {
           label="Nome de usuário"
           required
           autoComplete="username"
+          className={profileField}
         />
         <TextField
           control={control}
@@ -127,19 +132,31 @@ export function ProfileForm({ userId, profile }: ProfileFormProps) {
           type="email"
           required
           autoComplete="email"
+          className={profileField}
         />
-        <TextField control={control} name="ens" label="Nome ENS" prefix=".eth" />
-        <TextField control={control} name="nickname" label="Apelido da carteira" />
+        <TextField
+          control={control}
+          name="ens"
+          label="Nome ENS"
+          prefix=".eth"
+          className={profileField}
+        />
+        <TextField
+          control={control}
+          name="nickname"
+          label="Apelido da carteira"
+          className={profileField}
+        />
       </Form>
       <AvatarField userId={userId} avatarUrl={profile.avatarUrl} />
       <div className="mt-3 md:col-start-1 md:mt-0">
         <PasswordFields form={passwordForm} />
       </div>
-      <div className="md:col-span-2">
+      <div className="md:col-span-2 md:mt-1">
         <button
           type="submit"
           disabled={busy}
-          className="h-10 min-w-[131px] bg-primary px-6 text-[15px] font-bold text-ink transition-colors hover:bg-primary-hi disabled:cursor-wait disabled:opacity-70"
+          className="h-10 min-w-[131px] bg-primary px-6 text-[15px] font-bold text-ink transition-colors hover:bg-primary-hi disabled:cursor-wait disabled:opacity-70 md:rounded-[3px] md:text-sm"
         >
           {busy ? 'Salvando…' : 'Salvar'}
         </button>

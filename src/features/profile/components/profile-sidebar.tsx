@@ -11,6 +11,7 @@ import {
   UserRoundIcon,
 } from 'lucide-react'
 import { useSession } from '@/features/auth/use-session'
+import { cn } from '@/shared/lib/utils'
 import { Unavailable } from '@/shared/ui/unavailable'
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>
@@ -44,10 +45,11 @@ export function ProfileSidebar() {
   }
 
   return (
-    <nav aria-labelledby={`${id}-title`} className="min-w-0 bg-surface lg:self-start">
+    // 310×407 no frame: título com base em y 134, itens de 45 px a partir de y 145.
+    <nav aria-labelledby={`${id}-title`} className="min-w-0 bg-surface lg:self-start lg:pb-[9px]">
       <h2
         id={`${id}-title`}
-        className="sr-only lg:not-sr-only lg:block lg:px-2.5 lg:pt-4 lg:pb-1 lg:text-lg lg:font-bold"
+        className="sr-only lg:not-sr-only lg:block lg:px-2.5 lg:pt-3 lg:pb-1 lg:text-lg lg:font-bold"
       >
         Meu perfil
       </h2>
@@ -84,7 +86,8 @@ export function ProfileSidebar() {
           <button
             type="button"
             onClick={() => void signOut()}
-            className={`${item} font-bold lg:w-full`}
+            // "Sair" centrado em y 480, 20 px abaixo da divisória; a sidebar fecha 9 px depois.
+            className={cn(item, 'font-bold lg:h-[38px] lg:w-full')}
           >
             <LogOutIcon aria-hidden="true" className={icon} />
             Sair

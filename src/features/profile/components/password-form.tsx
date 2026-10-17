@@ -25,8 +25,11 @@ export const PASSWORD_FIELD_NAMES = FIELDS.map((f) => f.name)
 export function PasswordFields({ form }: { form: UseFormReturn<ChangePasswordBody> }) {
   return (
     <Form {...form}>
-      <fieldset className="grid gap-5">
-        <legend className="mb-5 text-lg text-cream">Alterar senha</legend>
+      {/* Frame desktop: título 16/500 com base em y 480 e campos a cada 91 px a partir de y 533. */}
+      <fieldset className="grid gap-5 md:gap-[21px]">
+        <legend className="mb-5 text-lg text-cream md:mb-4 md:text-base md:leading-[25px] md:font-medium">
+          Alterar senha
+        </legend>
         {FIELDS.map(({ name, label, autoComplete }) => (
           <FormField
             key={name}

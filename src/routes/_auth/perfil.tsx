@@ -8,7 +8,8 @@ export const Route = createFileRoute('/_auth/perfil')({
 /** Área da conta: "Meu perfil" ao lado (acima, no mobile) de dados do perfil ou carteiras. */
 function AccountLayout() {
   return (
-    <div className="page-container grid gap-6 pt-4 pb-12 md:pt-8 lg:grid-cols-[310px_minmax(0,1fr)] lg:gap-7">
+    // Sidebar e título em y 101, como nos frames Desktop/Perfil e Desktop/Carteiras.
+    <div className="page-container grid gap-6 pt-4 pb-12 md:pt-[33px] lg:grid-cols-[310px_minmax(0,1fr)] lg:gap-7">
       <ProfileSidebar />
       <div className="min-w-0">
         <Outlet />

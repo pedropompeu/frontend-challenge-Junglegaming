@@ -17,7 +17,7 @@ function ProfilePage() {
   const { user } = useSession()
   return (
     <section aria-labelledby="perfil-titulo">
-      <h1 id="perfil-titulo" className="text-lg font-bold">
+      <h1 id="perfil-titulo" className="text-lg font-bold md:text-base md:leading-[15px]">
         Perfil do colecionador
       </h1>
       {user ? <ProfileLoader user={user} /> : <ProfileSkeleton />}
@@ -45,7 +45,7 @@ function ProfileLoader({ user }: { user: User }) {
 
 function ProfileSkeleton() {
   return (
-    <div role="status" className="mt-6 grid gap-5 md:mt-8 md:grid-cols-2 md:gap-x-7 md:gap-y-8">
+    <div role="status" className="mt-6 grid gap-5 md:mt-9 md:grid-cols-2 md:gap-x-7 md:gap-y-8">
       <span className="sr-only">Carregando perfil…</span>
       {Array.from({ length: 6 }, (_, i) => (
         <Skeleton key={i} className="h-[72px] rounded-none bg-surface" />

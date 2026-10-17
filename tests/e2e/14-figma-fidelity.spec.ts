@@ -1,3 +1,5 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { Locator, Page } from '@playwright/test'
 import { addToCart } from './cart-helpers'
 import { openCheckout, placeOrder } from './checkout-helpers'
@@ -839,4 +841,132 @@ test('desktop order confirmation is the frame modal on the opaque ink page', asy
   await expect(etherscan).toHaveCSS('border-top-left-radius', '5px')
   await expect(etherscan).toHaveCSS('font-size', '16px')
   expectNear(box.y + box.height - (ethBox.y + ethBox.height), 58, 'faixa do rodapé')
+})
+
+/**
+ * Linha de base do primeiro texto num contêiner flex (rótulos, itens da sidebar): lá o inline-block
+ * do `baselineOf` viraria um item flex. Embrulha o texto num `span` só durante a medida.
+ */
+const textBaselineOf = (el: Locator) =>
+  el.evaluate((node) => {
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT)
+    let text = walker.nextNode() as Text | null
+    while (text && !text.textContent?.trim()) text = walker.nextNode() as Text | null
+    if (!text) throw new Error('sem texto')
+    const wrap = document.createElement('span')
+    text.before(wrap)
+    wrap.append(text)
+    const probe = document.createElement('span')
+    probe.style.cssText = 'display:inline-block;width:0;height:0'
+    wrap.prepend(probe)
+    const y = probe.getBoundingClientRect().bottom + window.scrollY
+    wrap.before(text)
+    wrap.remove()
+    return y
+  })
+
+const AVATAR_PNG = path.join(path.dirname(fileURLToPath(import.meta.url)), 'assets/avatar.png')
+
+test('desktop profile follows the frame sidebar, rows, avatar and buttons', async ({ page }) => {
+  test.skip(isMobile(page), 'o Figma não tem os formulários de perfil e pagamento no mobile')
+  await page.goto('/perfil')
+  await login(page, 'ana@kurio.test')
+  const main = page.getByRole('main')
+  const field = (label: string) => main.getByLabel(label, { exact: true })
+  const label = (text: string) => main.locator('label').getByText(text, { exact: true })
+  const top = async (el: Locator) => (await el.boundingBox())!.y
+  await expect(field('Nome de exibição')).toHaveValue('Ana Souza')
+
+  // Sidebar de 310×407 em y 101; "Meu perfil" 18 bold e itens de 45 px a partir de y 145.
+  const nav = page.getByRole('navigation', { name: 'Meu perfil' })
+  const navBox = (await nav.boundingBox())!
+  expectNear(navBox.y, 101, 'topo da sidebar')
+  expectNear(navBox.height, 407, 'altura da sidebar')
+  const title = nav.getByRole('heading', { name: 'Meu perfil' })
+  await expect(title).toHaveCSS('font-size', '18px')
+  expectNear(await baselineOf(title), 134, 'base de "Meu perfil"')
+  const active = nav.getByRole('link', { name: 'Dados do perfil' })
+  expectNear(await top(active), 145, 'item ativo')
+  expectNear(await textBaselineOf(active), 173.3, 'base de "Dados do perfil"')
+  // A marca do item ativo: barra #D28A4C de 6 px na borda esquerda.
+  expect(await active.evaluate((el) => getComputedStyle(el).boxShadow)).toContain(
+    'rgb(210, 138, 76) 6px 0px 0px 0px inset',
+  )
+  expectNear(
+    await textBaselineOf(nav.getByRole('button', { name: 'Sair' })),
+    485.8,
+    'base de "Sair"',
+  )
+
+  // Título 16 bold; três linhas de campos a cada 103 px, rótulo a 18,7 px do topo do campo.
+  const heading = page.getByRole('heading', { name: 'Perfil do colecionador' })
+  await expect(heading).toHaveCSS('font-size', '16px')
+  await expect(heading).toHaveCSS('font-weight', '700')
+  expectNear(await baselineOf(heading), 115.2, 'base do título')
+  for (const [name, base, y] of [
+    ['Nome de exibição', 169.3, 188],
+    ['E-mail', 272.3, 291],
+    ['Apelido da carteira', 375.3, 394],
+  ] as const) {
+    expectNear(await textBaselineOf(label(name)), base, `base de "${name}"`)
+    expectNear(await top(field(name)), y, `campo "${name}"`)
+  }
+  // O asterisco de 22 px fica 2,7 px abaixo da base do rótulo, e o campo opcional ao lado não desce.
+  const star = label('Nome de exibição').locator('xpath=following-sibling::span[1]')
+  expectNear(
+    (await textBaselineOf(star)) - (await textBaselineOf(label('Nome de exibição'))),
+    2.7,
+    'asterisco',
+  )
+  expect(await top(field('Nome ENS'))).toBe(await top(field('E-mail')))
+
+  // Avatar: rótulo em 368,3, círculo de 50 px em y 380, "Alterar" 98×40 r3 14 bold em (977, 385).
+  const avatarGroup = main.getByRole('group', { name: 'Avatar' })
+  expectNear(
+    await baselineOf(avatarGroup.getByText('Avatar', { exact: true })),
+    368.3,
+    'rótulo Avatar',
+  )
+  const circle = avatarGroup.locator('span.rounded-full')
+  const circleBox = (await circle.boundingBox())!
+  expectNear(circleBox.y, 380, 'círculo do avatar')
+  expect([circleBox.width, circleBox.height]).toEqual([50, 50])
+  const change = avatarGroup.getByRole('button', { name: 'Alterar avatar' })
+  const changeBox = (await change.boundingBox())!
+  expect([changeBox.width, changeBox.height]).toEqual([98, 40])
+  expectNear(changeBox.x, 977, '"Alterar" x')
+  expectNear(changeBox.y, 385, '"Alterar" y')
+  await expect(change).toHaveCSS('border-top-left-radius', '3px')
+  await expect(change).toHaveCSS('font-size', '14px')
+  await expect(change).toHaveCSS('font-weight', '700')
+
+  // "Alterar senha" 16/500 em 480,2; campos de senha a cada 91 px a partir de y 533.
+  const legend = main.locator('legend', { hasText: 'Alterar senha' })
+  await expect(legend).toHaveCSS('font-size', '16px')
+  await expect(legend).toHaveCSS('font-weight', '500')
+  expectNear(await baselineOf(legend), 480.2, 'base de "Alterar senha"')
+  expectNear(await textBaselineOf(label('Senha atual')), 519.3, 'base de "Senha atual"')
+  for (const [name, y] of [
+    ['Senha atual', 533],
+    ['Confirmar nova senha', 715],
+  ] as const) {
+    expectNear(await top(field(name)), y, `campo "${name}"`)
+  }
+
+  // "Salvar" 131×40 r3 14 bold em (458, 787).
+  const save = main.getByRole('button', { name: 'Salvar', exact: true })
+  const saveBox = (await save.boundingBox())!
+  expect([saveBox.width, saveBox.height]).toEqual([131, 40])
+  expectNear(saveBox.x, 458, '"Salvar" x')
+  expectNear(saveBox.y, 787, '"Salvar" y')
+  await expect(save).toHaveCSS('border-top-left-radius', '3px')
+  await expect(save).toHaveCSS('font-size', '14px')
+
+  // Com avatar salvo, "Remover" aparece em 14 regular, 20 px depois do "Alterar" (x 1095).
+  await page.locator('input[name="avatar"]').setInputFiles(AVATAR_PNG)
+  const remove = avatarGroup.getByRole('button', { name: 'Remover avatar' })
+  await expect(remove).toBeVisible()
+  await expect(remove).toHaveCSS('font-size', '14px')
+  await expect(remove).toHaveCSS('font-weight', '400')
+  expectNear((await remove.boundingBox())!.x, 1095, '"Remover" x')
 })
