@@ -1143,3 +1143,38 @@ test('mobile hero is the frame 190px card with the glow, type and art of the mas
   expect((await text.boundingBox())!.height).toBeCloseTo(54, 0)
   expect((await title.boundingBox())!.height).toBeCloseTo(58, 0)
 })
+
+test('mobile search is the frame 45px r10 field with the khaki placeholder and the 45px filter', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'a busca com o filtro ao lado é do topo mobile')
+  await page.goto('/')
+  const search = page.getByRole('searchbox', { name: 'Buscar NFTs' }).filter({ visible: true })
+  const box = (await search.boundingBox())!
+  expect(box.height).toBeCloseTo(45, 0)
+  await expect(search).toHaveCSS('border-top-left-radius', '10px')
+  await expect(search).toHaveCSS('background-color', 'rgb(36, 22, 18)')
+  // Placeholder e lupa #B39463, texto 14 negrito a 42 px da borda (x 66 − 24 no frame).
+  const placeholder = await search.evaluate((el) => {
+    const style = getComputedStyle(el, '::placeholder')
+    return [style.color, style.fontWeight, style.fontSize]
+  })
+  expect(placeholder).toEqual([KHAKI, '700', '14px'])
+  await expect(search).toHaveCSS('padding-left', '42px')
+  const lupa = search.locator('..').locator('svg')
+  const lupaBox = (await lupa.boundingBox())!
+  expect(lupaBox.width).toBeCloseTo(22, 0)
+  await expect(lupa).toHaveCSS('color', KHAKI)
+  expectNear(lupaBox.x - box.x, 12, 'lupa → borda da busca')
+  expectNear(lupaBox.y + lupaBox.height / 2, box.y + box.height / 2, 'lupa no meio da busca')
+  // Filtro 45×45 r14 a 8 px da busca. O vetor do frame começa fora do botão: 56% → 100%.
+  const filter = page.getByRole('button', { name: 'Filtros' })
+  const filterBox = (await filter.boundingBox())!
+  expect(filterBox.width).toBeCloseTo(45, 0)
+  expect(filterBox.height).toBeCloseTo(45, 0)
+  await expect(filter).toHaveCSS('border-top-left-radius', '14px')
+  expectNear(filterBox.x - (box.x + box.width), 8, 'busca → filtro')
+  const fill = await filter.evaluate((el) => getComputedStyle(el).backgroundImage)
+  expect(fill).toBe('linear-gradient(137deg, rgba(210, 138, 76, 0.56), rgb(210, 138, 76))')
+  await expect(filter.locator('svg')).toHaveCSS('stroke-width', '1.5px')
+})

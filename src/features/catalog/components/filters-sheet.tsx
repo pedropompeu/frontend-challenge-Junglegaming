@@ -20,8 +20,9 @@ export function FiltersSheet({ resultCount }: { resultCount?: number }) {
   const { search, setFilters, clearFilters } = useCatalogNavigation()
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="grid size-12 shrink-0 place-items-center rounded-[14px] bg-[linear-gradient(to_bottom_right,rgb(210_138_76/0.45),var(--primary))] text-ink">
-        <SlidersHorizontalIcon aria-hidden="true" className="size-5" />
+      {/* 45×45 r14 do frame; o vetor do degradê começa fora do botão, por isso 56% → 100%. */}
+      <SheetTrigger className="grid size-[45px] shrink-0 place-items-center rounded-[14px] bg-[linear-gradient(137deg,rgba(210,138,76,0.56),var(--color-primary))] text-ink">
+        <SlidersHorizontalIcon aria-hidden="true" strokeWidth={1.5} className="size-5" />
         <span className="sr-only">Filtros</span>
       </SheetTrigger>
       <SheetContent side="bottom" className="max-h-[85dvh] rounded-t-[28px] border-line bg-ink">

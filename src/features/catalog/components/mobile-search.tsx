@@ -50,9 +50,10 @@ export function SearchInput({ className }: { className?: string }) {
         commit(value.trim().slice(0, 80))
       }}
     >
+      {/* Mobile: lupa de 22 px e placeholder 14 bold #B39463 a 42 px da borda, como no frame. */}
       <SearchIcon
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-sand"
+        className="pointer-events-none absolute top-1/2 left-3 size-[22px] -translate-y-1/2 text-khaki md:left-4 md:size-5 md:text-sand"
       />
       <input
         type="search"
@@ -62,7 +63,7 @@ export function SearchInput({ className }: { className?: string }) {
         value={value}
         maxLength={80}
         onChange={(e) => setValue(e.target.value)}
-        className="h-12 w-full rounded-[14px] bg-surface pr-4 pl-12 text-sm text-cream placeholder:text-sand"
+        className="h-[45px] w-full rounded-[10px] bg-surface pr-4 pl-[42px] text-sm text-cream placeholder:font-bold placeholder:text-khaki md:h-12 md:rounded-[14px] md:pl-12 md:placeholder:font-normal md:placeholder:text-sand"
       />
     </form>
   )
