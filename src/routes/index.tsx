@@ -95,7 +95,7 @@ function HomePage() {
 
       <div
         id="catalogo"
-        className="mt-6 scroll-mt-6 md:mt-16 md:grid md:grid-cols-[minmax(0,310px)_1fr] md:gap-8 lg:gap-12"
+        className="mt-3.5 scroll-mt-6 md:mt-16 md:grid md:grid-cols-[minmax(0,310px)_1fr] md:gap-8 lg:gap-12"
       >
         <aside aria-label="Filtros" className="hidden md:block">
           <div className="bg-surface px-5 py-6">

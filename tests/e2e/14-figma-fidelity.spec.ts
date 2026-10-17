@@ -1239,3 +1239,42 @@ test('mobile catalog card is the frame portrait frame with the 27px heart and th
   expectNear((await textLeftOf(tag)) - tagBox.x, 8, 'texto do selo')
   expectNear((await textBaselineOf(tag)) - tagBox.y, 20, 'base do texto do selo')
 })
+
+test('mobile catalog tabs sit on the frame baseline with the 2px primary underline', async ({
+  page,
+}) => {
+  test.skip(!isMobile(page), 'o espaçamento e a base das abas são do frame mobile')
+  await page.goto('/')
+  const hero = (await page
+    .getByRole('region', { name: 'Destaques' })
+    .getByRole('group', { name: '1 de 3' })
+    .locator(':scope > div')
+    .boundingBox())!
+  const tablist = page.getByRole('tablist', { name: 'Seções do catálogo' })
+  const tabs = tablist.getByRole('tab')
+  const active = tablist.getByRole('tab', { selected: true })
+  // Ativa 14 bold #E89B55 sobre a linha #D28A4C de 2 px; as outras 14 regular #F5F1EB.
+  await expect(active).toHaveText('Todos os NFTs')
+  await expect(active).toHaveCSS('font-size', '14px')
+  await expect(active).toHaveCSS('font-weight', '700')
+  await expect(active).toHaveCSS('color', PRIMARY_HI)
+  await expect(active).toHaveCSS('border-bottom-color', PRIMARY)
+  await expect(active).toHaveCSS('border-bottom-width', '2px')
+  for (const i of [1, 2]) {
+    await expect(tabs.nth(i)).toHaveCSS('font-weight', '400')
+    await expect(tabs.nth(i)).toHaveCSS('color', 'rgb(245, 241, 235)')
+  }
+  // Base 29,4 px abaixo do hero (291 → 320,438) e a linha 4,6 px abaixo da base, do tamanho do texto.
+  const box = (await active.boundingBox())!
+  const baseline = await textBaselineOf(active)
+  expectNear(baseline - (hero.y + hero.height), 29.4, 'base das abas')
+  expectNear(box.y + box.height - 2 - baseline, 4.6, 'linha sob a base')
+  expectNear(box.x, 24, 'margem das abas')
+  expectNear(await textLeftOf(active), box.x, 'linha do tamanho do texto', 0.5)
+  // 16 px entre as abas, e as três cabem em 390 sem rolar.
+  const boxes = await Promise.all([0, 1, 2].map(async (i) => (await tabs.nth(i).boundingBox())!))
+  expectNear(boxes[1]!.x - (boxes[0]!.x + boxes[0]!.width), 16, 'vão entre as abas')
+  expectNear(boxes[2]!.x - (boxes[1]!.x + boxes[1]!.width), 16, 'vão entre as abas')
+  const row = tablist.locator('xpath=..')
+  expect(await row.evaluate((el) => el.scrollWidth - el.clientWidth)).toBe(0)
+})

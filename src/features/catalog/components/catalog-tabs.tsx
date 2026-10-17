@@ -18,11 +18,12 @@ export function CatalogTabs({
   onChange: (tab: NftTab) => void
   className?: string
 }) {
+  // Frame mobile: 16 px entre as abas e a linha de 2 px colada ao texto (4,6 px abaixo da base).
   return (
     <div
       role="tablist"
       aria-label="Seções do catálogo"
-      className={cn('flex gap-6 md:gap-8', className)}
+      className={cn('flex gap-4 md:gap-8', className)}
     >
       {TABS.map((t) => (
         <button
@@ -32,7 +33,7 @@ export function CatalogTabs({
           aria-selected={t.value === value}
           aria-controls={GRID_ID}
           onClick={() => onChange(t.value)}
-          className="border-b-2 border-transparent pb-1 text-sm whitespace-nowrap text-cream transition-colors hover:text-primary-hi aria-selected:border-primary aria-selected:font-bold aria-selected:text-primary-hi md:font-normal"
+          className="border-b-2 border-transparent text-sm whitespace-nowrap text-cream transition-colors hover:text-primary-hi aria-selected:border-primary aria-selected:font-bold aria-selected:text-primary-hi md:pb-1 md:font-normal"
         >
           {t.label}
         </button>
