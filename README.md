@@ -41,18 +41,18 @@ O `.env` está versionado de propósito: um checkout limpo já sobe com os mocks
 
 ### Comandos
 
-| Comando                | O que faz                                                                                         |
-| ---------------------- | ------------------------------------------------------------------------------------------------- |
-| `pnpm dev`             | Desenvolvimento com mocks (Vite, porta 5173)                                                      |
-| `pnpm build`           | `tsc -b` + build de produção em `dist/`                                                           |
-| `pnpm preview`         | Serve o `dist/` (porta 4173), com os mocks ativos como no deploy                                  |
-| `pnpm typecheck`       | Verificação de tipos (`tsc -b --noEmit`)                                                          |
-| `pnpm lint`            | ESLint                                                                                            |
-| `pnpm format`          | Prettier                                                                                          |
-| `pnpm test:unit`       | Vitest (27 arquivos, 205 testes)                                                                  |
-| `pnpm test:e2e`        | Playwright: build + preview na 4173 e os specs em Chromium desktop (1440×900) e mobile (390×844)  |
-| `pnpm test:e2e:update` | Igual, regravando as baselines visuais                                                            |
-| `pnpm lighthouse`      | Build + Lighthouse CI (início e detalhe, mobile e desktop, 3 execuções) + `lighthouse/summary.md` |
+| Comando                | O que faz                                                                                                  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`             | Desenvolvimento com mocks (Vite, porta 5173)                                                               |
+| `pnpm build`           | `tsc -b` + build de produção em `dist/`                                                                    |
+| `pnpm preview`         | Serve o `dist/` (porta 4173), com os mocks ativos como no deploy                                           |
+| `pnpm typecheck`       | Verificação de tipos (`tsc -b --noEmit`)                                                                   |
+| `pnpm lint`            | ESLint                                                                                                     |
+| `pnpm format`          | Prettier                                                                                                   |
+| `pnpm test:unit`       | Vitest (27 arquivos, 205 testes)                                                                           |
+| `pnpm test:e2e`        | Playwright: build + preview na 4173 e os specs em Chromium desktop (1440×900) e mobile (390×844)           |
+| `pnpm test:e2e:update` | Igual, regravando todas as baselines visuais (`--update-snapshots=all`; confira o diff antes de versionar) |
+| `pnpm lighthouse`      | Build + Lighthouse CI (início e detalhe, mobile e desktop, 3 execuções) + `lighthouse/summary.md`          |
 
 Relatório HTML do Playwright: `pnpm exec playwright show-report` (fica em `playwright-report/`; traces só dos testes que falharam).
 

@@ -16,7 +16,7 @@
     "format": "prettier --write .",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test:e2e:update": "playwright test --update-snapshots",
+    "test:e2e:update": "playwright test --update-snapshots=all",
     "lighthouse": "pnpm build && node -e \"fs.rmSync('lighthouse/reports', { recursive: true, force: true })\" && lhci collect --config=lighthouserc.mobile.cjs && lhci upload --config=lighthouserc.mobile.cjs && lhci collect --config=lighthouserc.desktop.cjs && lhci upload --config=lighthouserc.desktop.cjs && node scripts/lh-summary.mjs"
   },
   "msw": {

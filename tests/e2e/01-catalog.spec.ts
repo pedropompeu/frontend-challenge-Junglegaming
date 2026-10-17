@@ -43,10 +43,7 @@ test('search, combined filters, sort and pagination compose the URL and survive 
 
   await page.reload()
   await inFilters(page, () =>
-    expect(network(page, 'Ethereum')).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    ),
+    expect(network(page, 'Ethereum')).toHaveAttribute('aria-pressed', 'true'),
   )
   await page.goBack()
   await expect(page).toHaveURL(/page=2/)
