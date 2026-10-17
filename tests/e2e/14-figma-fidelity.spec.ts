@@ -585,3 +585,40 @@ test('mobile cart summary is the frame 40px sheet with 16px values and a 60px CT
   const cta = (await sheet.getByRole('button', { name: 'Conectar e finalizar' }).boundingBox())!
   expect(cta.height).toBeCloseTo(60, 0)
 })
+
+/** Linha de base do primeiro texto: um inline-block vazio no começo da linha pousa nela. */
+const baselineOf = (el: Locator) =>
+  el.evaluate((node) => {
+    const probe = document.createElement('span')
+    probe.style.cssText = 'display:inline-block;width:0;height:0'
+    node.prepend(probe)
+    const y = probe.getBoundingClientRect().bottom + window.scrollY
+    probe.remove()
+    return y
+  })
+
+/** Posição do frame com 1 px de folga: o Figma posiciona em frações, o Chromium arredonda a fonte. */
+function expectNear(actual: number, frame: number, what: string, tolerance = 1) {
+  expect(Math.abs(actual - frame), `${what}: ${actual} (frame ${frame})`).toBeLessThanOrEqual(
+    tolerance,
+  )
+}
+
+test('desktop breadcrumbs are 15px bold on the frame baseline', async ({ page }) => {
+  test.skip(isMobile(page), 'a trilha só aparece no desktop')
+  await addToCart(page, 'nft_neon-vessel')
+  const crumbs = page.getByRole('navigation', { name: 'Trilha' })
+  // "Início / Mercado…" dos frames de Detalhes, Carrinho e Pagamento: 15 bold com base em y 114,8.
+  for (const url of ['/nft/nft_neon-vessel', '/carrinho']) {
+    await page.goto(url)
+    await expect(crumbs).toHaveCSS('font-size', '15px')
+    await expect(crumbs).toHaveCSS('font-weight', '700')
+    expectNear(await baselineOf(crumbs), 114.8, url)
+  }
+  // No detalhe, miniaturas e moldura começam em y 129, 12 px abaixo da caixa da trilha.
+  await page.goto('/nft/nft_neon-vessel')
+  expectNear((await page.getByTestId('detail-hero').boundingBox())!.y, 129, 'detalhe')
+  await openCheckout(page)
+  await expect(crumbs).toHaveCSS('font-size', '15px')
+  expectNear(await baselineOf(crumbs), 114.8, '/checkout')
+})

@@ -107,8 +107,8 @@ const primaryButton =
 
 function CheckoutShell({ children }: { children: ReactNode }) {
   return (
-    <div className="page-container pt-4 pb-10 md:pt-6">
-      <nav aria-label="Trilha" className="hidden text-sm font-bold md:block">
+    <div className="page-container pt-4 pb-10 md:pt-[31px]">
+      <nav aria-label="Trilha" className="hidden text-[15px] leading-5 font-bold md:block">
         <Link to="/" className="hover:text-primary-hi">
           Início
         </Link>{' '}
@@ -126,7 +126,10 @@ function CheckoutShell({ children }: { children: ReactNode }) {
 
 function CheckoutSkeleton() {
   return (
-    <div aria-busy="true" className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_405px] lg:gap-16">
+    <div
+      aria-busy="true"
+      className="mt-6 grid gap-8 md:mt-[17px] lg:grid-cols-[minmax(0,1fr)_405px] lg:gap-16"
+    >
       <span className="sr-only">Carregando checkout…</span>
       <div className="grid gap-5 md:grid-cols-2">
         {Array.from({ length: 10 }, (_, i) => (
@@ -150,7 +153,7 @@ function CheckoutLoader({ user }: { user: User }) {
   const wallets = useQuery(walletsQuery(user.id))
   if (wallets.isError) {
     return (
-      <div className="mt-6">
+      <div className="mt-6 md:mt-[17px]">
         <RetryBox
           title="Não foi possível carregar suas carteiras"
           error={wallets.error}
@@ -510,7 +513,7 @@ function Checkout({ user, wallets }: { user: User; wallets: Wallet[] }) {
 
   return (
     <Form {...form}>
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_405px] lg:gap-16">
+      <div className="mt-6 grid gap-8 md:mt-[17px] lg:grid-cols-[minmax(0,1fr)_405px] lg:gap-16">
         <div className="min-w-0">
           {mode.kind === 'editing' ? (
             <CheckoutForm

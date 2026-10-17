@@ -89,8 +89,8 @@ function NftDetailPage() {
 
   return (
     <article>
-      <div className="page-container md:pt-6">
-        <nav aria-label="Trilha" className="hidden text-sm font-bold md:block">
+      <div className="page-container md:pt-[31px]">
+        <nav aria-label="Trilha" className="hidden text-[15px] leading-5 font-bold md:block">
           <Link to="/" className="hover:text-primary-hi">
             Início
           </Link>{' '}
@@ -99,7 +99,7 @@ function NftDetailPage() {
             Mercado
           </Link>
         </nav>
-        <div className="grid gap-0 md:mt-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:gap-10">
+        <div className="grid gap-0 md:mt-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8 lg:gap-10">
           {/* Topo do frame mobile: gradiente surface → surface-2 sob a arte, que a folha cobre em 30 px. */}
           <div
             data-testid="detail-hero"

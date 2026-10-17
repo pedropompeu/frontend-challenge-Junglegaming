@@ -62,8 +62,8 @@ function CartPage() {
   const showSummary = !cart.data || items.length > 0
 
   return (
-    <div className="page-container pt-4 pb-10 md:pt-6">
-      <nav aria-label="Trilha" className="hidden text-sm font-bold md:block">
+    <div className="page-container pt-4 pb-10 md:pt-[31px]">
+      <nav aria-label="Trilha" className="hidden text-[15px] leading-5 font-bold md:block">
         <Link to="/" className="hover:text-primary-hi">
           Início
         </Link>{' '}
@@ -74,7 +74,7 @@ function CartPage() {
         / <span aria-current="page">Carrinho</span>
       </nav>
       <TitleBar title="Carrinho de NFTs" />
-      <div className="mt-6 grid gap-8 md:mt-6 lg:grid-cols-[minmax(0,1fr)_332px] lg:gap-[86px]">
+      <div className="mt-6 grid gap-8 md:mt-[17px] lg:grid-cols-[minmax(0,1fr)_332px] lg:gap-[86px]">
         <div>{list}</div>
         {showSummary ? (
           <section
